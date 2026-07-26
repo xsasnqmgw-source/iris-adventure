@@ -8,21 +8,19 @@
 <title>IRIS · 鸢尾花的奇遇</title>
 <style>
 :root {
-  --iris-deep: #3B1F78;
-  --iris-royal: #5C3FA0;
-  --iris-mid: #7B5FC7;
-  --iris-light: #A78FDE;
-  --iris-petal: #CEC0F0;
-  --iris-gold: #F5C842;
-  --iris-gold-light: #FFE082;
-  --iris-white: #F7F3FF;
-  --bg-start: #120C24;
-  --bg-mid: #0F0A1E;
-  --bg-end: #0A0618;
-  --card-bg: rgba(22, 14, 50, 0.8);
-  --card-border: rgba(120, 95, 180, 0.25);
-  --text: #e6deff;
-  --text-dim: #a898d0;
+  --iris-deep: #5B2D8E;
+  --iris-mid: #8B5FBF;
+  --iris-light: #B89BE0;
+  --iris-soft: #DDCEF2;
+  --iris-gold: #FAC53D;
+  --iris-gold-bright: #FFE48A;
+  --bg-start: #1A1032;
+  --bg-mid: #150C2A;
+  --bg-end: #0E0820;
+  --card-bg: rgba(30, 18, 55, 0.78);
+  --card-border: rgba(140, 110, 200, 0.22);
+  --text: #EDE5FF;
+  --text-dim: #B8A8D8;
   --safe-bottom: env(safe-area-inset-bottom, 16px);
 }
 
@@ -34,102 +32,75 @@ html, body {
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   background: var(--bg-start);
   -webkit-tap-highlight-color: transparent;
-  -webkit-user-select: none;
-  user-select: none;
+  -webkit-user-select: none; user-select: none;
   -webkit-font-smoothing: antialiased;
   -webkit-overflow-scrolling: touch;
 }
 
 #app {
   width: 100%; min-height: 100vh;
-  position: relative;
-  overflow: hidden;
+  position: relative; overflow: hidden;
 }
 
-/* ============ BACKGROUND CANVAS ============ */
+/* Background canvas */
 #bgCanvas {
   position: fixed; top: 0; left: 0;
   width: 100%; height: 100%;
   pointer-events: none; z-index: 0;
 }
 
-/* ============ SCREENS ============ */
+/* Screens */
 .screen {
   position: absolute; top: 0; left: 0;
   width: 100%; min-height: 100vh;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   z-index: 10;
-  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
   opacity: 0; pointer-events: none;
   padding: 24px 16px;
   padding-bottom: calc(24px + var(--safe-bottom));
 }
-.screen.active {
-  opacity: 1; pointer-events: auto;
-  transform: translateY(0);
-}
-.screen.exit-left  { opacity: 0; transform: translateX(-40px); }
-.screen.exit-right { opacity: 0; transform: translateX(40px); }
-.screen.enter-from-right { opacity: 0; transform: translateX(40px); }
-.screen.enter-from-left  { opacity: 0; transform: translateX(-40px); }
+.screen.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.screen.exit-left  { opacity: 0; transform: translateX(-36px); }
+.screen.exit-right { opacity: 0; transform: translateX(36px); }
+.screen.enter-from-right { opacity: 0; transform: translateX(36px); }
+.screen.enter-from-left  { opacity: 0; transform: translateX(-36px); }
 
-/* ============ HOME SCREEN ============ */
-#homeScreen { gap: 6px; padding-top: 40px; }
+/* ============ HOME ============ */
+#homeScreen { gap: 4px; padding-top: 36px; }
 
-/* ---- Iris flower container ---- */
+/* Iris flower from real SVG */
 .iris-stage {
   position: relative;
-  width: 200px; height: 240px;
+  width: 160px; height: 190px;
   margin-bottom: 0;
+  animation: irisFloat 5s ease-in-out infinite;
 }
-.iris-stage .iris-svg-main {
+.iris-stage svg, .iris-stage img {
   width: 100%; height: 100%;
-  filter: drop-shadow(0 0 30px rgba(120,80,200,0.35));
-  animation: irisGentleSway 6s ease-in-out infinite;
+  filter: drop-shadow(0 6px 20px rgba(100,60,180,0.4));
 }
-@keyframes irisGentleSway {
-  0%,100% { transform: rotate(-1.5deg) translateY(0); }
-  25%  { transform: rotate(0.5deg) translateY(-4px); }
-  50%  { transform: rotate(1.5deg) translateY(-8px); }
-  75%  { transform: rotate(-0.5deg) translateY(-3px); }
-}
-
-/* floating sparkles around iris */
-.iris-stage .sparkle {
-  position: absolute; pointer-events: none;
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: white;
-  box-shadow: 0 0 6px 2px rgba(200,180,255,0.8);
-  animation: sparkleFloat 3s ease-in-out infinite;
-}
-.iris-stage .sparkle:nth-child(2) { top: 15%; left: 20%; animation-delay: 0s; }
-.iris-stage .sparkle:nth-child(3) { top: 10%; left: 70%; animation-delay: 1.2s; }
-.iris-stage .sparkle:nth-child(4) { top: 55%; left: 85%; animation-delay: 2.4s; }
-.iris-stage .sparkle:nth-child(5) { top: 70%; left: 12%; animation-delay: 0.8s; }
-.iris-stage .sparkle:nth-child(6) { top: 25%; left: 50%; animation-delay: 1.8s; width:3px; height:3px; }
-@keyframes sparkleFloat {
-  0%,100% { opacity: 0.2; transform: translateY(0) scale(1); }
-  50%  { opacity: 1; transform: translateY(-12px) scale(1.8); }
+@keyframes irisFloat {
+  0%,100% { transform: translateY(0) rotate(-1deg); }
+  30%  { transform: translateY(-10px) rotate(1deg); }
+  60%  { transform: translateY(-4px) rotate(-0.5deg); }
 }
 
 .home-title {
-  font-size: 26px; font-weight: 700;
-  color: var(--iris-white);
-  text-align: center;
+  font-size: 24px; font-weight: 700;
+  color: var(--text);
   letter-spacing: 2px;
-  text-shadow: 0 0 30px rgba(150, 120, 220, 0.5);
-  margin-top: -8px;
+  text-shadow: 0 0 25px rgba(140,110,210,0.5);
+  margin-top: 8px;
 }
 .home-subtitle {
   font-size: 14px; color: var(--text-dim);
-  text-align: center;
-  margin-bottom: 18px;
-  letter-spacing: 1.5px;
+  margin-bottom: 18px; letter-spacing: 1.5px;
+  margin-top: 6px;
 }
 
-/* ---- Option cards ---- */
+/* Cards */
 .options-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -139,181 +110,121 @@ html, body {
 .option-card {
   position: relative;
   background: var(--card-bg);
-  border: 1px solid var(--card-border);
+  border: 1.5px solid var(--card-border);
   border-radius: 18px;
   padding: 16px 12px;
   cursor: pointer;
   display: flex; flex-direction: column;
   align-items: center; gap: 6px;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
   overflow: hidden;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 .option-card::before {
   content: '';
   position: absolute; inset: 0;
-  background: radial-gradient(circle at 50% 30%, rgba(155,120,220,0.12) 0%, transparent 70%);
+  background: radial-gradient(circle at 50% 30%, rgba(155,120,220,0.15) 0%, transparent 70%);
   opacity: 0; transition: opacity 0.35s;
 }
 .option-card:active {
-  transform: scale(0.95);
-  border-color: rgba(155, 126, 216, 0.6);
-  box-shadow: 0 0 35px rgba(100, 60, 180, 0.45);
+  transform: scale(0.94);
+  border-color: rgba(160,130,220,0.6);
+  box-shadow: 0 0 30px rgba(100,60,180,0.4);
 }
 .option-card:active::before { opacity: 1; }
 .option-card .card-icon {
   font-size: 34px; position: relative; z-index: 1;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25));
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
 }
 .option-card .card-label {
   font-size: 13px; font-weight: 600;
-  color: var(--text);
-  position: relative; z-index: 1;
+  color: var(--text); position: relative; z-index: 1;
   text-align: center; line-height: 1.3;
 }
 .option-card.full-width { grid-column: 1 / -1; }
 
-/* ============ GAME SCREENS ============ */
+/* ============ SHARED GAME HEADER ============ */
 .game-header {
   position: absolute; top: 16px; left: 12px; right: 12px;
   display: flex; justify-content: space-between;
   align-items: center; z-index: 20;
 }
 .back-btn {
-  width: 38px; height: 38px;
-  border-radius: 50%;
-  background: rgba(22,14,50,0.75);
-  border: 1px solid rgba(120,95,180,0.3);
-  color: var(--text);
-  font-size: 18px; cursor: pointer;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(30,18,55,0.75);
+  border: 1px solid rgba(140,110,200,0.28);
+  color: var(--text); font-size: 18px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   transition: all 0.2s;
 }
 .back-btn:active { background: rgba(100,60,170,0.4); transform: scale(0.88); }
-
 .game-title {
   font-size: 17px; font-weight: 700;
-  color: var(--iris-white);
-  text-shadow: 0 0 18px rgba(150,120,220,0.45);
+  color: var(--text);
+  text-shadow: 0 0 16px rgba(140,110,210,0.4);
   text-align: center;
 }
 
-/* ============ TEMPLE GAME ============ */
-.temple-scene {
-  display: flex; flex-direction: column;
-  align-items: center; gap: 12px; width: 100%;
+/* ============ TEMPLE ============ */
+.temple-scene { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
+.temple-icon { font-size: 70px; filter: drop-shadow(0 6px 20px rgba(100,60,180,0.3)); }
+.bell-zone { position: relative; width: 100px; height: 110px; cursor: pointer; }
+.bell-zone .b-emoji { font-size: 64px; display: block; text-align: center; transition: transform 0.08s; }
+.bell-zone .b-emoji.swung { animation: bellSw 0.7s ease-in-out; }
+@keyframes bellSw {
+  0%,100%{transform:rotate(0)} 12%{transform:rotate(-15deg)} 28%{transform:rotate(12deg)}
+  44%{transform:rotate(-9deg)} 60%{transform:rotate(6deg)} 76%{transform:rotate(-3deg)} 90%{transform:rotate(2deg)}
 }
-.temple-building { font-size: 72px; filter: drop-shadow(0 8px 24px rgba(100,60,180,0.35)); }
-.bell-area {
-  position: relative; width: 100px; height: 110px; cursor: pointer;
-}
-.bell-area .bell-emoji {
-  font-size: 64px; display: block; text-align: center;
-  transition: transform 0.08s;
-}
-.bell-area .bell-emoji.swinging {
-  animation: bellSwing 0.7s ease-in-out;
-}
-@keyframes bellSwing {
-  0%,100%{transform:rotate(0)}
-  12%{transform:rotate(-16deg)}
-  28%{transform:rotate(13deg)}
-  44%{transform:rotate(-10deg)}
-  60%{transform:rotate(7deg)}
-  76%{transform:rotate(-4deg)}
-  90%{transform:rotate(2deg)}
-}
-.bell-area .ripple-ring {
-  position: absolute; top: 28px; left: 18px;
-  width: 64px; height: 64px; border-radius: 50%;
-  border: 2px solid rgba(245,200,66,0.5);
-  opacity: 0; pointer-events: none;
-}
-.bell-area .ripple-ring.expand {
-  animation: rippleExpand 1.2s ease-out forwards;
-}
-@keyframes rippleExpand {
-  0%{transform:scale(0.4);opacity:0.9}
-  100%{transform:scale(3);opacity:0}
-}
-.tap-prompt { font-size: 13px; color: var(--iris-gold); animation: softPulse 2s ease-in-out infinite; }
-@keyframes softPulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
-.worry-count { font-size: 13px; color: var(--text-dim); text-align: center; }
-.worry-display {
-  font-size: 13px; color: var(--iris-petal);
-  text-align: center; max-width: 280px;
-  line-height: 1.8; min-height: 20px;
-  transition: all 0.4s;
-}
+.bell-zone .ripple { position: absolute; top: 28px; left: 18px; width: 64px; height: 64px;
+  border-radius: 50%; border: 2px solid rgba(250,197,61,0.5); opacity: 0; pointer-events: none; }
+.bell-zone .ripple.go { animation: ripExpand 1.2s ease-out forwards; }
+@keyframes ripExpand { 0%{transform:scale(0.4);opacity:0.9} 100%{transform:scale(3);opacity:0} }
+.hint { font-size: 13px; color: var(--iris-gold); animation: softBeat 2s ease-in-out infinite; }
+@keyframes softBeat { 0%,100%{opacity:0.45} 50%{opacity:1} }
+.worry-num { font-size: 13px; color: var(--text-dim); text-align: center; }
+.worry-msg { font-size: 13px; color: var(--iris-soft); text-align: center; max-width: 280px; line-height: 1.8; min-height: 20px; transition: all 0.4s; }
 
-/* ============ RECHARGE GAME ============ */
-.breathe-scene {
-  display: flex; flex-direction: column;
-  align-items: center; gap: 10px; width: 100%;
-}
+/* ============ RECHARGE ============ */
+.breathe-scene { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
 .breathe-ring {
   width: 170px; height: 170px; border-radius: 50%;
   position: relative; display: flex;
-  align-items: center; justify-content: center;
-  cursor: pointer;
+  align-items: center; justify-content: center; cursor: pointer;
 }
-.breathe-ring .ring-bg {
+.breathe-ring .r-bg {
   position: absolute; width: 100%; height: 100%; border-radius: 50%;
-  background: radial-gradient(circle at center, rgba(120,80,200,0.25), rgba(90,60,160,0.08));
-  border: 1.5px solid rgba(150,120,220,0.35);
-  box-shadow: 0 0 45px rgba(100,60,170,0.25);
+  background: radial-gradient(circle at center, rgba(120,80,200,0.25), rgba(90,60,160,0.06));
+  border: 1.5px solid rgba(150,120,220,0.32);
+  box-shadow: 0 0 40px rgba(100,60,170,0.22);
 }
-.breathe-ring .bloom-icon {
+.breathe-ring .r-icon {
   font-size: 52px; z-index: 1;
   transition: transform 0.6s ease, font-size 0.6s ease;
 }
-.breathe-label {
-  font-size: 16px; color: var(--text); font-weight: 600;
-  text-align: center; transition: all 0.4s;
-}
-.breathe-sub {
-  font-size: 12px; color: var(--text-dim); text-align: center;
-}
-.charge-track {
-  width: 200px; height: 6px; background: rgba(150,120,220,0.18);
-  border-radius: 3px; overflow: hidden;
-}
-.charge-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--iris-royal), var(--iris-gold));
-  border-radius: 3px; transition: width 0.4s ease; width: 0%;
-}
+.breathe-label { font-size: 16px; color: var(--text); font-weight: 600; text-align: center; transition: all 0.4s; }
+.breathe-sub  { font-size: 12px; color: var(--text-dim); text-align: center; }
+.charge-track { width: 200px; height: 6px; background: rgba(150,120,220,0.16); border-radius: 3px; overflow: hidden; }
+.charge-fill  { height: 100%; background: linear-gradient(90deg, var(--iris-mid), var(--iris-gold)); border-radius: 3px; transition: width 0.4s ease; width: 0%; }
 
-/* ============ FOOD GAME ============ */
-.food-scene {
-  display: flex; flex-direction: column;
-  align-items: center; gap: 12px; width: 100%;
-}
+/* ============ FOOD ============ */
+.food-scene { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; }
 .food-slot {
   width: 180px; height: 180px;
-  background: var(--card-bg);
-  border-radius: 22px;
-  border: 1.5px solid rgba(150,120,220,0.3);
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden;
+  background: var(--card-bg); border-radius: 22px;
+  border: 1.5px solid rgba(150,120,220,0.28);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
 }
-.food-slot .slot-emoji {
-  font-size: 72px;
-  transition: transform 0.08s;
-}
-.food-slot .slot-emoji.rolling {
-  animation: slotShake 0.08s linear infinite;
-}
-@keyframes slotShake {
+.food-slot .s-emoji { font-size: 72px; transition: transform 0.08s; }
+.food-slot .s-emoji.roll { animation: slotRoll 0.08s linear infinite; }
+@keyframes slotRoll {
   0%{transform:translateY(0)} 25%{transform:translateY(-8px)}
   50%{transform:translateY(0)} 75%{transform:translateY(8px)} 100%{transform:translateY(0)}
 }
 .spin-btn {
   padding: 12px 36px;
-  background: linear-gradient(135deg, var(--iris-mid), var(--iris-royal));
+  background: linear-gradient(135deg, var(--iris-mid), var(--iris-deep));
   border: none; border-radius: 28px;
   color: #fff; font-size: 15px; font-weight: 700;
   cursor: pointer; letter-spacing: 1px;
@@ -321,103 +232,68 @@ html, body {
   transition: all 0.25s;
 }
 .spin-btn:active { transform: scale(0.92); }
-.food-result-text {
-  font-size: 15px; color: var(--iris-gold);
-  text-align: center; font-weight: 600;
-  min-height: 22px; transition: all 0.3s;
-}
-.food-desc-text {
-  font-size: 12px; color: var(--text-dim);
-  text-align: center; max-width: 280px; line-height: 1.6;
-}
+.food-result { font-size: 15px; color: var(--iris-gold); text-align: center; font-weight: 600; min-height: 22px; transition: all 0.3s; }
+.food-desc   { font-size: 12px; color: var(--text-dim); text-align: center; max-width: 280px; line-height: 1.6; }
 
-/* ============ PET GAME ============ */
-.pet-scene {
-  display: flex; flex-direction: column;
-  align-items: center; gap: 8px; width: 100%;
-}
+/* ============ PET ============ */
+.pet-scene { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; }
 .pet-stage {
   width: 150px; height: 150px;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; position: relative;
 }
-.pet-stage .pet-emoji {
+.pet-stage .p-emoji {
   font-size: 90px;
   transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
-  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.3));
+  filter: drop-shadow(0 5px 14px rgba(0,0,0,0.28));
 }
-.pet-stage .pet-emoji.bounce {
-  animation: petBounceAnim 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+.pet-stage .p-emoji.bop { animation: petBop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes petBop {
+  0%,100%{transform:translateY(0) scale(1)} 30%{transform:translateY(-26px) scale(1.1)}
+  60%{transform:translateY(-8px) scale(0.94)} 80%{transform:translateY(-4px) scale(1.02)}
 }
-@keyframes petBounceAnim {
-  0%,100%{transform:translateY(0) scale(1)}
-  30%{transform:translateY(-28px) scale(1.12)}
-  60%{transform:translateY(-8px) scale(0.94)}
-  80%{transform:translateY(-4px) scale(1.03)}
-}
-.pet-stage .heart-pop {
-  position: absolute; pointer-events: none;
-  font-size: 22px; opacity: 0;
-}
-.pet-stage .heart-pop.fly {
-  animation: heartRise 1.4s ease-out forwards;
-}
-@keyframes heartRise {
-  0%{opacity:1;transform:translateY(0) scale(0.4)}
-  40%{opacity:1;transform:translateY(-35px) scale(1.1)}
+.pet-stage .hearts { position: absolute; pointer-events: none; font-size: 22px; opacity: 0; }
+.pet-stage .hearts.pop { animation: heartUp 1.4s ease-out forwards; }
+@keyframes heartUp {
+  0%{opacity:1;transform:translateY(0) scale(0.4)} 40%{opacity:1;transform:translateY(-35px) scale(1.1)}
   100%{opacity:0;transform:translateY(-70px) scale(0.7)}
 }
-.pet-name-label { font-size: 15px; color: var(--text); font-weight: 600; }
-.pet-desc-label { font-size: 12px; color: var(--text-dim); text-align: center; }
-.pet-nav-row { display: flex; gap: 18px; }
-.pet-nav-dot {
+.pet-name  { font-size: 15px; color: var(--text); font-weight: 600; }
+.pet-desc  { font-size: 12px; color: var(--text-dim); text-align: center; }
+.pet-nav   { display: flex; gap: 18px; }
+.pet-nav button {
   width: 40px; height: 40px; border-radius: 50%;
-  background: rgba(22,14,50,0.7);
-  border: 1px solid rgba(120,95,180,0.3);
-  color: var(--text); font-size: 18px;
-  cursor: pointer; display: flex;
-  align-items: center; justify-content: center;
+  background: rgba(30,18,55,0.7);
+  border: 1px solid rgba(140,110,200,0.28);
+  color: var(--text); font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
   transition: all 0.2s;
 }
-.pet-nav-dot:active { background: rgba(100,60,170,0.4); }
+.pet-nav button:active { background: rgba(100,60,170,0.4); }
 
-/* ============ FORTUNE GAME ============ */
-.fortune-scene {
-  display: flex; flex-direction: column;
-  align-items: center; gap: 12px; width: 100%;
-}
-.fortune-flower-area {
+/* ============ FORTUNE ============ */
+.fortune-scene { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; }
+.fortune-area {
   position: relative; width: 150px; height: 150px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
 }
-.fortune-flower-area .ff-core {
-  font-size: 60px; transition: transform 0.3s;
-}
-.fortune-petal-layer {
-  position: absolute; width: 100%; height: 100%;
-  pointer-events: none;
-}
-.fortune-petal-layer .fp {
+.fortune-area .f-core { font-size: 60px; transition: transform 0.3s; }
+.fortune-petals { position: absolute; width: 100%; height: 100%; pointer-events: none; }
+.fortune-petals .fp {
   position: absolute; font-size: 22px;
   opacity: 0.75; transition: all 0.55s ease-out;
 }
-.fortune-petal-layer .fp.blown {
-  opacity: 0;
-  transform: translate(var(--fx), var(--fy)) rotate(var(--fr)) scale(0);
+.fortune-petals .fp.gone {
+  opacity: 0; transform: translate(var(--fx), var(--fy)) rotate(var(--fr)) scale(0);
 }
-.fortune-result {
+.fortune-msg {
   font-size: 15px; color: var(--iris-gold);
   text-align: center; font-weight: 600;
   min-height: 50px; max-width: 280px;
-  line-height: 1.6; transition: all 0.45s;
-  opacity: 0;
+  line-height: 1.6; transition: all 0.45s; opacity: 0;
 }
-.fortune-result.show { opacity: 1; }
-.fortune-hint-text {
-  font-size: 12px; color: var(--text-dim);
-  animation: softPulse 2s ease-in-out infinite;
-}
+.fortune-msg.shown { opacity: 1; }
+.fortune-hint { font-size: 12px; color: var(--text-dim); animation: softBeat 2s ease-in-out infinite; }
 
 /* ============ PETAL RAIN ============ */
 .petal-drop {
@@ -425,14 +301,23 @@ html, body {
   animation: petalDrift linear forwards;
 }
 @keyframes petalDrift {
-  0%  { opacity:0; transform:translateY(-30px) rotate(0deg) scale(0.4); }
-  8%  { opacity:0.85; }
-  15% { opacity:0.9; transform:translateY(8vh) rotate(50deg) scale(1); }
-  75% { opacity:0.4; }
-  100%{ opacity:0; transform:translateY(105vh) translateX(var(--drift)) rotate(var(--spin)) scale(0.25); }
+  0%  { opacity:0; transform:translateY(-30px) rotate(0deg) scale(0.35); }
+  10% { opacity:0.85; transform:translateY(5vh) rotate(40deg) scale(1); }
+  70% { opacity:0.35; }
+  100%{ opacity:0; transform:translateY(105vh) translateX(var(--drift)) rotate(var(--spin)) scale(0.2); }
 }
 
-/* ============ RESPONSIVE ============ */
+/* WeChat share tip */
+.wx-tip {
+  position: fixed; top: 10px; right: 14px; z-index: 1000;
+  font-size: 12px; color: var(--text-dim);
+  background: rgba(30,18,55,0.82); padding: 6px 12px;
+  border-radius: 10px; pointer-events: none; opacity: 0;
+  transition: opacity 0.35s;
+}
+.wx-tip.on { opacity: 1; }
+
+/* Responsive */
 @media (min-width: 420px) {
   .options-grid { max-width: 400px; gap: 12px; }
   .option-card { padding: 20px 16px; border-radius: 20px; }
@@ -445,19 +330,8 @@ html, body {
   .option-card .card-icon { font-size: 44px; }
   .option-card .card-label { font-size: 16px; }
   .home-title { font-size: 30px; }
-  .iris-stage { width: 240px; height: 280px; }
+  .iris-stage { width: 190px; height: 220px; }
 }
-
-/* WeChat share hint */
-.wx-tip {
-  position: fixed; top: 10px; right: 14px; z-index: 1000;
-  font-size: 12px; color: var(--text-dim);
-  background: rgba(22,14,50,0.82);
-  padding: 6px 12px; border-radius: 10px;
-  pointer-events: none; opacity: 0;
-  transition: opacity 0.35s;
-}
-.wx-tip.on { opacity: 1; }
 </style>
 </head>
 <body>
@@ -465,241 +339,11 @@ html, body {
 <div id="app">
   <canvas id="bgCanvas"></canvas>
 
-  <!-- ==================== HOME SCREEN ==================== -->
+  <!-- ===== HOME SCREEN ===== -->
   <div class="screen active" id="homeScreen">
-    <!-- Detailed Iris SVG -->
+    <!-- Real iris flower SVG from public domain -->
     <div class="iris-stage">
-      <svg class="iris-svg-main" viewBox="0 0 200 240">
-        <defs>
-          <!-- Standard petal gradient (lighter, lavender) -->
-          <linearGradient id="stdGrad" x1="0" y1="1" x2="0" y2="0">
-            <stop offset="0%" stop-color="#8B6DCF"/>
-            <stop offset="35%" stop-color="#AD93E5"/>
-            <stop offset="70%" stop-color="#CEC0F0"/>
-            <stop offset="100%" stop-color="#E8E0FA"/>
-          </linearGradient>
-          <linearGradient id="stdGradSide" x1="0.3" y1="1" x2="0" y2="0">
-            <stop offset="0%" stop-color="#7B5FC7"/>
-            <stop offset="40%" stop-color="#A085DD"/>
-            <stop offset="100%" stop-color="#D5CAF2"/>
-          </linearGradient>
-          <!-- Fall petal gradient (deep dramatic purple) -->
-          <linearGradient id="fallGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#5C3FA0"/>
-            <stop offset="30%" stop-color="#462E85"/>
-            <stop offset="70%" stop-color="#3B1F78"/>
-            <stop offset="100%" stop-color="#2A1060"/>
-          </linearGradient>
-          <linearGradient id="fallGradSide" x1="0.2" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#503894"/>
-            <stop offset="50%" stop-color="#3E2578"/>
-            <stop offset="100%" stop-color="#200848"/>
-          </linearGradient>
-          <!-- Beard gradient (yellow fuzzy signal) -->
-          <linearGradient id="beardGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#FFF8E1"/>
-            <stop offset="25%" stop-color="#FFE082"/>
-            <stop offset="60%" stop-color="#F5C842"/>
-            <stop offset="100%" stop-color="#C89820"/>
-          </linearGradient>
-          <radialGradient id="beardGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#FFF8E1" stop-opacity="0.9"/>
-            <stop offset="60%" stop-color="#FFE082" stop-opacity="0.35"/>
-            <stop offset="100%" stop-color="#F5C842" stop-opacity="0"/>
-          </radialGradient>
-          <!-- Leaf gradient -->
-          <linearGradient id="leafGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#2E7D32"/>
-            <stop offset="50%" stop-color="#43A047"/>
-            <stop offset="100%" stop-color="#66BB6A"/>
-          </linearGradient>
-          <linearGradient id="leafGrad2" x1="1" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#388E3C"/>
-            <stop offset="100%" stop-color="#81C784"/>
-          </linearGradient>
-          <!-- Filters -->
-          <filter id="petalShadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1a0a3a" flood-opacity="0.35"/>
-          </filter>
-          <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="2.5" result="blur"/>
-            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-          <filter id="beardBlur" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="1.2"/>
-          </filter>
-        </defs>
-
-        <!-- ===== STEM ===== -->
-        <path d="M100,232 Q98,195 100,160 Q101,130 99,100"
-              stroke="#4A8C4A" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-
-        <!-- ===== LEAVES (sword-shaped, overlapping) ===== -->
-        <!-- Left leaf -->
-        <path d="M99,195 Q70,180 30,165 Q50,155 75,165 Q92,173 99,185"
-              fill="url(#leafGrad)" opacity="0.9"/>
-        <!-- Right leaf -->
-        <path d="M100,180 Q130,165 170,148 Q155,140 130,150 Q108,158 100,170"
-              fill="url(#leafGrad2)" opacity="0.85"/>
-        <!-- Smaller back leaf left -->
-        <path d="M99,210 Q55,200 20,188 Q45,180 70,190 Q90,197 99,203"
-              fill="url(#leafGrad)" opacity="0.7"/>
-        <!-- Smaller back leaf right -->
-        <path d="M100,200 Q140,188 175,175 Q155,168 130,178 Q110,186 100,193"
-              fill="url(#leafGrad2)" opacity="0.65"/>
-
-        <!-- ===== OVARY / RECEPTACLE (small green bulge at base) ===== -->
-        <ellipse cx="100" cy="150" rx="6" ry="10" fill="#5B8C5A" opacity="0.7"/>
-
-        <!-- ===== FALLS (3 drooping petals with beards) ===== -->
-        <!-- Center fall -->
-        <g filter="url(#petalShadow)">
-          <path d="M100,132
-                   C85,136 60,150 42,172
-                   C35,180 32,190 40,195
-                   C52,202 72,206 100,208
-                   C128,206 148,202 160,195
-                   C168,190 165,180 158,172
-                   C140,150 115,136 100,132Z"
-                fill="url(#fallGrad)" stroke="rgba(60,30,100,0.3)" stroke-width="0.8"/>
-        </g>
-        <!-- Center fall beard -->
-        <ellipse cx="100" cy="172" rx="18" ry="28" fill="url(#beardGlow)" filter="url(#beardBlur)" opacity="0.6"/>
-        <path d="M100,148 Q95,165 100,190 Q105,165 100,148"
-              fill="url(#beardGrad)" opacity="0.85"/>
-        <!-- Beard fuzz lines -->
-        <g stroke="#D4A020" stroke-width="0.5" opacity="0.5" fill="none">
-          <path d="M92,158 L96,172"/>
-          <path d="M96,154 L98,174"/>
-          <path d="M100,152 L100,176"/>
-          <path d="M104,154 L102,174"/>
-          <path d="M108,158 L104,172"/>
-        </g>
-        <!-- Fall veins -->
-        <g stroke="rgba(30,8,60,0.3)" stroke-width="0.6" fill="none">
-          <path d="M100,135 Q95,155 88,185"/>
-          <path d="M100,135 Q90,160 78,190"/>
-          <path d="M100,135 Q105,155 112,185"/>
-          <path d="M100,135 Q110,160 122,190"/>
-        </g>
-
-        <!-- Left fall -->
-        <g filter="url(#petalShadow)">
-          <path d="M88,138
-                   C70,142 40,155 22,172
-                   C14,180 10,192 18,198
-                   C28,206 48,212 72,210
-                   C88,206 96,195 96,185
-                   C96,170 94,152 88,138Z"
-                fill="url(#fallGradSide)" stroke="rgba(60,30,100,0.3)" stroke-width="0.8"/>
-        </g>
-        <!-- Left fall beard -->
-        <ellipse cx="58" cy="178" rx="14" ry="22" fill="url(#beardGlow)" filter="url(#beardBlur)" opacity="0.5"
-                 transform="rotate(-25 58 178)"/>
-        <path d="M70,155 Q60,170 48,190 Q56,178 70,155"
-              fill="url(#beardGrad)" opacity="0.75" transform="rotate(-20 58 172)"/>
-        <!-- Left fall veins -->
-        <g stroke="rgba(30,8,60,0.25)" stroke-width="0.5" fill="none">
-          <path d="M86,140 Q75,160 58,188"/>
-          <path d="M86,140 Q68,165 42,192"/>
-        </g>
-
-        <!-- Right fall -->
-        <g filter="url(#petalShadow)">
-          <path d="M112,138
-                   C130,142 160,155 178,172
-                   C186,180 190,192 182,198
-                   C172,206 152,212 128,210
-                   C112,206 104,195 104,185
-                   C104,170 106,152 112,138Z"
-                fill="url(#fallGradSide)" stroke="rgba(60,30,100,0.3)" stroke-width="0.8"/>
-        </g>
-        <!-- Right fall beard -->
-        <ellipse cx="142" cy="178" rx="14" ry="22" fill="url(#beardGlow)" filter="url(#beardBlur)" opacity="0.5"
-                 transform="rotate(25 142 178)"/>
-        <path d="M130,155 Q140,170 152,190 Q144,178 130,155"
-              fill="url(#beardGrad)" opacity="0.75" transform="rotate(20 142 172)"/>
-        <!-- Right fall veins -->
-        <g stroke="rgba(30,8,60,0.25)" stroke-width="0.5" fill="none">
-          <path d="M114,140 Q125,160 142,188"/>
-          <path d="M114,140 Q132,165 158,192"/>
-        </g>
-
-        <!-- ===== STANDARDS (3 upright petals, lighter) ===== -->
-        <!-- Center standard -->
-        <g filter="url(#petalShadow)">
-          <path d="M100,130
-                   C90,105 85,72 92,44
-                   C96,30 100,22 100,18
-                   C100,22 104,30 108,44
-                   C115,72 110,105 100,130Z"
-                fill="url(#stdGrad)" stroke="rgba(130,100,200,0.3)" stroke-width="0.6"/>
-        </g>
-        <!-- Center standard center crease -->
-        <path d="M100,128 Q100,80 100,20" stroke="rgba(255,255,255,0.15)" stroke-width="1.2" fill="none"/>
-
-        <!-- Left standard -->
-        <g filter="url(#petalShadow)">
-          <path d="M92,128
-                   C76,110 52,82 40,54
-                   C34,42 30,30 34,24
-                   C40,20 48,24 55,36
-                   C70,60 82,90 92,128Z"
-                fill="url(#stdGradSide)" stroke="rgba(130,100,200,0.3)" stroke-width="0.6"/>
-        </g>
-
-        <!-- Right standard -->
-        <g filter="url(#petalShadow)">
-          <path d="M108,128
-                   C124,110 148,82 160,54
-                   C166,42 170,30 166,24
-                   C160,20 152,24 145,36
-                   C130,60 118,90 108,128Z"
-                fill="url(#stdGradSide)" stroke="rgba(130,100,200,0.3)" stroke-width="0.6"/>
-        </g>
-
-        <!-- ===== STYLE ARMS (3 small petal-like structures at center) ===== -->
-        <path d="M100,128 Q97,118 100,112 Q103,118 100,128Z"
-              fill="#D5C8F0" opacity="0.8"/>
-        <path d="M94,126 Q88,118 86,112 Q90,116 94,124Z"
-              fill="#C8B8EA" opacity="0.7"/>
-        <path d="M106,126 Q112,118 114,112 Q110,116 106,124Z"
-              fill="#C8B8EA" opacity="0.7"/>
-
-        <!-- ===== STIGMA (tiny yellow crown at very center) ===== -->
-        <circle cx="100" cy="122" r="3" fill="#F5C842"/>
-        <circle cx="100" cy="122" r="1.5" fill="#FFF8E1"/>
-
-        <!-- ===== BUDS (small) ===== -->
-        <g opacity="0.7">
-          <path d="M62,155 Q58,145 60,136 Q64,140 65,148 Q66,154 62,155Z"
-                fill="#8B6DCF"/>
-          <path d="M140,150 Q144,140 142,132 Q138,137 137,144 Q136,149 140,150Z"
-                fill="#8B6DCF"/>
-        </g>
-
-        <!-- ===== DEWDROP ===== -->
-        <ellipse cx="82" cy="88" rx="2.5" ry="3.5" fill="rgba(255,255,255,0.5)"/>
-        <ellipse cx="81.5" cy="87" rx="1" ry="1.2" fill="rgba(255,255,255,0.75)"/>
-
-        <!-- ===== SPARKLES STARS ===== -->
-        <g fill="white" opacity="0.6">
-          <circle cx="35" cy="40" r="1.2">
-            <animate attributeName="opacity" values="0.6;0.1;0.6" dur="2.2s" repeatCount="indefinite"/>
-          </circle>
-          <circle cx="165" cy="50" r="1">
-            <animate attributeName="opacity" values="0.5;0.08;0.5" dur="2.8s" repeatCount="indefinite"/>
-          </circle>
-          <circle cx="120" cy="15" r="0.8">
-            <animate attributeName="opacity" values="0.55;0.1;0.55" dur="1.9s" repeatCount="indefinite"/>
-          </circle>
-          <circle cx="50" cy="25" r="0.9">
-            <animate attributeName="opacity" values="0.45;0.05;0.45" dur="3s" repeatCount="indefinite"/>
-          </circle>
-        </g>
-      </svg>
-      <span class="sparkle"></span><span class="sparkle"></span>
-      <span class="sparkle"></span><span class="sparkle"></span><span class="sparkle"></span>
+      <img src="iris-purple.svg" alt="鸢尾花">
     </div>
 
     <h1 class="home-title">IRIS · 鸢尾花的奇遇</h1>
@@ -707,228 +351,181 @@ html, body {
 
     <div class="options-grid">
       <div class="option-card" data-screen="temple">
-        <span class="card-icon">🏛️</span>
-        <span class="card-label">寺庙消灾</span>
+        <span class="card-icon">🏛️</span><span class="card-label">寺庙消灾</span>
       </div>
       <div class="option-card" data-screen="recharge">
-        <span class="card-icon">🔋</span>
-        <span class="card-label">默默充电</span>
+        <span class="card-icon">🔋</span><span class="card-label">默默充电</span>
       </div>
       <div class="option-card" data-screen="food">
-        <span class="card-icon">🍜</span>
-        <span class="card-label">大吃特吃</span>
+        <span class="card-icon">🍜</span><span class="card-label">大吃特吃</span>
       </div>
       <div class="option-card" data-screen="pet">
-        <span class="card-icon">🦔</span>
-        <span class="card-label">异宠店</span>
+        <span class="card-icon">🦔</span><span class="card-label">异宠店</span>
       </div>
       <div class="option-card full-width" data-screen="fortune">
-        <span class="card-icon">🌸</span>
-        <span class="card-label">备用方法 · 鸢尾占卜</span>
+        <span class="card-icon">🌸</span><span class="card-label">备用方法 · 鸢尾占卜</span>
       </div>
     </div>
   </div>
 
-  <!-- ==================== TEMPLE SCREEN ==================== -->
+  <!-- ===== TEMPLE SCREEN ===== -->
   <div class="screen" id="templeScreen">
     <div class="game-header">
       <button class="back-btn" onclick="goHome()">←</button>
-      <span class="game-title">🏛️ 寺庙消灾</span>
-      <div style="width:38px"></div>
+      <span class="game-title">🏛️ 寺庙消灾</span><div style="width:38px"></div>
     </div>
     <div class="temple-scene">
-      <div class="temple-building">⛩️</div>
-      <div class="bell-area" id="bellArea">
-        <span class="bell-emoji" id="bellEmoji">🔔</span>
-        <div class="ripple-ring" id="rippleRing"></div>
+      <div class="temple-icon">⛩️</div>
+      <div class="bell-zone" id="bellZone">
+        <span class="b-emoji" id="bellEmoji">🔔</span>
+        <div class="ripple" id="rippleRing"></div>
       </div>
-      <div class="tap-prompt">👆 敲响钟声，驱散烦恼</div>
-      <div class="worry-count" id="worryCount">✨ 还有 <b>5</b> 个烦恼等待消散</div>
-      <div class="worry-display" id="worryDisplay"></div>
+      <div class="hint">👆 敲响钟声，驱散烦恼</div>
+      <div class="worry-num" id="worryNum">✨ 还有 <b>5</b> 个烦恼等待消散</div>
+      <div class="worry-msg" id="worryMsg"></div>
     </div>
   </div>
 
-  <!-- ==================== RECHARGE SCREEN ==================== -->
+  <!-- ===== RECHARGE SCREEN ===== -->
   <div class="screen" id="rechargeScreen">
     <div class="game-header">
       <button class="back-btn" onclick="goHome()">←</button>
-      <span class="game-title">🔋 默默充电</span>
-      <div style="width:38px"></div>
+      <span class="game-title">🔋 默默充电</span><div style="width:38px"></div>
     </div>
     <div class="breathe-scene">
       <div class="breathe-ring" id="breatheRing">
-        <div class="ring-bg"></div>
-        <span class="bloom-icon" id="bloomIcon">🪷</span>
+        <div class="r-bg"></div>
+        <span class="r-icon" id="bloomIcon">🪷</span>
       </div>
       <div class="breathe-label" id="breatheLabel">准备好了吗？</div>
       <div class="breathe-sub" id="breatheSub">跟着鸢尾花的节奏呼吸</div>
-      <div class="charge-track">
-        <div class="charge-fill" id="chargeFill"></div>
-      </div>
+      <div class="charge-track"><div class="charge-fill" id="chargeFill"></div></div>
     </div>
   </div>
 
-  <!-- ==================== FOOD SCREEN ==================== -->
+  <!-- ===== FOOD SCREEN ===== -->
   <div class="screen" id="foodScreen">
     <div class="game-header">
       <button class="back-btn" onclick="goHome()">←</button>
-      <span class="game-title">🍜 大吃特吃</span>
-      <div style="width:38px"></div>
+      <span class="game-title">🍜 大吃特吃</span><div style="width:38px"></div>
     </div>
     <div class="food-scene">
-      <div class="food-slot">
-        <span class="slot-emoji" id="slotEmoji">🍜</span>
-      </div>
+      <div class="food-slot"><span class="s-emoji" id="slotEmoji">🍜</span></div>
       <button class="spin-btn" id="spinBtn">🎰 今天吃什么？</button>
-      <div class="food-result-text" id="foodResultText"></div>
-      <div class="food-desc-text" id="foodDescText"></div>
+      <div class="food-result" id="foodResult"></div>
+      <div class="food-desc" id="foodDesc"></div>
     </div>
   </div>
 
-  <!-- ==================== PET SCREEN ==================== -->
+  <!-- ===== PET SCREEN ===== -->
   <div class="screen" id="petScreen">
     <div class="game-header">
       <button class="back-btn" onclick="goHome()">←</button>
-      <span class="game-title">🦔 异宠店</span>
-      <div style="width:38px"></div>
+      <span class="game-title">🦔 异宠店</span><div style="width:38px"></div>
     </div>
     <div class="pet-scene">
       <div class="pet-stage" id="petStage">
-        <span class="pet-emoji" id="petEmoji">🦔</span>
-        <span class="heart-pop" id="heartPop">💜</span>
+        <span class="p-emoji" id="petEmoji">🦔</span>
+        <span class="hearts" id="heartPop">💜</span>
       </div>
-      <div class="pet-name-label" id="petNameLabel">小刺刺 · 非洲迷你刺猬</div>
-      <div class="pet-desc-label" id="petDescLabel">戳戳我，我会很开心！</div>
-      <div class="pet-nav-row">
-        <button class="pet-nav-dot" id="prevPet">◀</button>
-        <button class="pet-nav-dot" id="nextPet">▶</button>
+      <div class="pet-name" id="petName">小刺刺 · 非洲迷你刺猬</div>
+      <div class="pet-desc" id="petDesc">戳戳我，我会很开心！</div>
+      <div class="pet-nav">
+        <button id="prevPet">◀</button>
+        <button id="nextPet">▶</button>
       </div>
     </div>
   </div>
 
-  <!-- ==================== FORTUNE SCREEN ==================== -->
+  <!-- ===== FORTUNE SCREEN ===== -->
   <div class="screen" id="fortuneScreen">
     <div class="game-header">
       <button class="back-btn" onclick="goHome()">←</button>
-      <span class="game-title">🌸 鸢尾占卜</span>
-      <div style="width:38px"></div>
+      <span class="game-title">🌸 鸢尾占卜</span><div style="width:38px"></div>
     </div>
     <div class="fortune-scene">
-      <div class="fortune-flower-area" id="fortuneFlowerArea">
-        <span class="ff-core">🌸</span>
-        <div class="fortune-petal-layer" id="fortunePetalLayer"></div>
+      <div class="fortune-area" id="fortuneArea">
+        <span class="f-core">🌸</span>
+        <div class="fortune-petals" id="fortunePetals"></div>
       </div>
-      <div class="fortune-hint-text" id="fortuneHint">👆 点一下鸢尾花，摘一片花瓣</div>
-      <div class="fortune-result" id="fortuneResult"></div>
+      <div class="fortune-hint" id="fortuneHint">👆 点一下鸢尾花，摘一片花瓣</div>
+      <div class="fortune-msg" id="fortuneMsg"></div>
     </div>
   </div>
 </div>
 
 <script>
-// ──────────────────────────────────
-// BACKGROUND CANVAS — floating iris petals
-// ──────────────────────────────────
+// ── BG PARTICLES ──
 const canvas = document.getElementById('bgCanvas');
 const ctx = canvas.getContext('2d');
 let W, H;
 function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
 window.addEventListener('resize', resize); resize();
 
-const bgParticles = [];
-class BgPetal {
+const bgP = [];
+class Petal {
   constructor(init) {
     this.x = Math.random() * W;
     this.y = init ? Math.random() * H : -20;
-    this.w = Math.random() * 8 + 4;
+    this.w = Math.random() * 7 + 3;
     this.h = this.w * 2.2;
-    this.vy = Math.random() * 0.4 + 0.15;
-    this.vx = (Math.random() - 0.5) * 0.35;
+    this.vy = Math.random() * 0.35 + 0.12;
+    this.vx = (Math.random() - 0.5) * 0.3;
     this.rot = Math.random() * 360;
-    this.vr = (Math.random() - 0.5) * 0.4;
-    this.alpha = Math.random() * 0.35 + 0.08;
-    this.purple = Math.random() < 0.65;
+    this.vr = (Math.random() - 0.5) * 0.35;
+    this.alpha = Math.random() * 0.32 + 0.06;
+    this.purple = Math.random() < 0.6;
   }
   update() {
-    this.y += this.vy;
-    this.x += this.vx + Math.sin(this.y * 0.02) * 0.15;
+    this.y += this.vy; this.x += this.vx + Math.sin(this.y * 0.02) * 0.12;
     this.rot += this.vr;
     if (this.y > H + 30) { this.y = -20; this.x = Math.random() * W; }
   }
   draw(ctx) {
-    ctx.save();
-    ctx.translate(this.x, this.y);
-    ctx.rotate(this.rot * Math.PI / 180);
+    ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rot * Math.PI / 180);
     ctx.globalAlpha = this.alpha;
-    // Iris-petal-shaped
-    ctx.fillStyle = this.purple ? 'rgba(155,120,215,1)' : 'rgba(245,200,66,0.8)';
-    ctx.beginPath();
-    ctx.ellipse(0, 0, this.w, this.h, 0, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.fillStyle = this.purple ? 'rgba(155,120,215,1)' : 'rgba(250,197,61,0.75)';
+    ctx.beginPath(); ctx.ellipse(0, 0, this.w, this.h, 0, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
   }
 }
-for (let i = 0; i < 45; i++) bgParticles.push(new BgPetal(true));
-
+for (let i = 0; i < 40; i++) bgP.push(new Petal(true));
 (function loop() {
   ctx.clearRect(0, 0, W, H);
-  const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, '#120C24');
-  grad.addColorStop(0.45, '#0F0A1E');
-  grad.addColorStop(1, '#0A0618');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, W, H);
-  bgParticles.forEach(p => { p.update(); p.draw(ctx); });
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#1A1032'); g.addColorStop(0.45, '#150C2A'); g.addColorStop(1, '#0E0820');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  bgP.forEach(p => { p.update(); p.draw(ctx); });
   requestAnimationFrame(loop);
 })();
 
-// ──────────────────────────────────
-// SCREEN NAVIGATION
-// ──────────────────────────────────
+// ── SCREEN NAV ──
 let currentScreen = 'home';
-
 function showScreen(id, dir) {
   const oldEl = document.getElementById(currentScreen + 'Screen');
   const newEl = document.getElementById(id + 'Screen');
   if (!oldEl || !newEl || currentScreen === id) return;
-
   ['exit-left','exit-right','enter-from-right','enter-from-left'].forEach(c => {
     oldEl.classList.remove(c); newEl.classList.remove(c);
   });
-
-  if (dir === 'forward') {
-    oldEl.classList.add('exit-left');
-    newEl.classList.add('enter-from-right');
-  } else {
-    oldEl.classList.add('exit-right');
-    newEl.classList.add('enter-from-left');
-  }
-
-  oldEl.classList.remove('active');
-  newEl.classList.add('active');
-
-  setTimeout(() => {
-    oldEl.classList.remove('exit-left','exit-right');
-    newEl.classList.remove('enter-from-right','enter-from-left');
-  }, 500);
-
+  if (dir === 'forward') { oldEl.classList.add('exit-left'); newEl.classList.add('enter-from-right'); }
+  else { oldEl.classList.add('exit-right'); newEl.classList.add('enter-from-left'); }
+  oldEl.classList.remove('active'); newEl.classList.add('active');
+  setTimeout(() => { oldEl.classList.remove('exit-left','exit-right'); newEl.classList.remove('enter-from-right','enter-from-left'); }, 450);
   currentScreen = id;
 }
-
 function goHome() { showScreen('home', 'back'); resetAll(); }
 
-// ──────────────────────────────────
-// PETAL BURST
-// ──────────────────────────────────
-function burstPetals(count) {
+// ── PETAL BURST ──
+function burst(n) {
   const emojis = ['💜','🌸','🪻','🔮','✨','💫','🍃'];
-  for (let i = 0; i < count; i++) {
-    const el = document.createElement('span');
-    el.className = 'petal-drop';
+  for (let i = 0; i < n; i++) {
+    const el = document.createElement('span'); el.className = 'petal-drop';
     el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
     el.style.left = (Math.random() * 80 + 8) + '%';
     el.style.top = -(Math.random() * 50 + 10) + 'px';
     el.style.animationDuration = (Math.random() * 2.5 + 3) + 's';
-    el.style.setProperty('--drift', (Math.random() - 0.5) * 120 + 'px');
+    el.style.setProperty('--drift', (Math.random() - 0.5) * 100 + 'px');
     el.style.setProperty('--spin', (Math.random() * 360) + 'deg');
     el.style.fontSize = (Math.random() * 14 + 14) + 'px';
     document.body.appendChild(el);
@@ -936,14 +533,11 @@ function burstPetals(count) {
   }
 }
 
-// ──────────────────────────────────
-// CARD CLICK → GAME LAUNCH
-// ──────────────────────────────────
+// ── CARD CLICK ──
 document.querySelectorAll('.option-card').forEach(card => {
   card.addEventListener('click', function() {
     const screen = this.dataset.screen;
-    burstPetals(12);
-    showScreen(screen, 'forward');
+    burst(12); showScreen(screen, 'forward');
     if (screen === 'temple') initTemple();
     else if (screen === 'recharge') initRecharge();
     else if (screen === 'food') initFood();
@@ -952,339 +546,148 @@ document.querySelectorAll('.option-card').forEach(card => {
   });
 });
 
-// ──────────────────────────────────
-// TEMPLE
-// ──────────────────────────────────
-const worries = [
-  '工作上的一点小疲惫',
-  '深夜辗转反侧的失眠',
-  '莫名其妙涌上来的焦虑',
-  '和别人比较后的小失落',
-  '对未来的那一点点迷茫'
-];
-let worryIdx = 0, templeOn = false;
-
-function initTemple() {
-  worryIdx = 0; templeOn = true;
-  document.getElementById('worryCount').innerHTML = '✨ 还有 <b>' + worries.length + '</b> 个烦恼等待消散';
-  document.getElementById('worryDisplay').textContent = '深呼吸，准备好迎接平静了吗？';
+// ── TEMPLE ──
+const worries = ['工作上的一点小疲惫','深夜辗转反侧的失眠','莫名其妙涌上来的焦虑','和别人比较后的小失落','对未来的那一点点迷茫'];
+let wi = 0, tOn = false;
+function initTemple() { wi = 0; tOn = true;
+  document.getElementById('worryNum').innerHTML = '✨ 还有 <b>' + worries.length + '</b> 个烦恼等待消散';
+  document.getElementById('worryMsg').textContent = '深呼吸，准备好迎接平静了吗？';
 }
-
-document.getElementById('bellArea').addEventListener('click', function() {
-  if (!templeOn || currentScreen !== 'temple') return;
-
-  const bell = document.getElementById('bellEmoji');
-  const ripple = document.getElementById('rippleRing');
-  const display = document.getElementById('worryDisplay');
-  const counter = document.getElementById('worryCount');
-
-  bell.classList.remove('swinging');
-  void bell.offsetWidth;
-  bell.classList.add('swinging');
-
-  ripple.classList.remove('expand');
-  void ripple.offsetWidth;
-  ripple.classList.add('expand');
-
-  burstPetals(8);
-
-  if (worryIdx < worries.length) {
-    display.textContent = '「' + worries[worryIdx] + '」—— 被钟声带走了 ✨';
-    worryIdx++;
-    const rem = worries.length - worryIdx;
-    if (rem > 0) {
-      counter.innerHTML = '✨ 还有 <b>' + rem + '</b> 个烦恼等待消散';
-    } else {
-      counter.innerHTML = '🎉 <b>全部消散！</b>';
-      display.textContent = '所有烦恼都随鸢尾花瓣飘走了～\nIRIS，你是最棒的！💜';
-      templeOn = false;
-      setTimeout(() => burstPetals(25), 350);
-    }
+document.getElementById('bellZone').addEventListener('click', function() {
+  if (!tOn || currentScreen !== 'temple') return;
+  const bell = document.getElementById('bellEmoji'), ripple = document.getElementById('rippleRing');
+  const msg = document.getElementById('worryMsg'), num = document.getElementById('worryNum');
+  bell.classList.remove('swung'); void bell.offsetWidth; bell.classList.add('swung');
+  ripple.classList.remove('go'); void ripple.offsetWidth; ripple.classList.add('go');
+  burst(8);
+  if (wi < worries.length) {
+    msg.textContent = '「' + worries[wi] + '」—— 被钟声带走了 ✨'; wi++;
+    const rem = worries.length - wi;
+    if (rem > 0) num.innerHTML = '✨ 还有 <b>' + rem + '</b> 个烦恼等待消散';
+    else { num.innerHTML = '🎉 <b>全部消散！</b>'; msg.textContent = '所有烦恼都随鸢尾花瓣飘走了～\nIRIS，你是最棒的！💜'; tOn = false; setTimeout(() => burst(25), 350); }
   }
 });
 
-// ──────────────────────────────────
-// RECHARGE (4-7-8 breathing)
-// ──────────────────────────────────
-let phase = 0, cycles = 0, breatheOn = false, breatheTimer = null;
-const phaseMap = {
-  0: { label:'准备好了吗？', sub:'跟着鸢尾花的节奏呼吸', scale:1, icon:'🪷' },
-  1: { label:'吸气……', sub:'慢慢吸 ~ 4 秒', scale:1.55, icon:'🌸' },
-  2: { label:'屏住呼吸', sub:'保持住 ~ 7 秒', scale:1.55, icon:'🌺' },
-  3: { label:'呼气……', sub:'缓缓呼 ~ 8 秒', scale:1, icon:'🪷' }
+// ── RECHARGE ──
+let phase = 0, cycles = 0, bOn = false, bt = null;
+const pm = {
+  0:{l:'准备好了吗？',s:'跟着鸢尾花的节奏呼吸',sc:1,ic:'🪷'},
+  1:{l:'吸气……',s:'慢慢吸 ~ 4 秒',sc:1.55,ic:'🌸'},
+  2:{l:'屏住呼吸',s:'保持住 ~ 7 秒',sc:1.55,ic:'🌺'},
+  3:{l:'呼气……',s:'缓缓呼 ~ 8 秒',sc:1,ic:'🪷'}
 };
-
-function initRecharge() {
-  clearBreatheTimer();
-  phase = 0; cycles = 0; breatheOn = true;
-  applyBreathePhase();
-  document.getElementById('chargeFill').style.width = '0%';
+function initRecharge() { clearBt(); phase=0; cycles=0; bOn=true; applyPhase(); document.getElementById('chargeFill').style.width='0%'; }
+function clearBt() { if(bt){clearTimeout(bt);bt=null;} }
+function applyPhase() {
+  const p=pm[phase];
+  document.getElementById('breatheLabel').textContent=p.l;
+  document.getElementById('breatheSub').textContent=p.s;
+  const icon=document.getElementById('bloomIcon');
+  icon.textContent=p.ic; icon.style.transform='scale('+p.sc+')'; icon.style.fontSize=(52*p.sc)+'px';
 }
-
-function clearBreatheTimer() { if (breatheTimer) { clearTimeout(breatheTimer); breatheTimer = null; } }
-
-function applyBreathePhase() {
-  const p = phaseMap[phase];
-  document.getElementById('breatheLabel').textContent = p.label;
-  document.getElementById('breatheSub').textContent = p.sub;
-  const icon = document.getElementById('bloomIcon');
-  icon.textContent = p.icon;
-  icon.style.transform = 'scale(' + p.scale + ')';
-  icon.style.fontSize = (52 * p.scale) + 'px';
-}
-
-function runBreatheCycle() {
-  if (!breatheOn || currentScreen !== 'recharge') return;
-  switch (phase) {
-    case 0:
-      phase = 1; applyBreathePhase(); burstPetals(4);
-      breatheTimer = setTimeout(runBreatheCycle, 4000);
-      break;
-    case 1:
-      phase = 2; applyBreathePhase();
-      breatheTimer = setTimeout(runBreatheCycle, 7000);
-      break;
-    case 2:
-      phase = 3; applyBreathePhase();
-      breatheTimer = setTimeout(runBreatheCycle, 8000);
-      break;
-    case 3:
-      cycles++;
-      document.getElementById('chargeFill').style.width = Math.min(cycles * 25, 100) + '%';
-      if (cycles >= 4) {
-        document.getElementById('breatheLabel').textContent = '🔋 充满电了！';
-        document.getElementById('breatheSub').textContent = 'IRIS，你现在能量满满 ✨';
-        const icon = document.getElementById('bloomIcon');
-        icon.textContent = '🌷';
-        icon.style.transform = 'scale(1.65)';
-        icon.style.fontSize = '72px';
-        breatheOn = false;
-        burstPetals(20);
-        return;
-      }
-      phase = 1; applyBreathePhase(); burstPetals(3);
-      breatheTimer = setTimeout(runBreatheCycle, 4000);
-      break;
+function runCycle() {
+  if(!bOn||currentScreen!=='recharge')return;
+  switch(phase){
+    case 0: phase=1;applyPhase();burst(4);bt=setTimeout(runCycle,4000);break;
+    case 1: phase=2;applyPhase();bt=setTimeout(runCycle,7000);break;
+    case 2: phase=3;applyPhase();bt=setTimeout(runCycle,8000);break;
+    case 3: cycles++; document.getElementById('chargeFill').style.width=Math.min(cycles*25,100)+'%';
+      if(cycles>=4){document.getElementById('breatheLabel').textContent='🔋 充满电了！';document.getElementById('breatheSub').textContent='IRIS，你现在能量满满 ✨';
+        const icon=document.getElementById('bloomIcon');icon.textContent='🌷';icon.style.transform='scale(1.65)';icon.style.fontSize='72px';bOn=false;burst(20);return;}
+      phase=1;applyPhase();burst(3);bt=setTimeout(runCycle,4000);break;
   }
 }
+document.getElementById('breatheRing').addEventListener('click',function(){if(!bOn){initRecharge();setTimeout(()=>runCycle(),500);return;}if(phase===0)runCycle();});
 
-document.getElementById('breatheRing').addEventListener('click', function() {
-  if (!breatheOn) { initRecharge(); setTimeout(() => runBreatheCycle(), 500); return; }
-  if (phase === 0) runBreatheCycle();
-});
-
-// ──────────────────────────────────
-// FOOD SLOT
-// ──────────────────────────────────
-const foodList = [
-  { emoji:'🍜', name:'热腾腾的拉面', desc:'一碗浓郁豚骨拉面，配上溏心蛋和叉烧，暖到心里！今天就出发～' },
-  { emoji:'🍣', name:'精致寿司拼盘', desc:'三文鱼、金枪鱼、鳗鱼…新鲜到发光！约上朋友去吃日料吧～' },
-  { emoji:'🍕', name:'芝士瀑布披萨', desc:'拉丝拉到天花板！碳水使人快乐，今天别委屈自己～' },
-  { emoji:'🌮', name:'墨西哥塔可', desc:'酸辣开胃，一口一个！换个口味尝尝异国风情吧～' },
-  { emoji:'🍰', name:'草莓奶油蛋糕', desc:'甜食治愈一切。下午茶配拿铁，完美的 me time～' },
-  { emoji:'🍲', name:'咕噜咕噜小火锅', desc:'毛肚虾滑肥牛…冲冲冲！一个人也可以很丰盛！' },
-  { emoji:'🍗', name:'酥脆多汁炸鸡', desc:'咔嚓咔嚓的声音就是幸福～配冰可乐，双倍快乐！' },
-  { emoji:'🍦', name:'梦幻三球冰淇淋', desc:'香草+抹茶+草莓，夏天的快乐就是这么简单！' },
-  { emoji:'🥟', name:'热乎手工饺子', desc:'皮薄馅大，蘸醋吃。简单朴实但超满足～' },
-  { emoji:'🧋', name:'黑糖珍珠奶茶', desc:'Q弹珍珠+浓郁奶茶=快乐水！今天就去买一杯犒劳自己。' },
-  { emoji:'🍝', name:'奶油培根意面', desc:'白酱裹着每根意面，浓郁绵密。找个有格调的小店～' },
-  { emoji:'🥩', name:'滋滋作响的牛排', desc:'五分熟，切开是完美的粉红色。今天值得一顿大餐！' }
+// ── FOOD ──
+const foods = [
+  {e:'🍜',n:'热腾腾的拉面',d:'一碗浓郁豚骨拉面，配上溏心蛋和叉烧，暖到心里！今天就出发～'},
+  {e:'🍣',n:'精致寿司拼盘',d:'三文鱼、金枪鱼、鳗鱼…新鲜到发光！约上朋友去吃日料吧～'},
+  {e:'🍕',n:'芝士瀑布披萨',d:'拉丝拉到天花板！碳水使人快乐，今天别委屈自己～'},
+  {e:'🌮',n:'墨西哥塔可',d:'酸辣开胃，一口一个！换个口味尝尝异国风情～'},
+  {e:'🍰',n:'草莓奶油蛋糕',d:'甜食治愈一切。下午茶配拿铁，完美的 me time～'},
+  {e:'🍲',n:'咕噜咕噜小火锅',d:'毛肚虾滑肥牛冲冲冲！一个人也可以很丰盛～'},
+  {e:'🍗',n:'酥脆多汁炸鸡',d:'咔嚓咔嚓的声音就是幸福～配冰可乐，双倍快乐！'},
+  {e:'🍦',n:'梦幻三球冰淇淋',d:'香草+抹茶+草莓，夏天的快乐就是这么简单！'},
+  {e:'🥟',n:'热乎手工饺子',d:'皮薄馅大蘸醋吃，简单朴实但超满足～'},
+  {e:'🧋',n:'黑糖珍珠奶茶',d:'Q弹珍珠+浓郁奶茶=快乐水！今天就去买一杯犒劳自己。'},
+  {e:'🍝',n:'奶油培根意面',d:'白酱裹着每根意面，浓郁绵密。找个有格调的小店～'},
+  {e:'🥩',n:'滋滋作响的牛排',d:'五分熟切开是完美的粉红色，今天值得一顿大餐！'}
 ];
-let spinning = false, spinTimer = null;
-
-function initFood() {
-  stopSpin();
-  spinning = false;
-  document.getElementById('foodResultText').textContent = '';
-  document.getElementById('foodDescText').textContent = '';
-  document.getElementById('slotEmoji').textContent = '🍜';
-  document.getElementById('slotEmoji').classList.remove('rolling');
-}
-
-function stopSpin() { if (spinTimer) { clearInterval(spinTimer); spinTimer = null; } }
-
-document.getElementById('spinBtn').addEventListener('click', function() {
-  if (spinning || currentScreen !== 'food') return;
-  spinning = true;
-  const slot = document.getElementById('slotEmoji');
-  const result = document.getElementById('foodResultText');
-  const desc = document.getElementById('foodDescText');
-  result.textContent = ''; desc.textContent = '';
-  slot.classList.add('rolling');
-
-  let tick = 0;
-  spinTimer = setInterval(() => {
-    slot.textContent = foodList[Math.floor(Math.random() * foodList.length)].emoji;
-    tick++;
-    if (tick >= 22) {
-      stopSpin();
-      slot.classList.remove('rolling');
-      const pick = foodList[Math.floor(Math.random() * foodList.length)];
-      slot.textContent = pick.emoji;
-      result.textContent = '🎯 ' + pick.name;
-      desc.textContent = pick.desc;
-      spinning = false;
-      burstPetals(10);
-    }
-  }, 75);
+let spinOn=false, spinT=null;
+function initFood() { stopSpin(); spinOn=false; document.getElementById('foodResult').textContent=''; document.getElementById('foodDesc').textContent=''; document.getElementById('slotEmoji').textContent='🍜'; document.getElementById('slotEmoji').classList.remove('roll'); }
+function stopSpin() { if(spinT){clearInterval(spinT);spinT=null;} }
+document.getElementById('spinBtn').addEventListener('click',function(){
+  if(spinOn||currentScreen!=='food')return; spinOn=true;
+  const slot=document.getElementById('slotEmoji'), r=document.getElementById('foodResult'), d=document.getElementById('foodDesc');
+  r.textContent=''; d.textContent=''; slot.classList.add('roll');
+  let tick=0;
+  spinT=setInterval(()=>{slot.textContent=foods[Math.floor(Math.random()*foods.length)].e;tick++;
+    if(tick>=22){stopSpin();slot.classList.remove('roll');
+      const pick=foods[Math.floor(Math.random()*foods.length)];slot.textContent=pick.e;
+      r.textContent='🎯 '+pick.n; d.textContent=pick.d; spinOn=false; burst(10);}},75);
 });
 
-// ──────────────────────────────────
-// PET SHOP
-// ──────────────────────────────────
+// ── PET ──
 const pets = [
-  { emoji:'🦔', name:'小刺刺 · 非洲迷你刺猬', desc:'虽然浑身是刺，但肚子超软！戳戳它会缩成小球～' },
-  { emoji:'🦎', name:'小鳞鳞 · 豹纹守宫', desc:'眼睛大大，笑起来像天使。喜欢趴在温暖的手心里～' },
-  { emoji:'🐍', name:'小卷卷 · 玉米蛇', desc:'滑溜溜凉丝丝，其实超温顺！缠在手上像活的项链～' },
-  { emoji:'🦜', name:'小彩彩 · 玄凤鹦鹉', desc:'头顶一撮呆毛，开心时会吹口哨。最喜欢被摸摸头～' },
-  { emoji:'🐇', name:'小绒绒 · 安哥拉兔', desc:'毛茸茸一团云朵！耳朵长长，鼻子一耸一耸超治愈～' },
-  { emoji:'🐹', name:'小圆圆 · 仓鼠', desc:'腮帮子塞满食物最治愈了！跑轮小能手，停不下来～' },
-  { emoji:'🦋', name:'小翅膀 · 大蓝闪蝶', desc:'翅膀闪着蓝色磷光，停在指尖时，时间都慢了～' },
-  { emoji:'🐠', name:'小泡泡 · 泰国斗鱼', desc:'鳍像丝绸一样飘舞，看它游泳就能发呆好久好久～' }
+  {e:'🦔',n:'小刺刺·非洲迷你刺猬',d:'虽然浑身是刺，但肚子超软！戳戳它会缩成小球～'},
+  {e:'🦎',n:'小鳞鳞·豹纹守宫',d:'眼睛大大笑起来像天使。喜欢趴在温暖的手心里～'},
+  {e:'🐍',n:'小卷卷·玉米蛇',d:'滑溜溜凉丝丝，其实超温顺！缠在手上像活的项链～'},
+  {e:'🦜',n:'小彩彩·玄凤鹦鹉',d:'头顶一撮呆毛，开心时会吹口哨。最喜欢被摸摸头～'},
+  {e:'🐇',n:'小绒绒·安哥拉兔',d:'毛茸茸一团云朵！耳朵长长鼻子一耸一耸超治愈～'},
+  {e:'🐹',n:'小圆圆·仓鼠',d:'腮帮子塞满食物最治愈！跑轮小能手停不下来～'},
+  {e:'🦋',n:'小翅膀·大蓝闪蝶',d:'翅膀闪着蓝色磷光，停在指尖时时间都慢了～'},
+  {e:'🐠',n:'小泡泡·泰国斗鱼',d:'鳍像丝绸一样飘舞，看它游泳就能发呆好久好久～'}
 ];
-let petIdx = 0;
-
-function initPet() { petIdx = 0; renderPet(); }
-function renderPet() {
-  const p = pets[petIdx];
-  document.getElementById('petEmoji').textContent = p.emoji;
-  document.getElementById('petNameLabel').textContent = p.name;
-  document.getElementById('petDescLabel').textContent = p.desc;
+let pIdx=0;
+function initPet(){pIdx=0;renderPet();}
+function renderPet(){const p=pets[pIdx];document.getElementById('petEmoji').textContent=p.e;document.getElementById('petName').textContent=p.n;document.getElementById('petDesc').textContent=p.d;}
+function boop(){
+  const el=document.getElementById('petEmoji'),h=document.getElementById('heartPop');
+  el.classList.remove('bop');void el.offsetWidth;el.classList.add('bop');
+  h.classList.remove('pop');void h.offsetWidth;h.classList.add('pop');burst(5);
 }
+document.getElementById('petStage').addEventListener('click',boop);
+document.getElementById('prevPet').addEventListener('click',function(e){e.stopPropagation();pIdx=(pIdx-1+pets.length)%pets.length;renderPet();burst(3);});
+document.getElementById('nextPet').addEventListener('click',function(e){e.stopPropagation();pIdx=(pIdx+1)%pets.length;renderPet();burst(3);});
 
-function boopPet() {
-  const el = document.getElementById('petEmoji');
-  const heart = document.getElementById('heartPop');
-  el.classList.remove('bounce');
-  void el.offsetWidth;
-  el.classList.add('bounce');
-  heart.classList.remove('fly');
-  void heart.offsetWidth;
-  heart.classList.add('fly');
-  burstPetals(5);
-}
-
-document.getElementById('petStage').addEventListener('click', boopPet);
-document.getElementById('prevPet').addEventListener('click', function(e) {
-  e.stopPropagation(); petIdx = (petIdx - 1 + pets.length) % pets.length; renderPet(); burstPetals(3);
-});
-document.getElementById('nextPet').addEventListener('click', function(e) {
-  e.stopPropagation(); petIdx = (petIdx + 1) % pets.length; renderPet(); burstPetals(3);
-});
-
-// ──────────────────────────────────
-// FORTUNE — petal plucking
-// ──────────────────────────────────
+// ── FORTUNE ──
 const fortunes = [
-  '今天会有意想不到的好事发生 💫',
-  '你笑起来的样子最好看，多笑笑吧～',
-  '有一份礼物正在路上向你赶来 🎁',
-  '你重视的人，同样也在重视着你 💜',
-  '偶尔放空自己，也是一种重要的能力',
-  '你已经做得很好了，不用给自己太大压力',
-  '今天适合给自己买一个小礼物 🛍️',
-  '想吃的东西就去吃，想去的地方就去吧！',
-  '你的努力有人看在眼里，别着急 🌟',
-  '今晚的月色会很美，记得抬头看看 🌙',
-  '明天醒来，一切都会比今天更好一点',
-  '你是被爱着的，永远不要怀疑这一点 💝',
-  '有时候慢慢来，反而比较快 🌿',
-  '今天可能会收到一条让你开心的消息 💌',
-  '相信直觉，它会带你去对的地方 🧭'
+  '今天会有意想不到的好事发生 💫','你笑起来的样子最好看，多笑笑吧～','有一份礼物正在路上向你赶来 🎁',
+  '你重视的人，同样也在重视着你 💜','偶尔放空自己，也是一种重要的能力','你已经做得很好了，不用给自己太大压力',
+  '今天适合给自己买一个小礼物 🛍️','想吃的东西就去吃，想去的地方就去吧！','你的努力有人看在眼里，别着急 🌟',
+  '今晚的月色会很美，记得抬头看看 🌙','明天醒来，一切都会比今天更好一点','你是被爱着的，永远不要怀疑这一点 💝',
+  '有时候慢慢来，反而比较快 🌿','今天可能会收到一条让你开心的消息 💌','相信直觉，它会带你去对的地方 🧭'
 ];
-let usedFortunes = [], fortuneOn = false;
-
-function initFortune() {
-  usedFortunes = []; fortuneOn = true;
-  document.getElementById('fortuneResult').textContent = '';
-  document.getElementById('fortuneResult').classList.remove('show');
-  document.getElementById('fortuneHint').textContent = '👆 点一下鸢尾花，摘一片花瓣';
-  document.getElementById('fortuneHint').style.opacity = '1';
-  buildPetals();
+let uf=[], fOn=false;
+function initFortune(){uf=[];fOn=true;document.getElementById('fortuneMsg').textContent='';document.getElementById('fortuneMsg').classList.remove('shown');document.getElementById('fortuneHint').textContent='👆 点一下鸢尾花，摘一片花瓣';document.getElementById('fortuneHint').style.opacity='1';buildP();}
+function buildP(){
+  const l=document.getElementById('fortunePetals');l.innerHTML='';
+  const em=['💜','🪻','🌸','💮'];
+  for(let i=0;i<8;i++){const el=document.createElement('span');el.className='fp';el.textContent=em[Math.floor(Math.random()*em.length)];const a=(i/8)*360*Math.PI/180;const d=48+Math.random()*28;el.style.left=(75+Math.cos(a)*d-11)+'px';el.style.top=(75+Math.sin(a)*d-11)+'px';l.appendChild(el);}
 }
-
-function buildPetals() {
-  const layer = document.getElementById('fortunePetalLayer');
-  layer.innerHTML = '';
-  const emojis = ['💜','🪻','🌸','💮'];
-  for (let i = 0; i < 8; i++) {
-    const el = document.createElement('span');
-    el.className = 'fp';
-    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-    const angle = (i / 8) * 360 * Math.PI / 180;
-    const dist = 48 + Math.random() * 28;
-    el.style.left = (75 + Math.cos(angle) * dist - 11) + 'px';
-    el.style.top = (75 + Math.sin(angle) * dist - 11) + 'px';
-    layer.appendChild(el);
-  }
-}
-
-document.getElementById('fortuneFlowerArea').addEventListener('click', function() {
-  if (!fortuneOn || currentScreen !== 'fortune') return;
-
-  const petals = document.querySelectorAll('.fp');
-  const alive = Array.from(petals).filter(p => !p.classList.contains('blown'));
-
-  if (alive.length === 0) {
-    document.getElementById('fortuneResult').textContent = '';
-    document.getElementById('fortuneResult').classList.remove('show');
-    document.getElementById('fortuneHint').textContent = '👆 再摘一轮花瓣吧～';
-    document.getElementById('fortuneHint').style.opacity = '1';
-    usedFortunes = [];
-    buildPetals();
-    return;
-  }
-
-  const pick = alive[Math.floor(Math.random() * alive.length)];
-  const a = Math.random() * Math.PI * 2;
-  const d = 60 + Math.random() * 70;
-  pick.style.setProperty('--fx', Math.cos(a) * d + 'px');
-  pick.style.setProperty('--fy', Math.sin(a) * d - 30 + 'px');
-  pick.style.setProperty('--fr', (Math.random() - 0.5) * 360 + 'deg');
-  pick.classList.add('blown');
-
-  let avail = fortunes.filter((_, i) => !usedFortunes.includes(i));
-  if (!avail.length) { usedFortunes = []; avail = fortunes; }
-  const msg = avail[Math.floor(Math.random() * avail.length)];
-  usedFortunes.push(fortunes.indexOf(msg));
-
-  document.getElementById('fortuneResult').textContent = '🔮 ' + msg;
-  document.getElementById('fortuneResult').classList.add('show');
-
-  const still = Array.from(petals).filter(p => !p.classList.contains('blown'));
-  document.getElementById('fortuneHint').textContent = still.length <= 1
-    ? '👆 再点一下开启新一轮'
-    : '👆 再摘一片花瓣';
-
-  burstPetals(5);
+document.getElementById('fortuneArea').addEventListener('click',function(){
+  if(!fOn||currentScreen!=='fortune')return;
+  const ps=document.querySelectorAll('.fp'),alive=Array.from(ps).filter(p=>!p.classList.contains('gone'));
+  if(!alive.length){document.getElementById('fortuneMsg').textContent='';document.getElementById('fortuneMsg').classList.remove('shown');document.getElementById('fortuneHint').textContent='👆 再摘一轮花瓣吧～';document.getElementById('fortuneHint').style.opacity='1';uf=[];buildP();return;}
+  const pick=alive[Math.floor(Math.random()*alive.length)],a=Math.random()*Math.PI*2,d=60+Math.random()*70;
+  pick.style.setProperty('--fx',Math.cos(a)*d+'px');pick.style.setProperty('--fy',Math.sin(a)*d-30+'px');pick.style.setProperty('--fr',(Math.random()-0.5)*360+'deg');pick.classList.add('gone');
+  let av=fortunes.filter((_,i)=>!uf.includes(i));if(!av.length){uf=[];av=fortunes;}
+  const msg=av[Math.floor(Math.random()*av.length)];uf.push(fortunes.indexOf(msg));
+  document.getElementById('fortuneMsg').textContent='🔮 '+msg;document.getElementById('fortuneMsg').classList.add('shown');
+  const st=Array.from(ps).filter(p=>!p.classList.contains('gone'));
+  document.getElementById('fortuneHint').textContent=st.length<=1?'👆 再点一下开启新一轮':'👆 再摘一片花瓣';
+  burst(5);
 });
 
-// ──────────────────────────────────
-// RESET
-// ──────────────────────────────────
-function resetAll() {
-  clearBreatheTimer();
-  stopSpin();
-  templeOn = false; breatheOn = false; spinning = false; fortuneOn = false;
-}
+// ── RESET ──
+function resetAll(){clearBt();stopSpin();tOn=false;bOn=false;spinOn=false;fOn=false;}
 
-// ──────────────────────────────────
-// WECHAT DETECTION
-// ──────────────────────────────────
-if (/micromessenger/i.test(navigator.userAgent)) {
-  const tip = document.createElement('div');
-  tip.className = 'wx-tip on';
-  tip.textContent = '💡 点击右上角 ··· 分享给朋友';
-  document.body.appendChild(tip);
-  setTimeout(() => { tip.classList.remove('on'); }, 5000);
-}
+// ── WECHAT ──
+if(/micromessenger/i.test(navigator.userAgent)){const tip=document.createElement('div');tip.className='wx-tip on';tip.textContent='💡 点击右上角 ··· 分享给朋友';document.body.appendChild(tip);setTimeout(()=>tip.classList.remove('on'),5000);}
 
-// prevent double-tap zoom on interactive elements
-document.addEventListener('dblclick', function(e) {
-  if (e.target.closest('.option-card,button,.bell-area,.breathe-ring,.fortune-flower-area,.pet-stage,.pet-nav-dot,.spin-btn')) {
-    e.preventDefault();
-  }
-}, { passive: false });
+// Prevent double-tap zoom
+document.addEventListener('dblclick',function(e){if(e.target.closest('.option-card,button,.bell-zone,.breathe-ring,.fortune-area,.pet-stage,.pet-nav button,.spin-btn'))e.preventDefault();},{passive:false});
 </script>
 </body>
 </html>
