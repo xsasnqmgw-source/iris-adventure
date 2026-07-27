@@ -82,138 +82,147 @@
     z-index: 5;
   }
 
-  /* 借鉴 CSS3 Lotus 技法：border-radius 生成花瓣 */
-  .lotus-wrap {
-    position: absolute; top:0; left:0; width:100%; height:100%;
-    -webkit-transform: rotate(-45deg); transform: rotate(-45deg);
-  }
-
+  /* 中心坐标系：所有花瓣 transform-origin 都在花朵中心 */
   .lotus {
     position: absolute; top: 50%; left: 50%;
-    width: 200px; height: 200px;
-    margin-top: -100px; margin-left: -100px;
+    width: 0; height: 0;  /* 0 尺寸的容器，仅作为旋转参考点 */
   }
 
+  /* 花瓣：椭圆形，初始贴合中心，旋转出去 */
   .petal {
-    position: absolute; top: 0; right: 0;
-    width: 100px; height: 100px;
-    border-radius: 0 60% 0 90%;
-    -webkit-transform-origin: top right;
-    transform-origin: top right;
+    position: absolute;
+    left: -32px; top: -85px;  /* 中心点对齐莲花中心；椭圆向上 */
+    width: 64px; height: 85px;
+    border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
+    -webkit-transform-origin: 32px 85px;  /* 椭圆底部中心 = 花朵中心 */
+    transform-origin: 32px 85px;
     opacity: 0;
-    box-shadow: inset -10px 10px 20px rgba(255,255,255,0.25);
+    box-shadow: inset -6px -6px 14px rgba(190,120,180,0.3),
+                inset 4px 4px 10px rgba(255,255,255,0.4);
   }
 
-  /* 外层大花瓣：10片 */
+  /* 外层大花瓣：12片，粉白色 */
   .petal.outer {
-    background: linear-gradient(135deg, rgba(255,240,250,0.95) 0%, rgba(255,200,225,0.9) 30%, rgba(232,160,205,0.85) 70%, rgba(190,120,180,0.8) 100%);
+    background: linear-gradient(180deg,
+      rgba(255,250,253,0.98) 0%,
+      rgba(255,225,238,0.95) 35%,
+      rgba(240,170,210,0.9) 75%,
+      rgba(210,130,190,0.85) 100%);
   }
-  .petal.outer:nth-child(1)  { -webkit-animation: bloomOut1  2.4s cubic-bezier(.25,.46,.45,.94) .10s forwards; animation: bloomOut1  2.4s cubic-bezier(.25,.46,.45,.94) .10s forwards; }
-  .petal.outer:nth-child(2)  { -webkit-animation: bloomOut2  2.4s cubic-bezier(.25,.46,.45,.94) .20s forwards; animation: bloomOut2  2.4s cubic-bezier(.25,.46,.45,.94) .20s forwards; }
-  .petal.outer:nth-child(3)  { -webkit-animation: bloomOut3  2.4s cubic-bezier(.25,.46,.45,.94) .30s forwards; animation: bloomOut3  2.4s cubic-bezier(.25,.46,.45,.94) .30s forwards; }
-  .petal.outer:nth-child(4)  { -webkit-animation: bloomOut4  2.4s cubic-bezier(.25,.46,.45,.94) .40s forwards; animation: bloomOut4  2.4s cubic-bezier(.25,.46,.45,.94) .40s forwards; }
-  .petal.outer:nth-child(5)  { -webkit-animation: bloomOut5  2.4s cubic-bezier(.25,.46,.45,.94) .50s forwards; animation: bloomOut5  2.4s cubic-bezier(.25,.46,.45,.94) .50s forwards; }
-  .petal.outer:nth-child(6)  { -webkit-animation: bloomOut6  2.4s cubic-bezier(.25,.46,.45,.94) .60s forwards; animation: bloomOut6  2.4s cubic-bezier(.25,.46,.45,.94) .60s forwards; }
-  .petal.outer:nth-child(7)  { -webkit-animation: bloomOut7  2.4s cubic-bezier(.25,.46,.45,.94) .70s forwards; animation: bloomOut7  2.4s cubic-bezier(.25,.46,.45,.94) .70s forwards; }
-  .petal.outer:nth-child(8)  { -webkit-animation: bloomOut8  2.4s cubic-bezier(.25,.46,.45,.94) .80s forwards; animation: bloomOut8  2.4s cubic-bezier(.25,.46,.45,.94) .80s forwards; }
-  .petal.outer:nth-child(9)  { -webkit-animation: bloomOut9  2.4s cubic-bezier(.25,.46,.45,.94) .90s forwards; animation: bloomOut9  2.4s cubic-bezier(.25,.46,.45,.94) .90s forwards; }
-  .petal.outer:nth-child(10) { -webkit-animation: bloomOut10 2.4s cubic-bezier(.25,.46,.45,.94) 1.0s forwards; animation: bloomOut10 2.4s cubic-bezier(.25,.46,.45,.94) 1.0s forwards; }
+  .petal.outer.p1  { -webkit-animation: bloomP1  2.4s cubic-bezier(.25,.46,.45,.94) .10s forwards; animation: bloomP1  2.4s cubic-bezier(.25,.46,.45,.94) .10s forwards; }
+  .petal.outer.p2  { -webkit-animation: bloomP2  2.4s cubic-bezier(.25,.46,.45,.94) .18s forwards; animation: bloomP2  2.4s cubic-bezier(.25,.46,.45,.94) .18s forwards; }
+  .petal.outer.p3  { -webkit-animation: bloomP3  2.4s cubic-bezier(.25,.46,.45,.94) .26s forwards; animation: bloomP3  2.4s cubic-bezier(.25,.46,.45,.94) .26s forwards; }
+  .petal.outer.p4  { -webkit-animation: bloomP4  2.4s cubic-bezier(.25,.46,.45,.94) .34s forwards; animation: bloomP4  2.4s cubic-bezier(.25,.46,.45,.94) .34s forwards; }
+  .petal.outer.p5  { -webkit-animation: bloomP5  2.4s cubic-bezier(.25,.46,.45,.94) .42s forwards; animation: bloomP5  2.4s cubic-bezier(.25,.46,.45,.94) .42s forwards; }
+  .petal.outer.p6  { -webkit-animation: bloomP6  2.4s cubic-bezier(.25,.46,.45,.94) .50s forwards; animation: bloomP6  2.4s cubic-bezier(.25,.46,.45,.94) .50s forwards; }
+  .petal.outer.p7  { -webkit-animation: bloomP7  2.4s cubic-bezier(.25,.46,.45,.94) .58s forwards; animation: bloomP7  2.4s cubic-bezier(.25,.46,.45,.94) .58s forwards; }
+  .petal.outer.p8  { -webkit-animation: bloomP8  2.4s cubic-bezier(.25,.46,.45,.94) .66s forwards; animation: bloomP8  2.4s cubic-bezier(.25,.46,.45,.94) .66s forwards; }
+  .petal.outer.p9  { -webkit-animation: bloomP9  2.4s cubic-bezier(.25,.46,.45,.94) .74s forwards; animation: bloomP9  2.4s cubic-bezier(.25,.46,.45,.94) .74s forwards; }
+  .petal.outer.p10 { -webkit-animation: bloomP10 2.4s cubic-bezier(.25,.46,.45,.94) .82s forwards; animation: bloomP10 2.4s cubic-bezier(.25,.46,.45,.94) .82s forwards; }
+  .petal.outer.p11 { -webkit-animation: bloomP11 2.4s cubic-bezier(.25,.46,.45,.94) .90s forwards; animation: bloomP11 2.4s cubic-bezier(.25,.46,.45,.94) .90s forwards; }
+  .petal.outer.p12 { -webkit-animation: bloomP12 2.4s cubic-bezier(.25,.46,.45,.94) .98s forwards; animation: bloomP12 2.4s cubic-bezier(.25,.46,.45,.94) .98s forwards; }
 
-  /* 中层花瓣：10片，更小 */
+  /* 中层花瓣：8片，紫色，位置错开 */
   .petal.mid {
-    width: 72px; height: 72px;
-    background: linear-gradient(135deg, rgba(245,235,255,0.95) 0%, rgba(225,190,245,0.9) 40%, rgba(180,140,220,0.85) 100%);
+    width: 50px; height: 65px;
+    left: -25px; top: -65px;
+    -webkit-transform-origin: 25px 65px;
+    transform-origin: 25px 65px;
+    background: linear-gradient(180deg,
+      rgba(248,235,255,0.95) 0%,
+      rgba(220,180,240,0.9) 50%,
+      rgba(170,120,210,0.85) 100%);
+    box-shadow: inset -4px -4px 10px rgba(150,90,180,0.3),
+                inset 3px 3px 8px rgba(255,255,255,0.4);
   }
-  .petal.mid:nth-child(11) { -webkit-animation: bloomMid1  2.2s cubic-bezier(.25,.46,.45,.94) .55s forwards; animation: bloomMid1  2.2s cubic-bezier(.25,.46,.45,.94) .55s forwards; }
-  .petal.mid:nth-child(12) { -webkit-animation: bloomMid2  2.2s cubic-bezier(.25,.46,.45,.94) .65s forwards; animation: bloomMid2  2.2s cubic-bezier(.25,.46,.45,.94) .65s forwards; }
-  .petal.mid:nth-child(13) { -webkit-animation: bloomMid3  2.2s cubic-bezier(.25,.46,.45,.94) .75s forwards; animation: bloomMid3  2.2s cubic-bezier(.25,.46,.45,.94) .75s forwards; }
-  .petal.mid:nth-child(14) { -webkit-animation: bloomMid4  2.2s cubic-bezier(.25,.46,.45,.94) .85s forwards; animation: bloomMid4  2.2s cubic-bezier(.25,.46,.45,.94) .85s forwards; }
-  .petal.mid:nth-child(15) { -webkit-animation: bloomMid5  2.2s cubic-bezier(.25,.46,.45,.94) .95s forwards; animation: bloomMid5  2.2s cubic-bezier(.25,.46,.45,.94) .95s forwards; }
-  .petal.mid:nth-child(16) { -webkit-animation: bloomMid6  2.2s cubic-bezier(.25,.46,.45,.94) 1.05s forwards; animation: bloomMid6  2.2s cubic-bezier(.25,.46,.45,.94) 1.05s forwards; }
-  .petal.mid:nth-child(17) { -webkit-animation: bloomMid7  2.2s cubic-bezier(.25,.46,.45,.94) 1.15s forwards; animation: bloomMid7  2.2s cubic-bezier(.25,.46,.45,.94) 1.15s forwards; }
-  .petal.mid:nth-child(18) { -webkit-animation: bloomMid8  2.2s cubic-bezier(.25,.46,.45,.94) 1.25s forwards; animation: bloomMid8  2.2s cubic-bezier(.25,.46,.45,.94) 1.25s forwards; }
-  .petal.mid:nth-child(19) { -webkit-animation: bloomMid9  2.2s cubic-bezier(.25,.46,.45,.94) 1.35s forwards; animation: bloomMid9  2.2s cubic-bezier(.25,.46,.45,.94) 1.35s forwards; }
-  .petal.mid:nth-child(20) { -webkit-animation: bloomMid10 2.2s cubic-bezier(.25,.46,.45,.94) 1.45s forwards; animation: bloomMid10 2.2s cubic-bezier(.25,.46,.45,.94) 1.45s forwards; }
+  .petal.mid.m1 { -webkit-animation: bloomM1 2.2s cubic-bezier(.25,.46,.45,.94) .55s forwards; animation: bloomM1 2.2s cubic-bezier(.25,.46,.45,.94) .55s forwards; }
+  .petal.mid.m2 { -webkit-animation: bloomM2 2.2s cubic-bezier(.25,.46,.45,.94) .65s forwards; animation: bloomM2 2.2s cubic-bezier(.25,.46,.45,.94) .65s forwards; }
+  .petal.mid.m3 { -webkit-animation: bloomM3 2.2s cubic-bezier(.25,.46,.45,.94) .75s forwards; animation: bloomM3 2.2s cubic-bezier(.25,.46,.45,.94) .75s forwards; }
+  .petal.mid.m4 { -webkit-animation: bloomM4 2.2s cubic-bezier(.25,.46,.45,.94) .85s forwards; animation: bloomM4 2.2s cubic-bezier(.25,.46,.45,.94) .85s forwards; }
+  .petal.mid.m5 { -webkit-animation: bloomM5 2.2s cubic-bezier(.25,.46,.45,.94) .95s forwards; animation: bloomM5 2.2s cubic-bezier(.25,.46,.45,.94) .95s forwards; }
+  .petal.mid.m6 { -webkit-animation: bloomM6 2.2s cubic-bezier(.25,.46,.45,.94) 1.05s forwards; animation: bloomM6 2.2s cubic-bezier(.25,.46,.45,.94) 1.05s forwards; }
+  .petal.mid.m7 { -webkit-animation: bloomM7 2.2s cubic-bezier(.25,.46,.45,.94) 1.15s forwards; animation: bloomM7 2.2s cubic-bezier(.25,.46,.45,.94) 1.15s forwards; }
+  .petal.mid.m8 { -webkit-animation: bloomM8 2.2s cubic-bezier(.25,.46,.45,.94) 1.25s forwards; animation: bloomM8 2.2s cubic-bezier(.25,.46,.45,.94) 1.25s forwards; }
 
   /* 花心 */
   .core {
     position: absolute; top: 50%; left: 50%;
-    width: 46px; height: 46px;
-    margin-top: -23px; margin-left: -23px;
+    width: 40px; height: 40px;
+    margin-top: -20px; margin-left: -20px;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #fff8e0, #ffd888 40%, #e8a850 100%);
-    box-shadow: 0 0 20px rgba(255,200,120,0.5), inset 0 0 12px rgba(255,255,255,0.4);
+    background: radial-gradient(circle at 35% 30%, #fff8e0 0%, #ffd888 45%, #e8a850 100%);
+    box-shadow: 0 0 18px rgba(255,200,120,0.55), inset 0 0 10px rgba(255,255,255,0.5);
     opacity: 0;
     -webkit-transform: scale(0);
     transform: scale(0);
-    -webkit-animation: coreBloom 1.4s cubic-bezier(.34,1.56,.64,1) 1.4s forwards;
-    animation: coreBloom 1.4s cubic-bezier(.34,1.56,.64,1) 1.4s forwards;
+    -webkit-animation: coreBloom 1.4s cubic-bezier(.34,1.56,.64,1) 1.2s forwards;
+    animation: coreBloom 1.4s cubic-bezier(.34,1.56,.64,1) 1.2s forwards;
     z-index: 6;
   }
   .core::before {
     content: ''; position: absolute; top: 50%; left: 50%;
     width: 60px; height: 60px; margin: -30px 0 0 -30px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,220,160,0.35) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255,220,160,0.4) 0%, transparent 70%);
     -webkit-animation: coreGlow 3s ease-in-out infinite;
     animation: coreGlow 3s ease-in-out infinite;
   }
 
-  /* 花粉点 */
+  /* 花粉点：装饰在花心上 */
   .pollen {
     position: absolute; top: 50%; left: 50%;
-    width: 4px; height: 4px;
-    margin-top: -2px; margin-left: -2px;
-    border-radius: 50%; background: #d08040;
+    width: 3px; height: 3px;
+    margin-top: -1.5px; margin-left: -1.5px;
+    border-radius: 50%; background: #c87028;
     z-index: 7;
     opacity: 0;
-    -webkit-animation: pollenShow .8s ease-out 2s forwards;
-    animation: pollenShow .8s ease-out 2s forwards;
+    -webkit-animation: pollenShow .8s ease-out 1.8s forwards;
+    animation: pollenShow .8s ease-out 1.8s forwards;
   }
 
-  /* 外层花瓣关键帧：从收拢到展开 */
-  @-webkit-keyframes bloomOut1  { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(0deg) scale(1); opacity: .85; } }
-  @keyframes bloomOut1  { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(0deg) scale(1); opacity: .85; } }
-  @-webkit-keyframes bloomOut2  { 0% { -webkit-transform: rotate(36deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(36deg) scale(1); opacity: .85; } }
-  @keyframes bloomOut2  { 0% { transform: rotate(36deg) scale(0); opacity: 0; } 100% { transform: rotate(36deg) scale(1); opacity: .85; } }
-  @-webkit-keyframes bloomOut3  { 0% { -webkit-transform: rotate(72deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(72deg) scale(1); opacity: .85; } }
-  @keyframes bloomOut3  { 0% { transform: rotate(72deg) scale(0); opacity: 0; } 100% { transform: rotate(72deg) scale(1); opacity: .85; } }
-  @-webkit-keyframes bloomOut4  { 0% { -webkit-transform: rotate(108deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(108deg) scale(1); opacity: .85; } }
-  @keyframes bloomOut4  { 0% { transform: rotate(108deg) scale(0); opacity: 0; } 100% { transform: rotate(108deg) scale(1); opacity: .85; } }
-  @-webkit-keyframes bloomOut5  { 0% { -webkit-transform: rotate(144deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(144deg) scale(1); opacity: .85; } }
-  @keyframes bloomOut5  { 0% { transform: rotate(144deg) scale(0); opacity: 0; } 100% { transform: rotate(144deg) scale(1); opacity: .85; } }
-  @-webkit-keyframes bloomOut6  { 0% { -webkit-transform: rotate(180deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(180deg) scale(1); opacity: .85; } }
-  @keyframes bloomOut6  { 0% { transform: rotate(180deg) scale(0); opacity: 0; } 100% { transform: rotate(180deg) scale(1); opacity: .85; } }
-  @-webkit-keyframes bloomOut7  { 0% { -webkit-transform: rotate(216deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(216deg) scale(1); opacity: .85; } }
-  @keyframes bloomOut7  { 0% { transform: rotate(216deg) scale(0); opacity: 0; } 100% { transform: rotate(216deg) scale(1); opacity: .85; } }
-  @-webkit-keyframes bloomOut8  { 0% { -webkit-transform: rotate(252deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(252deg) scale(1); opacity: .85; } }
-  @keyframes bloomOut8  { 0% { transform: rotate(252deg) scale(0); opacity: 0; } 100% { transform: rotate(252deg) scale(1); opacity: .85; } }
-  @-webkit-keyframes bloomOut9  { 0% { -webkit-transform: rotate(288deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(288deg) scale(1); opacity: .85; } }
-  @keyframes bloomOut9  { 0% { transform: rotate(288deg) scale(0); opacity: 0; } 100% { transform: rotate(288deg) scale(1); opacity: .85; } }
-  @-webkit-keyframes bloomOut10 { 0% { -webkit-transform: rotate(324deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(324deg) scale(1); opacity: .85; } }
-  @keyframes bloomOut10 { 0% { transform: rotate(324deg) scale(0); opacity: 0; } 100% { transform: rotate(324deg) scale(1); opacity: .85; } }
+  /* 外层花瓣关键帧：从 0deg 旋转展开到自己的扇区 */
+  @-webkit-keyframes bloomP1  { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(0deg) scale(1); opacity: .9; } }
+  @keyframes bloomP1  { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(0deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP2  { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(30deg) scale(1); opacity: .9; } }
+  @keyframes bloomP2  { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(30deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP3  { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(60deg) scale(1); opacity: .9; } }
+  @keyframes bloomP3  { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(60deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP4  { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(90deg) scale(1); opacity: .9; } }
+  @keyframes bloomP4  { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(90deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP5  { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(120deg) scale(1); opacity: .9; } }
+  @keyframes bloomP5  { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(120deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP6  { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(150deg) scale(1); opacity: .9; } }
+  @keyframes bloomP6  { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(150deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP7  { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(180deg) scale(1); opacity: .9; } }
+  @keyframes bloomP7  { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(180deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP8  { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(210deg) scale(1); opacity: .9; } }
+  @keyframes bloomP8  { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(210deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP9  { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(240deg) scale(1); opacity: .9; } }
+  @keyframes bloomP9  { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(240deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP10 { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(270deg) scale(1); opacity: .9; } }
+  @keyframes bloomP10 { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(270deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP11 { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(300deg) scale(1); opacity: .9; } }
+  @keyframes bloomP11 { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(300deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP12 { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(330deg) scale(1); opacity: .9; } }
+  @keyframes bloomP12 { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(330deg) scale(1); opacity: .9; } }
 
-  /* 中层花瓣关键帧 */
-  @-webkit-keyframes bloomMid1  { 0% { -webkit-transform: rotate(18deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(18deg) scale(1); opacity: .9; } }
-  @keyframes bloomMid1  { 0% { transform: rotate(18deg) scale(0); opacity: 0; } 100% { transform: rotate(18deg) scale(1); opacity: .9; } }
-  @-webkit-keyframes bloomMid2  { 0% { -webkit-transform: rotate(54deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(54deg) scale(1); opacity: .9; } }
-  @keyframes bloomMid2  { 0% { transform: rotate(54deg) scale(0); opacity: 0; } 100% { transform: rotate(54deg) scale(1); opacity: .9; } }
-  @-webkit-keyframes bloomMid3  { 0% { -webkit-transform: rotate(90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(90deg) scale(1); opacity: .9; } }
-  @keyframes bloomMid3  { 0% { transform: rotate(90deg) scale(0); opacity: 0; } 100% { transform: rotate(90deg) scale(1); opacity: .9; } }
-  @-webkit-keyframes bloomMid4  { 0% { -webkit-transform: rotate(126deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(126deg) scale(1); opacity: .9; } }
-  @keyframes bloomMid4  { 0% { transform: rotate(126deg) scale(0); opacity: 0; } 100% { transform: rotate(126deg) scale(1); opacity: .9; } }
-  @-webkit-keyframes bloomMid5  { 0% { -webkit-transform: rotate(162deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(162deg) scale(1); opacity: .9; } }
-  @keyframes bloomMid5  { 0% { transform: rotate(162deg) scale(0); opacity: 0; } 100% { transform: rotate(162deg) scale(1); opacity: .9; } }
-  @-webkit-keyframes bloomMid6  { 0% { -webkit-transform: rotate(198deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(198deg) scale(1); opacity: .9; } }
-  @keyframes bloomMid6  { 0% { transform: rotate(198deg) scale(0); opacity: 0; } 100% { transform: rotate(198deg) scale(1); opacity: .9; } }
-  @-webkit-keyframes bloomMid7  { 0% { -webkit-transform: rotate(234deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(234deg) scale(1); opacity: .9; } }
-  @keyframes bloomMid7  { 0% { transform: rotate(234deg) scale(0); opacity: 0; } 100% { transform: rotate(234deg) scale(1); opacity: .9; } }
-  @-webkit-keyframes bloomMid8  { 0% { -webkit-transform: rotate(270deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(270deg) scale(1); opacity: .9; } }
-  @keyframes bloomMid8  { 0% { transform: rotate(270deg) scale(0); opacity: 0; } 100% { transform: rotate(270deg) scale(1); opacity: .9; } }
-  @-webkit-keyframes bloomMid9  { 0% { -webkit-transform: rotate(306deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(306deg) scale(1); opacity: .9; } }
-  @keyframes bloomMid9  { 0% { transform: rotate(306deg) scale(0); opacity: 0; } 100% { transform: rotate(306deg) scale(1); opacity: .9; } }
-  @-webkit-keyframes bloomMid10 { 0% { -webkit-transform: rotate(342deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(342deg) scale(1); opacity: .9; } }
-  @keyframes bloomMid10 { 0% { transform: rotate(342deg) scale(0); opacity: 0; } 100% { transform: rotate(342deg) scale(1); opacity: .9; } }
+  /* 中层：错开 22.5° */
+  @-webkit-keyframes bloomM1 { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(22.5deg) scale(1); opacity: .92; } }
+  @keyframes bloomM1 { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(22.5deg) scale(1); opacity: .92; } }
+  @-webkit-keyframes bloomM2 { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(67.5deg) scale(1); opacity: .92; } }
+  @keyframes bloomM2 { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(67.5deg) scale(1); opacity: .92; } }
+  @-webkit-keyframes bloomM3 { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(112.5deg) scale(1); opacity: .92; } }
+  @keyframes bloomM3 { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(112.5deg) scale(1); opacity: .92; } }
+  @-webkit-keyframes bloomM4 { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(157.5deg) scale(1); opacity: .92; } }
+  @keyframes bloomM4 { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(157.5deg) scale(1); opacity: .92; } }
+  @-webkit-keyframes bloomM5 { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(202.5deg) scale(1); opacity: .92; } }
+  @keyframes bloomM5 { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(202.5deg) scale(1); opacity: .92; } }
+  @-webkit-keyframes bloomM6 { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(247.5deg) scale(1); opacity: .92; } }
+  @keyframes bloomM6 { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(247.5deg) scale(1); opacity: .92; } }
+  @-webkit-keyframes bloomM7 { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(292.5deg) scale(1); opacity: .92; } }
+  @keyframes bloomM7 { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(292.5deg) scale(1); opacity: .92; } }
+  @-webkit-keyframes bloomM8 { 0% { -webkit-transform: rotate(0deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(337.5deg) scale(1); opacity: .92; } }
+  @keyframes bloomM8 { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(337.5deg) scale(1); opacity: .92; } }
 
   @-webkit-keyframes coreBloom {
     0% { -webkit-transform: scale(0); opacity: 0; }
@@ -226,12 +235,12 @@
     100% { transform: scale(1); opacity: 1; }
   }
   @-webkit-keyframes coreGlow {
-    0%,100% { -webkit-transform: scale(1); opacity: .6; }
-    50% { -webkit-transform: scale(1.25); opacity: .3; }
+    0%,100% { -webkit-transform: scale(1); opacity: .65; }
+    50% { -webkit-transform: scale(1.3); opacity: .3; }
   }
   @keyframes coreGlow {
-    0%,100% { transform: scale(1); opacity: .6; }
-    50% { transform: scale(1.25); opacity: .3; }
+    0%,100% { transform: scale(1); opacity: .65; }
+    50% { transform: scale(1.3); opacity: .3; }
   }
   @-webkit-keyframes pollenShow {
     0% { opacity: 0; -webkit-transform: scale(0); }
@@ -523,39 +532,31 @@
       <div class="ring ring-1"></div>
       <div class="ring ring-2"></div>
       <div class="flower" id="flower">
-        <div class="lotus-wrap">
-          <div class="lotus">
-            <!-- 外层花瓣 10片 -->
-            <div class="petal outer"></div>
-            <div class="petal outer"></div>
-            <div class="petal outer"></div>
-            <div class="petal outer"></div>
-            <div class="petal outer"></div>
-            <div class="petal outer"></div>
-            <div class="petal outer"></div>
-            <div class="petal outer"></div>
-            <div class="petal outer"></div>
-            <div class="petal outer"></div>
-            <!-- 中层花瓣 10片 -->
-            <div class="petal mid"></div>
-            <div class="petal mid"></div>
-            <div class="petal mid"></div>
-            <div class="petal mid"></div>
-            <div class="petal mid"></div>
-            <div class="petal mid"></div>
-            <div class="petal mid"></div>
-            <div class="petal mid"></div>
-            <div class="petal mid"></div>
-            <div class="petal mid"></div>
-            <!-- 花心 -->
-            <div class="core"></div>
-            <div class="pollen" style="transform: translate(-12px,-12px)"></div>
-            <div class="pollen" style="transform: translate(12px,-12px)"></div>
-            <div class="pollen" style="transform: translate(0,-16px)"></div>
-            <div class="pollen" style="transform: translate(-14px,8px)"></div>
-            <div class="pollen" style="transform: translate(14px,8px)"></div>
-            <div class="pollen" style="transform: translate(0,14px)"></div>
-          </div>
+        <div class="lotus">
+          <!-- 外层花瓣 12片 -->
+          <div class="petal outer p1"></div>
+          <div class="petal outer p2"></div>
+          <div class="petal outer p3"></div>
+          <div class="petal outer p4"></div>
+          <div class="petal outer p5"></div>
+          <div class="petal outer p6"></div>
+          <div class="petal outer p7"></div>
+          <div class="petal outer p8"></div>
+          <div class="petal outer p9"></div>
+          <div class="petal outer p10"></div>
+          <div class="petal outer p11"></div>
+          <div class="petal outer p12"></div>
+          <!-- 中层花瓣 8片 -->
+          <div class="petal mid m1"></div>
+          <div class="petal mid m2"></div>
+          <div class="petal mid m3"></div>
+          <div class="petal mid m4"></div>
+          <div class="petal mid m5"></div>
+          <div class="petal mid m6"></div>
+          <div class="petal mid m7"></div>
+          <div class="petal mid m8"></div>
+          <!-- 花心 -->
+          <div class="core"></div>
         </div>
         <div class="tap-hint">轻 触</div>
       </div>
