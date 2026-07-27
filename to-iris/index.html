@@ -697,14 +697,16 @@ modal.addEventListener('click', function(e){
 
 function openModal(){
   renderCollectList();
-  modal.classList.add('show');
+  modal.style.display = 'flex';
   setTimeout(function(){
-    modal.style.alignItems = 'center';
-    modal.style.display = 'flex';
+    modal.classList.add('show');
   }, 10);
 }
 function closeModal(){
   modal.classList.remove('show');
+  setTimeout(function(){
+    modal.style.display = 'none';
+  }, 400);
 }
 
 function renderCollectList(){
