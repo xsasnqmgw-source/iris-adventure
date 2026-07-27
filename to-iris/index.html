@@ -641,6 +641,11 @@
     -webkit-transition: -webkit-transform 0.6s cubic-bezier(.2,.8,.2,1), opacity 0.4s;
     transition: transform 0.6s cubic-bezier(.2,.8,.2,1), opacity 0.4s;
     -webkit-tap-highlight-color: transparent;
+    z-index: 1;
+  }
+  .orbit-card:active {
+    -webkit-transform: rotateY(var(--ry, 0deg)) translateZ(var(--tz, 0px)) scale(0.95);
+    transform: rotateY(var(--ry, 0deg)) translateZ(var(--tz, 0px)) scale(0.95);
   }
 
   .orbit-face {
@@ -797,15 +802,11 @@
 
   /* 其他卡片淡出 */
   .orbit-card.faded {
-    -webkit-animation: cardFaded .5s ease-out forwards;
-    animation: cardFaded .5s ease-out forwards;
-    pointer-events: none;
-  }
-  @-webkit-keyframes cardFaded {
-    to { opacity: 0; -webkit-transform: rotateY(var(--ry, 0deg)) translateZ(var(--tz, 0px)) scale(.6); -webkit-filter: blur(6px); }
-  }
-  @keyframes cardFaded {
-    to { opacity: 0; transform: rotateY(var(--ry, 0deg)) translateZ(var(--tz, 0px)) scale(.6); filter: blur(6px); }
+    opacity: 0 !important;
+    filter: blur(8px);
+    -webkit-filter: blur(8px);
+    transform: rotateY(var(--ry, 0deg)) translateZ(var(--tz, 0px)) scale(0.5) !important;
+    -webkit-transform: rotateY(var(--ry, 0deg)) translateZ(var(--tz, 0px)) scale(0.5) !important;
   }
 
   /* 卡片入场：从中心飞入圆环 */
@@ -1308,27 +1309,23 @@ function openOrb(){
 function buildOrbit(){
   orbit3d.innerHTML = '';
   var n = CARDS.length;
-  var radius = 380;  // 圆环半径
-  // 随机选1张作为"今天推荐"（带闪光特殊卡片）
+  var radius = 380;
   var featuredIdx = Math.floor(Math.random() * n);
   for (var i = 0; i < n; i++) {
     var c = CARDS[i];
     var angle = (360 / n) * i;
     var card = document.createElement('div');
-    card.className = 'orbit-card entering';
+    card.className = 'orbit-card';
     if (i === featuredIdx) card.classList.add('featured');
     card.style.setProperty('--ry', angle + 'deg');
     card.style.setProperty('--tz', radius + 'px');
-    card.style.animationDelay = (i * 30) + 'ms';
     card.dataset.idx = i;
-    // 正面：可点击的图标
     var front = document.createElement('div');
     front.className = 'orbit-face front';
     front.innerHTML =
       '<div class="orbit-kind">' + c.kind + '</div>' +
       '<div class="orbit-ico">' + c.ico + '</div>' +
-      '<div class="orbit-hint">触 摸 翻 牌</div>';
-    // 背面：显示内容（点击后才可见）
+      '<div class="orbit-hint">点 击 翻 牌</div>';
     var back = document.createElement('div');
     back.className = 'orbit-face back';
     back.innerHTML =
@@ -1337,10 +1334,10 @@ function buildOrbit(){
     card.appendChild(back);
     card.appendChild(front);
     (function(idx, el){
-      // 拖拽旋转：点击/触摸触发选择
       function onSelect(e){
         e.stopPropagation();
         e.preventDefault();
+        if (busy) return;
         selectOrbitCard(idx, el);
       }
       el.addEventListener('click', onSelect);
@@ -1348,7 +1345,6 @@ function buildOrbit(){
     })(i, card);
     orbit3d.appendChild(card);
   }
-  // 拖动旋转支持
   setupOrbitDrag();
 }
 
@@ -1401,16 +1397,25 @@ function setupOrbitDrag(){
 function selectOrbitCard(idx, el){
   if (busy) return;
   busy = true;
-  // 停止 orbit3d 自动旋转
   orbit3d.style.animation = 'none';
-  // 当前选中的卡片：飞出放大 + 翻面
-  el.classList.remove('entering');
-  el.classList.add('selected');
+  var ry = parseFloat(el.style.getPropertyValue('--ry')) || 0;
+  var tz = parseFloat(el.style.getPropertyValue('--tz')) || 380;
+  // 用 JS 动画让选中卡片飞出并旋转
+  el.style.transition = 'none';
+  el.style.transform = 'rotateY(' + ry + 'deg) translateZ(' + tz + 'px)';
+  void el.offsetWidth;
+  el.style.transition = 'transform 1.1s cubic-bezier(.4,0,.2,1), opacity 0.8s';
+  // 飞出 + 旋转 540度 + 放大
+  el.style.transform = 'rotateY(' + (ry + 540) + 'deg) translateZ(420px) scale(1.8)';
+  el.style.opacity = '0';
   // 其他卡片淡出
   var all = orbit3d.querySelectorAll('.orbit-card');
   for (var i = 0; i < all.length; i++) {
     if (all[i] !== el) {
-      all[i].classList.add('faded');
+      all[i].style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
+      all[i].style.opacity = '0';
+      all[i].style.filter = 'blur(8px)';
+      all[i].style.transform = 'rotateY(' + (parseFloat(all[i].style.getPropertyValue('--ry')) || 0) + 'deg) translateZ(' + (parseFloat(all[i].style.getPropertyValue('--tz')) || 380) + 'px) scale(0.5)';
     }
   }
   // 闪屏
@@ -1445,10 +1450,9 @@ function selectOrbitCard(idx, el){
     burst(innerWidth/2, innerHeight/2);
     burst(innerWidth/2, innerHeight/2);
   }, 400);
-  // 0.5s 后打开卡片详情
+  // 1.0s 后打开卡片详情
   setTimeout(function(){
     drawCard(idx);
-    // 重置卡片显示状态
     orbit3d.innerHTML = '';
     orbit3d.style.animation = '';
     currentRotationY = 0;
@@ -1460,8 +1464,18 @@ function selectOrbitCard(idx, el){
 function showOrbit(){
   buildOrbit();
   orbitStage.classList.add('show');
-  // 0.5s 内不接收点击，让用户先看
-  setTimeout(function(){ busy = false; }, 500);
+  // 让卡片有一个简短的入场动画
+  var cards = orbit3d.querySelectorAll('.orbit-card');
+  cards.forEach(function(card, i){
+    card.style.opacity = '0';
+    card.style.transform = 'rotateY(var(--ry, 0deg)) translateZ(calc(var(--tz, 0px) - 200px)) scale(0.6)';
+    setTimeout(function(){
+      card.style.transition = 'transform 0.8s cubic-bezier(.3,1.2,.4,1), opacity 0.5s';
+      card.style.opacity = '1';
+      card.style.transform = 'rotateY(var(--ry, 0deg)) translateZ(var(--tz, 0px))';
+    }, i * 20);
+  });
+  setTimeout(function(){ busy = false; }, cards.length * 20 + 800);
 }
 
 function hideOrbit(){
