@@ -88,6 +88,28 @@
     width: 0; height: 0;  /* 0 尺寸的容器，仅作为旋转参考点 */
   }
 
+  /* 花瓣公转环：外层和中层各自独立旋转，角速度不同 */
+  .petal-ring {
+    position: absolute; top: 0; left: 0;
+    width: 0; height: 0;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+  }
+  /* 外层：30秒一圈，逆时针，慢 */
+  .outer-ring {
+    -webkit-animation: orbitOuter 30s linear infinite;
+    animation: orbitOuter 30s linear infinite;
+  }
+  /* 中层：18秒一圈，逆时针，快 */
+  .mid-ring {
+    -webkit-animation: orbitMid 18s linear infinite;
+    animation: orbitMid 18s linear infinite;
+  }
+  @-webkit-keyframes orbitOuter { from { -webkit-transform: rotate(0deg); } to { -webkit-transform: rotate(-360deg); } }
+  @keyframes orbitOuter { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+  @-webkit-keyframes orbitMid { from { -webkit-transform: rotate(0deg); } to { -webkit-transform: rotate(-360deg); } }
+  @keyframes orbitMid { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+
   /* 花瓣：椭圆形，初始贴合中心，旋转出去 */
   .petal {
     position: absolute;
@@ -938,28 +960,32 @@
       <div class="ring ring-2"></div>
       <div class="flower" id="flower">
         <div class="lotus">
-          <!-- 外层花瓣 12片 -->
-          <div class="petal outer p1"></div>
-          <div class="petal outer p2"></div>
-          <div class="petal outer p3"></div>
-          <div class="petal outer p4"></div>
-          <div class="petal outer p5"></div>
-          <div class="petal outer p6"></div>
-          <div class="petal outer p7"></div>
-          <div class="petal outer p8"></div>
-          <div class="petal outer p9"></div>
-          <div class="petal outer p10"></div>
-          <div class="petal outer p11"></div>
-          <div class="petal outer p12"></div>
-          <!-- 中层花瓣 8片 -->
-          <div class="petal mid m1"></div>
-          <div class="petal mid m2"></div>
-          <div class="petal mid m3"></div>
-          <div class="petal mid m4"></div>
-          <div class="petal mid m5"></div>
-          <div class="petal mid m6"></div>
-          <div class="petal mid m7"></div>
-          <div class="petal mid m8"></div>
+          <!-- 外层花瓣 12片（公转环：30s/圈 逆时针） -->
+          <div class="petal-ring outer-ring">
+            <div class="petal outer p1"></div>
+            <div class="petal outer p2"></div>
+            <div class="petal outer p3"></div>
+            <div class="petal outer p4"></div>
+            <div class="petal outer p5"></div>
+            <div class="petal outer p6"></div>
+            <div class="petal outer p7"></div>
+            <div class="petal outer p8"></div>
+            <div class="petal outer p9"></div>
+            <div class="petal outer p10"></div>
+            <div class="petal outer p11"></div>
+            <div class="petal outer p12"></div>
+          </div>
+          <!-- 中层花瓣 8片（公转环：18s/圈 逆时针） -->
+          <div class="petal-ring mid-ring">
+            <div class="petal mid m1"></div>
+            <div class="petal mid m2"></div>
+            <div class="petal mid m3"></div>
+            <div class="petal mid m4"></div>
+            <div class="petal mid m5"></div>
+            <div class="petal mid m6"></div>
+            <div class="petal mid m7"></div>
+            <div class="petal mid m8"></div>
+          </div>
           <!-- 花心 -->
           <div class="core"></div>
         </div>
