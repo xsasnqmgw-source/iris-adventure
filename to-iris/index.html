@@ -57,6 +57,17 @@
   }
   .signature.hide { opacity: 0 !important; -webkit-transform: translateY(-10px); transform: translateY(-10px); }
 
+  .welcome {
+    font-size: 14px; color: #c8a8d8; text-align: center;
+    margin-bottom: 16px; letter-spacing: 1px;
+    opacity: 0; transition: opacity .8s .5s;
+    font-family: "PingFang SC", sans-serif;
+    height: 42px;
+  }
+  .welcome.show { opacity: .85; }
+  .welcome.hide { opacity: 0; -webkit-transform: translateY(-10px); transform: translateY(-10px); }
+  .welcome .line2 { font-size: 11px; color: #8a7a9a; margin-top: 4px; display: block; }
+
   .orb-wrap {
     position: relative; width: 200px; height: 200px;
     margin-bottom: 36px;
@@ -365,6 +376,8 @@
 
     <div class="title" id="title">点一下光</div>
 
+    <div class="welcome" id="welcome"></div>
+
     <div class="orb-wrap" id="orbWrap">
       <div class="ring ring-1"></div>
       <div class="ring ring-2"></div>
@@ -510,6 +523,11 @@ setTimeout(function(){
   document.getElementById('title').classList.add('show');
   document.getElementById('orbWrap').classList.add('show');
   document.getElementById('counter').classList.add('show');
+  // 欢迎语
+  var welcomeEl = document.getElementById('welcome');
+  var lastVisit = getLastVisitText();
+  welcomeEl.innerHTML = getWelcomeText() + (lastVisit ? '<span class="line2">' + lastVisit + '</span>' : '');
+  welcomeEl.classList.add('show');
   // 底部加个"看收藏"按钮
   var bar = document.querySelector('.bottom-bar');
   var btn = document.createElement('button');
@@ -520,21 +538,65 @@ setTimeout(function(){
   bar.insertBefore(btn, document.querySelector('.counter'));
 }, 300);
 
-/* ===== 收集系统 (localStorage) ===== */
-var STORAGE_KEY = 'iris_collected_v1';
-function getCollected(){
+/* ===== 记忆系统 (localStorage) ===== */
+var STORAGE_KEY = 'iris_memory_v1';
+var memory = loadMemory();
+
+function loadMemory(){
   try {
     var s = localStorage.getItem(STORAGE_KEY);
-    return s ? JSON.parse(s) : {};
-  } catch(e) { return {}; }
+    var m = s ? JSON.parse(s) : {};
+    return {
+      collected: m.collected || {},
+      totalFlips: m.totalFlips || 0,
+      visitCount: m.visitCount || 0,
+      lastVisitTime: m.lastVisitTime || 0,
+      lastCardIdx: m.lastCardIdx || -1
+    };
+  } catch(e) {
+    return { collected: {}, totalFlips: 0, visitCount: 0, lastVisitTime: 0, lastCardIdx: -1 };
+  }
 }
-function saveCollected(obj){
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); } catch(e) {}
+
+function saveMemory(){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(memory)); } catch(e) {}
 }
-var collected = getCollected();
+
+function markVisit(){
+  memory.visitCount++;
+  memory.lastVisitTime = Date.now();
+  saveMemory();
+}
+
+function getWelcomeText(){
+  var visits = memory.visitCount;
+  if (visits === 1) return '初次见面，请多指教 ✨';
+  if (visits === 2) return '又见面了，很高兴你还来 🌸';
+  if (visits === 3) return '第三次了，你是不是喜欢上这里了？ 😊';
+  if (visits === 5) return '五连打卡！我开始期待每天见到你了 🥰';
+  if (visits === 10) return '十次了！你是我的常客了 🎉';
+  if (visits > 10) return '第 ' + visits + ' 次相遇，谢谢你一直陪着我 💞';
+  var msgs = ['好久不见，想我了吗？ 💫', '欢迎回来，今天想翻哪张？ 🌙', '又见面啦，今天天气真好 🍃', '等你好久了，点一下吧 ✨'];
+  return msgs[(visits - 1) % msgs.length];
+}
+
+function getLastVisitText(){
+  if (!memory.lastVisitTime) return '';
+  var diff = Date.now() - memory.lastVisitTime;
+  var hours = Math.floor(diff / (1000 * 60 * 60));
+  var days = Math.floor(hours / 24);
+  if (days > 0) return '上次见面是 ' + days + ' 天前';
+  if (hours > 0) return '上次见面是 ' + hours + ' 小时前';
+  if (Math.floor(diff / 60000) > 0) return '上次见面是几分钟前';
+  return '刚见过面，这么快又来啦';
+}
+
+var collected = memory.collected;
 var currentIdx = -1;
-var count = 0;
-var lastIdx = -1;
+var count = memory.totalFlips;
+var lastIdx = memory.lastCardIdx;
+
+markVisit();
 
 /* ===== 交互 ===== */
 var orb = document.getElementById('orb');
@@ -554,6 +616,7 @@ var modal = document.getElementById('modal');
 var modalClose = document.getElementById('modalClose');
 var collectList = document.getElementById('collectList');
 var collectedCount = document.getElementById('collectedCount');
+var welcomeEl = null;
 
 var busy = false;
 
@@ -565,6 +628,9 @@ function drawCard(){
   }
   lastIdx = idx;
   currentIdx = idx;
+  memory.lastCardIdx = idx;
+  memory.totalFlips++;
+  saveMemory();
   var c = CARDS[idx];
   cKind.textContent = c.kind;
   cIco.textContent = c.ico;
@@ -574,13 +640,12 @@ function drawCard(){
   cSub.textContent = c.sub || '';
   count++;
   counter.textContent = '已翻开 ' + count + ' 张';
-  // 收藏按钮状态
   updateCollectBtn();
 }
 
 function updateCollectBtn(){
   if (currentIdx < 0) return;
-  var isCollected = collected[currentIdx];
+  var isCollected = memory.collected[currentIdx];
   collectBtn.textContent = isCollected ? '已收藏 ✓' : '收 藏 ✦';
   collectBtn.disabled = !!isCollected;
   collectBtn.style.opacity = isCollected ? '0.6' : '1';
@@ -620,6 +685,7 @@ function openOrb(){
   // 标题和底部栏快速淡出
   document.getElementById('title').classList.add('hide');
   document.getElementById('sig').classList.add('hide');
+  document.getElementById('welcome').classList.add('hide');
   document.querySelector('.bottom-bar').classList.add('hide');
   orb.classList.add('popped');
   burst(cx, cy);
@@ -641,6 +707,7 @@ function closeOrb(){
     // 标题和底部栏恢复
     document.getElementById('title').classList.remove('hide');
     document.getElementById('sig').classList.remove('hide');
+    document.getElementById('welcome').classList.remove('hide');
     document.querySelector('.bottom-bar').classList.remove('hide');
     busy = false;
   }, 400);
@@ -679,11 +746,10 @@ closeBtn.addEventListener('touchend', function(e){ e.preventDefault(); closeOrb(
 // 收藏
 collectBtn.addEventListener('click', function(){
   if (currentIdx < 0) return;
-  if (collected[currentIdx]) return;
-  collected[currentIdx] = { time: Date.now() };
-  saveCollected(collected);
+  if (memory.collected[currentIdx]) return;
+  memory.collected[currentIdx] = { time: Date.now() };
+  saveMemory();
   updateCollectBtn();
-  // 小撒花
   var rect = collectBtn.getBoundingClientRect();
   burst(rect.left + rect.width/2, rect.top + rect.height/2);
 });
@@ -711,7 +777,7 @@ function closeModal(){
 
 function renderCollectList(){
   var n = 0;
-  for (var k in collected) n++;
+  for (var k in memory.collected) n++;
   collectedCount.textContent = n + ' / ' + CARDS.length;
   collectList.innerHTML = '';
   if (n === 0) {
@@ -720,7 +786,7 @@ function renderCollectList(){
   }
   for (var i = 0; i < CARDS.length; i++) {
     var c = CARDS[i];
-    var has = collected[i];
+    var has = memory.collected[i];
     var item = document.createElement('div');
     item.className = 'collect-item' + (has ? '' : ' locked');
     var desc = c.title || c.text.split('\n')[0];
