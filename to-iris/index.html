@@ -68,53 +68,99 @@
   .welcome.hide { opacity: 0; -webkit-transform: translateY(-10px); transform: translateY(-10px); }
   .welcome .line2 { font-size: 11px; color: #8a7a9a; margin-top: 4px; display: block; }
 
-  .orb-wrap {
-    position: relative; width: 200px; height: 200px;
+  .flower-wrap {
+    position: relative; width: 220px; height: 220px;
     margin-bottom: 36px;
-    opacity: 0; -webkit-transform: scale(0.8); transform: scale(0.8);
-    transition: opacity 1.2s .6s, transform 1.2s .6s cubic-bezier(.2,.9,.3,1.2);
+    opacity: 0; -webkit-transform: scale(0.6); transform: scale(0.6);
+    transition: opacity 1.5s .3s, transform 1.5s .3s cubic-bezier(.2,.9,.3,1.2);
   }
-  .orb-wrap.show { opacity: 1; -webkit-transform: scale(1); transform: scale(1); }
+  .flower-wrap.show { opacity: 1; -webkit-transform: scale(1); transform: scale(1); }
 
-  .orb {
-    position: absolute; top:0; left:0; width:100%; height:100%;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 28%, #fff5e8 0%, #ffd1a8 18%, #e8a8d8 40%, #a888e0 65%, #5a3aa8 85%, transparent 100%);
-    -webkit-box-shadow: 0 0 40px rgba(184,168,232,0.5), 0 0 100px rgba(232,168,216,0.35), inset 0 0 30px rgba(255,255,255,0.3);
-    box-shadow: 0 0 40px rgba(184,168,232,0.5), 0 0 100px rgba(232,168,216,0.35), inset 0 0 30px rgba(255,255,255,0.3);
+  .flower {
+    position: absolute; inset: 0;
     cursor: pointer;
-    -webkit-animation: breath 4s ease-in-out infinite;
-    animation: breath 4s ease-in-out infinite;
-    transition: transform .15s;
     z-index: 5;
   }
-  .orb:active { -webkit-transform: scale(0.94); transform: scale(0.94); }
-  .orb.popped {
-    -webkit-animation: pop .6s cubic-bezier(.2,.9,.3,1.2) forwards;
-    animation: pop .6s cubic-bezier(.2,.9,.3,1.2) forwards;
+
+  .flower-svg {
+    width: 100%; height: 100%;
+    filter: drop-shadow(0 0 20px rgba(184,168,232,0.5)) drop-shadow(0 0 40px rgba(232,168,216,0.3));
   }
 
-  @-webkit-keyframes breath {
-    0%,100% { -webkit-transform: scale(1); -webkit-filter: hue-rotate(0deg);
-      -webkit-box-shadow: 0 0 40px rgba(184,168,232,0.5), 0 0 100px rgba(232,168,216,0.35), inset 0 0 30px rgba(255,255,255,0.3); }
-    50% { -webkit-transform: scale(1.07); -webkit-filter: hue-rotate(15deg);
-      -webkit-box-shadow: 0 0 60px rgba(184,168,232,0.7), 0 0 140px rgba(232,168,216,0.5), inset 0 0 40px rgba(255,255,255,0.4); }
+  .petal-outer {
+    -webkit-transform-origin: center center;
+    transform-origin: center center;
+    -webkit-animation: petalOpenOuter 2s cubic-bezier(.2,.8,.2,1) forwards;
+    animation: petalOpenOuter 2s cubic-bezier(.2,.8,.2,1) forwards;
   }
-  @keyframes breath {
-    0%,100% { transform: scale(1); filter: hue-rotate(0deg);
-      box-shadow: 0 0 40px rgba(184,168,232,0.5), 0 0 100px rgba(232,168,216,0.35), inset 0 0 30px rgba(255,255,255,0.3); }
-    50% { transform: scale(1.07); filter: hue-rotate(15deg);
-      box-shadow: 0 0 60px rgba(184,168,232,0.7), 0 0 140px rgba(232,168,216,0.5), inset 0 0 40px rgba(255,255,255,0.4); }
+  .petal-inner {
+    -webkit-transform-origin: center center;
+    transform-origin: center center;
+    -webkit-animation: petalOpenInner 2s cubic-bezier(.2,.8,.2,1) .3s forwards;
+    animation: petalOpenInner 2s cubic-bezier(.2,.8,.2,1) .3s forwards;
   }
-  @-webkit-keyframes pop {
+  .petal-center {
+    opacity: 0;
+    -webkit-transform: scale(0);
+    transform: scale(0);
+    -webkit-animation: centerOpen 1.5s cubic-bezier(.2,.8,.2,1) .8s forwards;
+    animation: centerOpen 1.5s cubic-bezier(.2,.8,.2,1) .8s forwards;
+  }
+
+  .petal-outer:nth-child(1) { -webkit-animation-delay: .1s; animation-delay: .1s; }
+  .petal-outer:nth-child(2) { -webkit-animation-delay: .25s; animation-delay: .25s; }
+  .petal-outer:nth-child(3) { -webkit-animation-delay: .4s; animation-delay: .4s; }
+  .petal-outer:nth-child(4) { -webkit-animation-delay: .55s; animation-delay: .55s; }
+  .petal-outer:nth-child(5) { -webkit-animation-delay: .7s; animation-delay: .7s; }
+  .petal-outer:nth-child(6) { -webkit-animation-delay: .85s; animation-delay: .85s; }
+
+  .petal-inner:nth-child(7) { -webkit-animation-delay: .5s; animation-delay: .5s; }
+  .petal-inner:nth-child(8) { -webkit-animation-delay: .65s; animation-delay: .65s; }
+  .petal-inner:nth-child(9) { -webkit-animation-delay: .8s; animation-delay: .8s; }
+
+  @-webkit-keyframes petalOpenOuter {
+    0% { -webkit-transform: rotate(var(--rot)) scale(0) translateY(-20px); opacity: 0; }
+    30% { opacity: 0.8; }
+    100% { -webkit-transform: rotate(var(--rot)) scale(1) translateY(0); opacity: 1; }
+  }
+  @keyframes petalOpenOuter {
+    0% { transform: rotate(var(--rot)) scale(0) translateY(-20px); opacity: 0; }
+    30% { opacity: 0.8; }
+    100% { transform: rotate(var(--rot)) scale(1) translateY(0); opacity: 1; }
+  }
+  @-webkit-keyframes petalOpenInner {
+    0% { -webkit-transform: rotate(var(--rot)) scale(0); opacity: 0; }
+    30% { opacity: 0.8; }
+    100% { -webkit-transform: rotate(var(--rot)) scale(1); opacity: 1; }
+  }
+  @keyframes petalOpenInner {
+    0% { transform: rotate(var(--rot)) scale(0); opacity: 0; }
+    30% { opacity: 0.8; }
+    100% { transform: rotate(var(--rot)) scale(1); opacity: 1; }
+  }
+  @-webkit-keyframes centerOpen {
+    0% { -webkit-transform: scale(0); opacity: 0; }
+    100% { -webkit-transform: scale(1); opacity: 1; }
+  }
+  @keyframes centerOpen {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .flower.popped {
+    -webkit-animation: flowerPop .5s cubic-bezier(.2,.9,.3,1.2) forwards;
+    animation: flowerPop .5s cubic-bezier(.2,.9,.3,1.2) forwards;
+  }
+
+  @-webkit-keyframes flowerPop {
     0% { -webkit-transform: scale(1); opacity: 1; }
-    40% { -webkit-transform: scale(1.3); opacity: .8; }
-    100% { -webkit-transform: scale(0.2); opacity: 0; }
+    30% { -webkit-transform: scale(1.4); opacity: .9; }
+    100% { -webkit-transform: scale(0); opacity: 0; }
   }
-  @keyframes pop {
+  @keyframes flowerPop {
     0% { transform: scale(1); opacity: 1; }
-    40% { transform: scale(1.3); opacity: .8; }
-    100% { transform: scale(0.2); opacity: 0; }
+    30% { transform: scale(1.4); opacity: .9; }
+    100% { transform: scale(0); opacity: 0; }
   }
 
   .ring {
@@ -122,13 +168,13 @@
     pointer-events: none;
   }
   .ring-1 {
-    top: -18px; left: -18px; right: -18px; bottom: -18px;
+    top: -24px; left: -24px; right: -24px; bottom: -24px;
     border: 1.5px dashed rgba(255,200,220,0.35);
     -webkit-animation: spin 20s linear infinite;
     animation: spin 20s linear infinite;
   }
   .ring-2 {
-    top: -42px; left: -42px; right: -42px; bottom: -42px;
+    top: -52px; left: -52px; right: -52px; bottom: -52px;
     border: 1px solid rgba(184,168,232,0.2);
     -webkit-animation: spin 35s linear infinite reverse;
     animation: spin 35s linear infinite reverse;
@@ -146,11 +192,12 @@
     text-shadow: 0 1px 8px rgba(90,58,168,0.4);
     pointer-events: none;
     z-index: 6;
-    -webkit-animation: hintPulse 2s ease-in-out infinite;
-    animation: hintPulse 2s ease-in-out infinite;
+    opacity: 0;
+    -webkit-animation: hintPulse 2s ease-in-out 2.5s infinite;
+    animation: hintPulse 2s ease-in-out 2.5s infinite;
   }
-  @-webkit-keyframes hintPulse { 0%,100% { opacity:.6; } 50% { opacity:1; } }
-  @keyframes hintPulse { 0%,100% { opacity:.6; } 50% { opacity:1; } }
+  @-webkit-keyframes hintPulse { 0%,100% { opacity:.5; } 50% { opacity:1; } }
+  @keyframes hintPulse { 0%,100% { opacity:.5; } 50% { opacity:1; } }
 
   /* 卡片 */
   .card-wrap {
@@ -378,10 +425,68 @@
 
     <div class="welcome" id="welcome"></div>
 
-    <div class="orb-wrap" id="orbWrap">
+    <div class="flower-wrap" id="flowerWrap">
       <div class="ring ring-1"></div>
       <div class="ring ring-2"></div>
-      <div class="orb" id="orb">
+      <div class="flower" id="flower">
+        <svg class="flower-svg" viewBox="0 0 200 200">
+          <defs>
+            <linearGradient id="petalGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#fff5f8"/>
+              <stop offset="30%" stop-color="#ffd8e8"/>
+              <stop offset="60%" stop-color="#e8a8d8"/>
+              <stop offset="100%" stop-color="#c888c0"/>
+            </linearGradient>
+            <linearGradient id="petalGradInner" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#e8d8ff"/>
+              <stop offset="50%" stop-color="#c8a8e8"/>
+              <stop offset="100%" stop-color="#9878d0"/>
+            </linearGradient>
+            <linearGradient id="centerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#fff8d8"/>
+              <stop offset="50%" stop-color="#ffd888"/>
+              <stop offset="100%" stop-color="#e8c868"/>
+            </linearGradient>
+          </defs>
+          <!-- 外层花瓣 6片 -->
+          <g class="petal-outer" style="--rot: 0deg; transform: rotate(0deg);">
+            <ellipse cx="100" cy="30" rx="30" ry="60" fill="url(#petalGrad)" opacity="0.9"/>
+          </g>
+          <g class="petal-outer" style="--rot: 60deg; transform: rotate(60deg);">
+            <ellipse cx="100" cy="30" rx="30" ry="60" fill="url(#petalGrad)" opacity="0.9"/>
+          </g>
+          <g class="petal-outer" style="--rot: 120deg; transform: rotate(120deg);">
+            <ellipse cx="100" cy="30" rx="30" ry="60" fill="url(#petalGrad)" opacity="0.9"/>
+          </g>
+          <g class="petal-outer" style="--rot: 180deg; transform: rotate(180deg);">
+            <ellipse cx="100" cy="30" rx="30" ry="60" fill="url(#petalGrad)" opacity="0.9"/>
+          </g>
+          <g class="petal-outer" style="--rot: 240deg; transform: rotate(240deg);">
+            <ellipse cx="100" cy="30" rx="30" ry="60" fill="url(#petalGrad)" opacity="0.9"/>
+          </g>
+          <g class="petal-outer" style="--rot: 300deg; transform: rotate(300deg);">
+            <ellipse cx="100" cy="30" rx="30" ry="60" fill="url(#petalGrad)" opacity="0.9"/>
+          </g>
+          <!-- 内层花瓣 3片 -->
+          <g class="petal-inner" style="--rot: 30deg; transform: rotate(30deg);">
+            <ellipse cx="100" cy="45" rx="22" ry="45" fill="url(#petalGradInner)" opacity="0.95"/>
+          </g>
+          <g class="petal-inner" style="--rot: 150deg; transform: rotate(150deg);">
+            <ellipse cx="100" cy="45" rx="22" ry="45" fill="url(#petalGradInner)" opacity="0.95"/>
+          </g>
+          <g class="petal-inner" style="--rot: 270deg; transform: rotate(270deg);">
+            <ellipse cx="100" cy="45" rx="22" ry="45" fill="url(#petalGradInner)" opacity="0.95"/>
+          </g>
+          <!-- 花心 -->
+          <g class="petal-center">
+            <circle cx="100" cy="100" r="28" fill="url(#centerGrad)"/>
+            <circle cx="100" cy="100" r="20" fill="#fff8d8" opacity="0.6"/>
+            <circle cx="92" cy="92" r="4" fill="#e8c868"/>
+            <circle cx="108" cy="92" r="3" fill="#e8c868"/>
+            <circle cx="95" cy="108" r="3.5" fill="#e8c868"/>
+            <circle cx="105" cy="105" r="3" fill="#e8c868"/>
+          </g>
+        </svg>
         <div class="tap-hint">轻 触</div>
       </div>
     </div>
@@ -521,7 +626,7 @@ tick();
 setTimeout(function(){
   document.getElementById('sig').classList.add('show');
   document.getElementById('title').classList.add('show');
-  document.getElementById('orbWrap').classList.add('show');
+  document.getElementById('flowerWrap').classList.add('show');
   document.getElementById('counter').classList.add('show');
   // 欢迎语
   var welcomeEl = document.getElementById('welcome');
@@ -599,8 +704,8 @@ var lastIdx = memory.lastCardIdx;
 markVisit();
 
 /* ===== 交互 ===== */
-var orb = document.getElementById('orb');
-var orbWrap = document.getElementById('orbWrap');
+var flower = document.getElementById('flower');
+var flowerWrap = document.getElementById('flowerWrap');
 var cardWrap = document.getElementById('cardWrap');
 var cKind = document.getElementById('cKind');
 var cIco = document.getElementById('cIco');
@@ -679,7 +784,7 @@ function burst(cx, cy){
 function openOrb(){
   if (busy) return;
   busy = true;
-  var rect = orb.getBoundingClientRect();
+  var rect = flower.getBoundingClientRect();
   var cx = rect.left + rect.width/2;
   var cy = rect.top + rect.height/2;
   // 标题和底部栏快速淡出
@@ -687,11 +792,11 @@ function openOrb(){
   document.getElementById('sig').classList.add('hide');
   document.getElementById('welcome').classList.add('hide');
   document.querySelector('.bottom-bar').classList.add('hide');
-  orb.classList.add('popped');
+  flower.classList.add('popped');
   burst(cx, cy);
   drawCard();
   setTimeout(function(){
-    orbWrap.style.display = 'none';
+    flowerWrap.style.display = 'none';
     cardWrap.classList.add('show');
     busy = false;
   }, 450);
@@ -702,8 +807,8 @@ function closeOrb(){
   busy = true;
   cardWrap.classList.remove('show');
   setTimeout(function(){
-    orbWrap.style.display = '';
-    orb.classList.remove('popped');
+    flowerWrap.style.display = '';
+    flower.classList.remove('popped');
     // 标题和底部栏恢复
     document.getElementById('title').classList.remove('hide');
     document.getElementById('sig').classList.remove('hide');
@@ -722,8 +827,8 @@ function handleOrbTap(e){
   lastTap = now;
   openOrb();
 }
-orb.addEventListener('click', function(e){ e.stopPropagation(); handleOrbTap(e); });
-orb.addEventListener('touchend', function(e){ e.preventDefault(); e.stopPropagation(); handleOrbTap(e); }, {passive:false});
+flower.addEventListener('click', function(e){ e.stopPropagation(); handleOrbTap(e); });
+flower.addEventListener('touchend', function(e){ e.preventDefault(); e.stopPropagation(); handleOrbTap(e); }, {passive:false});
 
 // 再翻一张
 nextBtn.addEventListener('click', function(){
@@ -812,7 +917,7 @@ function renderCollectList(){
           cText.textContent = card.text;
           cSub.textContent = card.sub || '';
           updateCollectBtn();
-          orbWrap.style.display = 'none';
+          flowerWrap.style.display = 'none';
           cardWrap.classList.add('show');
         });
       })(i);
