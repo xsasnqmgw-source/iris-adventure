@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -62,7 +62,7 @@
     margin-bottom: 16px; letter-spacing: 1px;
     opacity: 0; transition: opacity .8s .5s;
     font-family: "PingFang SC", sans-serif;
-    height: 42px;
+    min-height: 42px; max-height: 80px;
   }
   .welcome.show { opacity: .85; }
   .welcome.hide { opacity: 0; -webkit-transform: translateY(-10px); transform: translateY(-10px); }
@@ -461,6 +461,172 @@
     font-family: "PingFang SC", sans-serif;
   }
   .card-sub:empty { display: none; }
+
+  /* ===== 稀有度系统 ===== */
+  .rarity-tag {
+    position: absolute; top: 12px; right: 14px;
+    font-size: 9px; font-weight: 700; letter-spacing: 1px;
+    padding: 3px 8px; border-radius: 6px;
+    font-family: "PingFang SC", sans-serif;
+    z-index: 3;
+  }
+  .rarity-tag.r { background: rgba(184,168,232,0.2); color: #b8a8e8; }
+  .rarity-tag.sr { background: rgba(100,160,255,0.25); color: #8ac8ff; }
+  .rarity-tag.ssr { background: rgba(200,130,255,0.3); color: #e8a8ff; }
+  .rarity-tag.ur {
+    background: linear-gradient(135deg, #ffd700, #ffa500);
+    color: #4a2800;
+    -webkit-animation: urShine 1.5s ease-in-out infinite;
+    animation: urShine 1.5s ease-in-out infinite;
+  }
+  @-webkit-keyframes urShine { 0%,100% { box-shadow: 0 0 8px rgba(255,215,0,0.6); } 50% { box-shadow: 0 0 20px rgba(255,165,0,0.9); } }
+  @keyframes urShine { 0%,100% { box-shadow: 0 0 8px rgba(255,215,0,0.6); } 50% { box-shadow: 0 0 20px rgba(255,165,0,0.9); } }
+
+  /* 稀有度边框 */
+  .card.rarity-r { border-color: rgba(255,255,255,0.18); }
+  .card.rarity-sr { border-color: rgba(100,160,255,0.4); box-shadow: 0 20px 60px rgba(60,100,200,0.4); }
+  .card.rarity-ssr {
+    border-color: rgba(200,130,255,0.5);
+    box-shadow: 0 20px 60px rgba(140,60,200,0.5), 0 0 30px rgba(200,130,255,0.3);
+  }
+  .card.rarity-ur {
+    border: 2px solid transparent;
+    background:
+      -webkit-linear-gradient(160deg, rgba(255,250,230,0.15) 0%, rgba(255,220,180,0.08) 100%) padding-box,
+      -webkit-linear-gradient(135deg, #ffd700 0%, #ff8c00 50%, #ffd700 100%) border-box;
+    background:
+      linear-gradient(160deg, rgba(255,250,230,0.15) 0%, rgba(255,220,180,0.08) 100%) padding-box,
+      linear-gradient(135deg, #ffd700 0%, #ff8c00 50%, #ffd700 100%) border-box;
+    box-shadow: 0 20px 60px rgba(200,130,0,0.6), 0 0 40px rgba(255,180,0,0.4);
+  }
+  .card.rarity-ur::before {
+    background: linear-gradient(90deg, transparent, #ffd700, #ff8c00, #ffd700, transparent);
+    opacity: 0.9;
+  }
+
+  /* UR 金光粒子爆发层 */
+  .gold-burst-layer {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 150;
+    opacity: 0;
+  }
+  .gold-burst-layer.active { opacity: 1; }
+  .gold-particle {
+    position: absolute; width: 6px; height: 6px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff8d0 0%, #ffd700 50%, transparent 100%);
+    box-shadow: 0 0 10px #ffd700;
+    -webkit-animation: goldFly 1.5s cubic-bezier(.15,.6,.3,1) forwards;
+    animation: goldFly 1.5s cubic-bezier(.15,.6,.3,1) forwards;
+  }
+  @-webkit-keyframes goldFly {
+    0% { -webkit-transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    50% { opacity: 1; }
+    100% { -webkit-transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.2); opacity: 0; }
+  }
+  @keyframes goldFly {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    50% { opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.2); opacity: 0; }
+  }
+  .purple-glow {
+    position: absolute; top: 50%; left: 50%;
+    width: 300px; height: 300px;
+    margin: -150px 0 0 -150px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,130,255,0.4) 0%, transparent 70%);
+    -webkit-animation: purplePulse 1.2s ease-out forwards;
+    animation: purplePulse 1.2s ease-out forwards;
+  }
+  @-webkit-keyframes purplePulse {
+    0% { -webkit-transform: scale(0.3); opacity: 0; }
+    40% { opacity: 1; }
+    100% { -webkit-transform: scale(1.5); opacity: 0; }
+  }
+  @keyframes purplePulse {
+    0% { transform: scale(0.3); opacity: 0; }
+    40% { opacity: 1; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+
+  /* 收集进度 */
+  .collect-progress {
+    font-size: 10px; color: #d8c8ff; letter-spacing: 1px;
+    font-family: "PingFang SC", sans-serif;
+    opacity: 0.8;
+  }
+
+  /* 限定卡池按钮 */
+  .limited-btn {
+    background: linear-gradient(135deg, rgba(255,180,100,0.2), rgba(232,168,216,0.2));
+    border: 1px solid rgba(255,180,100,0.4);
+    color: #ffd8a8;
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 11px; letter-spacing: 1px;
+    cursor: pointer; font-family: inherit;
+    position: relative;
+  }
+  .limited-btn:active { transform: scale(0.95); }
+  .limited-btn.available {
+    -webkit-animation: limitedPulse 2s ease-in-out infinite;
+    animation: limitedPulse 2s ease-in-out infinite;
+  }
+  .limited-btn.used { opacity: 0.5; }
+  @-webkit-keyframes limitedPulse { 0%,100% { box-shadow: 0 0 0 rgba(255,180,100,0.4); } 50% { box-shadow: 0 0 16px rgba(255,180,100,0.7); } }
+  @keyframes limitedPulse { 0%,100% { box-shadow: 0 0 0 rgba(255,180,100,0.4); } 50% { box-shadow: 0 0 16px rgba(255,180,100,0.7); } }
+
+  /* 限定卡预告 */
+  .limited-preview {
+    position: absolute; bottom: 60px; left: 0; right: 0;
+    text-align: center;
+    font-size: 10px; color: #9a86c4; letter-spacing: 1px;
+    font-family: "PingFang SC", sans-serif;
+    opacity: 0; transition: opacity .6s;
+    pointer-events: none;
+  }
+  .limited-preview.show { opacity: 0.7; }
+
+  /* 收集册稀有度分组 */
+  .collect-section { margin-bottom: 20px; }
+  .collect-section-title {
+    font-size: 11px; letter-spacing: 2px; margin-bottom: 10px;
+    padding-bottom: 6px; border-bottom: 1px solid rgba(184,168,232,0.12);
+    font-family: "PingFang SC", sans-serif;
+  }
+  .collect-section-title .tier-ur { color: #ffd700; }
+  .collect-section-title .tier-ssr { color: #e8a8ff; }
+  .collect-section-title .tier-sr { color: #8ac8ff; }
+  .collect-section-title .tier-r { color: #b8a8e8; }
+  .collect-section-title .tier-limited { color: #ffb878; }
+  .collect-mini-card {
+    display: inline-block; width: 60px; vertical-align: top;
+    margin: 4px 6px; text-align: center;
+  }
+  .collect-mini-card .mini-ico {
+    font-size: 24px; width: 48px; height: 48px; line-height: 48px;
+    border-radius: 10px; margin: 0 auto 4px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(184,168,232,0.15);
+  }
+  .collect-mini-card.collected .mini-ico { background: rgba(255,220,180,0.1); }
+  .collect-mini-card.locked .mini-ico {
+    background: rgba(255,255,255,0.02);
+    color: transparent;
+  }
+  .collect-mini-card.locked .mini-ico::before { content: '?'; color: rgba(154,134,196,0.4); font-size: 18px; }
+  .collect-mini-card.expired .mini-ico { opacity: 0.3; filter: grayscale(1); }
+  .collect-mini-card .mini-name {
+    font-size: 8px; color: #9a86c4; letter-spacing: 0.5px;
+    font-family: "PingFang SC", sans-serif;
+  }
+  .collect-mini-card.expired .mini-name::after { content: ' · 绝版'; color: #8a6a5a; }
+  .collect-mini-card .mini-tag {
+    font-size: 7px; margin-top: 1px;
+  }
+  .collect-mini-card .mini-tag.ur { color: #ffd700; }
+  .collect-mini-card .mini-tag.ssr { color: #e8a8ff; }
+  .collect-mini-card .mini-tag.sr { color: #8ac8ff; }
+  .collect-mini-card .mini-tag.r { color: #b8a8e8; }
 
   .actions {
     margin-top: 18px;
@@ -864,6 +1030,81 @@
     0%   { opacity: 1; transform: rotate(var(--ang, 0deg)) translateY(-30px) scaleY(.3); }
     100% { opacity: 0; transform: rotate(var(--ang, 0deg)) translateY(-180px) scaleY(1.4); }
   }
+
+  /* ===== 每日一签 ===== */
+  .daily-badge {
+    position: absolute; top: -8px; right: -8px;
+    background: linear-gradient(135deg, #ffd888, #e8a850);
+    color: #4a2860; font-size: 9px; font-weight: 700;
+    padding: 2px 8px; border-radius: 10px;
+    letter-spacing: 1px; font-family: "PingFang SC", sans-serif;
+    box-shadow: 0 2px 8px rgba(232,168,80,0.4);
+    z-index: 8;
+  }
+  .daily-sign-banner {
+    text-align: center; padding: 6px 0;
+    font-size: 11px; color: #e8a850;
+    letter-spacing: 2px; font-family: "PingFang SC", sans-serif;
+    margin-bottom: 8px;
+    opacity: 0; transition: opacity .5s .8s;
+  }
+  .daily-sign-banner.show { opacity: .9; }
+  .daily-sign-banner .daily-date {
+    font-size: 10px; color: #9a86c4; letter-spacing: 1px;
+    display: block; margin-top: 2px;
+  }
+  .card.daily-card {
+    border-color: rgba(232,168,80,0.35);
+    box-shadow: 0 20px 60px rgba(232,168,80,0.35), 0 0 30px rgba(255,200,120,0.15);
+  }
+  .card.daily-card::after {
+    content: '今 日 一 签';
+    position: absolute; top: 8px; right: 12px;
+    font-size: 8px; letter-spacing: 2px;
+    color: #e8a850; opacity: .7;
+    font-family: "PingFang SC", sans-serif;
+  }
+
+  /* ===== 隐藏卡 ===== */
+  .hidden-unlock-toast {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, rgba(255,200,120,0.95), rgba(232,168,80,0.95));
+    color: #4a2860; padding: 16px 28px; border-radius: 16px;
+    font-size: 14px; font-weight: 600; letter-spacing: 2px;
+    font-family: "PingFang SC", sans-serif;
+    box-shadow: 0 12px 40px rgba(232,168,80,0.5);
+    z-index: 300; text-align: center;
+    -webkit-animation: toastPop 2s cubic-bezier(.2,.9,.3,1) forwards;
+    animation: toastPop 2s cubic-bezier(.2,.9,.3,1) forwards;
+  }
+  .hidden-unlock-toast small {
+    display: block; font-size: 10px; font-weight: 400;
+    letter-spacing: 1px; margin-top: 4px; opacity: .7;
+  }
+  @-webkit-keyframes toastPop {
+    0% { opacity: 0; -webkit-transform: translate(-50%, -50%) scale(0.5); }
+    15% { opacity: 1; -webkit-transform: translate(-50%, -50%) scale(1.05); }
+    30% { -webkit-transform: translate(-50%, -50%) scale(1); }
+    75% { opacity: 1; }
+    100% { opacity: 0; -webkit-transform: translate(-50%, -50%) scale(0.9) translateY(-20px); }
+  }
+  @keyframes toastPop {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    15% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+    30% { transform: translate(-50%, -50%) scale(1); }
+    75% { opacity: 1; }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9) translateY(-20px); }
+  }
+  .collect-item.hidden-card {
+    border-color: rgba(232,168,80,0.3);
+    background: rgba(232,168,80,0.06);
+  }
+  .ci-badge {
+    font-size: 8px; color: #e8a850; letter-spacing: 1px;
+    background: rgba(232,168,80,0.12); padding: 1px 5px;
+    border-radius: 4px; font-family: "PingFang SC", sans-serif;
+  }
 </style>
 </head>
 <body>
@@ -916,17 +1157,26 @@
 
     <div class="bottom-bar">
       <div class="counter" id="counter">已翻开 0 张</div>
+      <div class="collect-progress" id="collectProgress">✦ 已收集 0 / 42</div>
+      <button class="limited-btn" id="limitedBtn">✦ 限定卡池</button>
     </div>
+    <div class="limited-preview" id="limitedPreview"></div>
   </div>
+
+  <!-- UR/SSR 特效层 -->
+  <div class="gold-burst-layer" id="goldBurstLayer"></div>
 
   <!-- 卡片 -->
   <div class="card-wrap" id="cardWrap">
-    <div class="card">
+    <div class="card" id="theCard">
+      <div class="rarity-tag" id="rarityTag" style="display:none;">R</div>
+      <div class="daily-sign-banner" id="dailyBanner" style="display:none;"></div>
       <div class="card-kind" id="cKind">—</div>
       <div class="card-ico" id="cIco">✨</div>
       <div class="card-title" id="cTitle">—</div>
       <div class="card-text" id="cText">—</div>
       <div class="card-sub" id="cSub"></div>
+
       <div class="actions">
         <button class="btn" id="nextBtn">再翻一张 ↻</button>
       </div>
@@ -963,31 +1213,123 @@
 <script>
 /* ===== 卡片内容库 ===== */
 var CARDS = [
-  // 一句心意 (7)
-  { kind:'一句心意', ico:'💫', title:'', text:'IRIS，你知道吗，\n光是想起你的名字，\n今天就变得比昨天好一点了。', sub:'' },
-  { kind:'一句心意', ico:'🌙', title:'', text:'月亮不会奔向你，\n但我会。\n不远万里的那种。', sub:'' },
-  { kind:'一句心意', ico:'🌸', title:'', text:'如果是去见你，\n我一定是用跑的。\n你不用跑，我来就好。', sub:'' },
-  { kind:'一句心意', ico:'⭐', title:'', text:'你是我藏在星星里的浪漫，\n是我等了好久的光。', sub:'' },
-  { kind:'一句心意', ico:'🍃', title:'', text:'风很温柔，花很浪漫，\n你很特别，我很喜欢。', sub:'' },
-  { kind:'一句心意', ico:'✨', title:'', text:'遇见你以后，\n我所有的"随便"，\n其实都是"只要你在就好"。', sub:'' },
-  { kind:'一句心意', ico:'🦋', title:'', text:'你身上有光，\n我抓来看看，\n然后就不想放了。', sub:'' },
-  // 今天去哪儿 (9)
-  { kind:'今天去哪儿', ico:'⛩️', title:'寺庙祈福', text:'一起去庙里走一圈吧，\n不求别的，\n就求你今天开开心心。', sub:'挑个下午，人少的时候去最舒服' },
-  { kind:'今天去哪儿', ico:'🦎', title:'异宠店', text:'去看那些奇奇怪怪的小家伙吧，\n蜥蜴、守宫、角蛙……\n看看你敢不敢摸一下。', sub:'记得问店员能不能上手，别偷偷摸' },
-  { kind:'今天去哪儿', ico:'⛰️', title:'岳麓山', text:'上山！\n爱晚亭坐一会儿，\n看日落慢慢把天染成橘色。', sub:'下午3点出发，刚好赶上日落' },
-  { kind:'今天去哪儿', ico:'🎨', title:'湖南美术馆', text:'看展去。\n不用懂，\n就一起慢慢逛，假装很文艺。', sub:'记得提前预约，周一别去' },
-  { kind:'今天去哪儿', ico:'📷', title:'谢子龙影像馆', text:'拍照圣地，\n给你拍一组好看的，\n朋友圈有素材了。', sub:'下午光线最棒，穿浅色更出片' },
-  { kind:'今天去哪儿', ico:'☕', title:'泊麓山咖啡书吧', text:'找个靠窗位置，\n各看各的书，\n偶尔抬头对视一下就好。', sub:'4楼有山景位，先到先得' },
-  { kind:'今天去哪儿', ico:'🍜', title:'麓山南觅食', text:'从头吃到尾，\n糖油粑粑、臭豆腐、烤冷面……\n我请客，你负责吃。', sub:'别吃太饱，后面还有好几家' },
-  { kind:'今天去哪儿', ico:'🌊', title:'橘子洲散步', text:'湘江边走一走，\n吹吹风，\n什么烦恼都没了。', sub:'建议坐观光车，走完全程腿会废' },
-  { kind:'今天去哪儿', ico:'📖', title:'止间书店', text:'安静的一下午，\n一本书，一杯咖啡，\n还有你。', sub:'二楼有咖啡区，更安静' },
-  // 小小挑战 (6)
-  { kind:'小小挑战', ico:'🎯', title:'对视十秒', text:'现在，\n看着我的眼睛，\n不许笑，不许躲。\n……\n好，你输了。', sub:'输了的人请喝奶茶' },
-  { kind:'小小挑战', ico:'🎵', title:'猜歌名', text:'我哼一句，\n你猜是什么歌。\n猜不出来就……\n让我弹你脑门一下。', sub:'我跑调了你也得猜' },
-  { kind:'小小挑战', ico:'📸', title:'拍一张奇怪的合照', text:'做个最丑的表情，\n三二一，咔嚓。\n这张照片我存了。', sub:'不许删，以后要拿来笑你' },
-  { kind:'小小挑战', ico:'🤫', title:'用眼神对话', text:'接下来一分钟，\n谁都不许说话，\n只用眼神交流。\n看看你能不能猜到我在想什么。', sub:'提示：我想的一定是好吃的' },
-  { kind:'小小挑战', ico:'🎲', title:'真心话大冒险', text:'石头剪刀布，\n输的人选一个：\n真心话还是大冒险？', sub:'我先来，我选……你猜' },
-  { kind:'小小挑战', ico:'🍬', title:'分享耳机', text:'一人一只耳机，\n听同一首歌，\n什么都不说也挺好。', sub:'我推荐的歌不许说难听' }
+  // 一句心意 (7) — SSR×4 金句 + R×3 日常
+  { kind:'一句心意', ico:'💫', title:'', text:'IRIS，你知道吗，\n光是想起你的名字，\n今天就变得比昨天好一点了。', sub:'', rarity:'R' },
+  { kind:'一句心意', ico:'🌙', title:'', text:'月亮不会奔向你，\n但我会。\n不远万里的那种。', sub:'', rarity:'SSR' },
+  { kind:'一句心意', ico:'🌸', title:'', text:'如果是去见你，\n我一定是用跑的。\n你不用跑，我来就好。', sub:'', rarity:'SSR' },
+  { kind:'一句心意', ico:'⭐', title:'', text:'你是我藏在星星里的浪漫，\n是我等了好久的光。', sub:'', rarity:'R' },
+  { kind:'一句心意', ico:'🍃', title:'', text:'风很温柔，花很浪漫，\n你很特别，我很喜欢。', sub:'', rarity:'R' },
+  { kind:'一句心意', ico:'✨', title:'', text:'遇见你以后，\n我所有的"随便"，\n其实都是"只要你在就好"。', sub:'', rarity:'SSR' },
+  { kind:'一句心意', ico:'🦋', title:'', text:'你身上有光，\n我抓来看看，\n然后就不想放了。', sub:'', rarity:'SSR' },
+  // 今天去哪儿 (9) — SR×4 场景 + R×5 日常
+  { kind:'今天去哪儿', ico:'⛩️', title:'寺庙祈福', text:'一起去庙里走一圈吧，\n不求别的，\n就求你今天开开心心。', sub:'挑个下午，人少的时候去最舒服', rarity:'SR' },
+  { kind:'今天去哪儿', ico:'🦎', title:'异宠店', text:'去看那些奇奇怪怪的小家伙吧，\n蜥蜴、守宫、角蛙……\n看看你敢不敢摸一下。', sub:'记得问店员能不能上手，别偷偷摸', rarity:'R' },
+  { kind:'今天去哪儿', ico:'⛰️', title:'岳麓山', text:'上山！\n爱晚亭坐一会儿，\n看日落慢慢把天染成橘色。', sub:'下午3点出发，刚好赶上日落', rarity:'SR' },
+  { kind:'今天去哪儿', ico:'🎨', title:'湖南美术馆', text:'看展去。\n不用懂，\n就一起慢慢逛，假装很文艺。', sub:'记得提前预约，周一别去', rarity:'SR' },
+  { kind:'今天去哪儿', ico:'📷', title:'谢子龙影像馆', text:'拍照圣地，\n给你拍一组好看的，\n朋友圈有素材了。', sub:'下午光线最棒，穿浅色更出片', rarity:'SR' },
+  { kind:'今天去哪儿', ico:'☕', title:'泊麓山咖啡书吧', text:'找个靠窗位置，\n各看各的书，\n偶尔抬头对视一下就好。', sub:'4楼有山景位，先到先得', rarity:'R' },
+  { kind:'今天去哪儿', ico:'🍜', title:'麓山南觅食', text:'从头吃到尾，\n糖油粑粑、臭豆腐、烤冷面……\n我请客，你负责吃。', sub:'别吃太饱，后面还有好几家', rarity:'R' },
+  { kind:'今天去哪儿', ico:'🌊', title:'橘子洲散步', text:'湘江边走一走，\n吹吹风，\n什么烦恼都没了。', sub:'建议坐观光车，走完全程腿会废', rarity:'R' },
+  { kind:'今天去哪儿', ico:'📖', title:'止间书店', text:'安静的一下午，\n一本书，一杯咖啡，\n还有你。', sub:'二楼有咖啡区，更安静', rarity:'R' },
+  // 小小挑战 (6) — SR×3 互动 + R×3 轻松
+  { kind:'小小挑战', ico:'🎯', title:'对视十秒', text:'现在，\n看着我的眼睛，\n不许笑，不许躲。\n……\n好，你输了。', sub:'输了的人请喝奶茶', rarity:'SR' },
+  { kind:'小小挑战', ico:'🎵', title:'猜歌名', text:'我哼一句，\n你猜是什么歌。\n猜不出来就……\n让我弹你脑门一下。', sub:'我跑调了你也得猜', rarity:'R' },
+  { kind:'小小挑战', ico:'📸', title:'拍一张奇怪的合照', text:'做个最丑的表情，\n三二一，咔嚓。\n这张照片我存了。', sub:'不许删，以后要拿来笑你', rarity:'SR' },
+  { kind:'小小挑战', ico:'🤫', title:'用眼神对话', text:'接下来一分钟，\n谁都不许说话，\n只用眼神交流。\n看看你能不能猜到我在想什么。', sub:'提示：我想的一定是好吃的', rarity:'R' },
+  { kind:'小小挑战', ico:'🎲', title:'真心话大冒险', text:'石头剪刀布，\n输的人选一个：\n真心话还是大冒险？', sub:'我先来，我选……你猜', rarity:'SR' },
+  { kind:'小小挑战', ico:'🍬', title:'分享耳机', text:'一人一只耳机，\n听同一首歌，\n什么都不说也挺好。', sub:'我推荐的歌不许说难听', rarity:'R' }
+];
+
+/* ===== 隐藏卡（UR 传说级）===== */
+var HIDDEN_CARDS = [
+  { kind:'✦ 传说', ico:'🌟', title:'缘分卡', text:'第七次相遇——\n这不是巧合，\n是缘分在替我们计数。', sub:'第7次访问解锁', unlockVisit: 7, rarity:'UR' },
+  { kind:'✦ 传说', ico:'🌙', title:'晚安卡', text:'夜深了，\n如果你还没睡，\n那就......晚安。\n梦里见。', sub:'晚上22点后概率获得', nightOnly: true, rarity:'UR' },
+  { kind:'✦ 传说', ico:'🤝', title:'约定卡', text:'连续三天都来了，\n那我们约定——\n明天，\n也要见面。', sub:'连续3天访问解锁', unlockStreak: 3, rarity:'UR' },
+  { kind:'✦ 传说', ico:'💌', title:'真心卡', text:'其实每一张卡片，\n都是同一句话：\n我想你了。', sub:'翻开20张解锁', unlockFlips: 20, rarity:'UR' }
+];
+
+/* ===== 限定卡（时间跨度钩子，每月/节气只开1张）===== */
+/* 节气卡：4张，各开放30天窗口 */
+var SEASONAL_CARDS = [
+  { id:'spring', ico:'🌱', title:'迎春卡', text:'春天来了，\n我们去看看第一朵花开。\n它会替我告诉你——\n新的一年，我在。', openStart:'01-20', openEnd:'02-19', rarity:'SSR' },
+  { id:'summer', ico:'🍉', title:'初夏卡', text:'蝉鸣起来的时候，\n我想和你一起吃西瓜。\n甜的给你，\n籽我来吐。', openStart:'05-06', openEnd:'06-05', rarity:'SSR' },
+  { id:'autumn', ico:'🍂', title:'落叶卡', text:'踩落叶的声音，\n是我们专属的秋天 BGM。\n嘎吱嘎吱，\n像在替我们说悄悄话。', openStart:'08-08', openEnd:'09-07', rarity:'SSR' },
+  { id:'winter', ico:'❄️', title:'围炉卡', text:'天冷了，\n但靠近你的时候很暖。\n这个冬天，\n我不想到处跑，\n只想待在你旁边。', openStart:'11-08', openEnd:'12-07', rarity:'SSR' }
+];
+/* 月份卡：12张，每月1张，错过等明年 */
+var MONTHLY_CARDS = [
+  { month:0,  ico:'🎆', title:'新年卡',  text:'新的一年，\n第一个想见的人是你。\n烟花再好看，\n也不如你抬头时的眼睛。', rarity:'SSR' },
+  { month:1,  ico:'🌷', title:'春日卡',  text:'二月的风开始软了，\n像你笑起来的样子。\n这个春天，\n我预定了。', rarity:'SSR' },
+  { month:2,  ico:'🌸', title:'樱花卡',  text:'樱花飘落的速度\n是秒速五厘米，\n而我走向你的速度——\n是能用跑就绝不走。', rarity:'SSR' },
+  { month:3,  ico:'🌧️', title:'雨季卡',  text:'四月的雨，\n打在伞上噼里啪啦。\n一把伞两个人，\n肩膀挨着肩膀，\n这就是最好的晴天。', rarity:'SSR' },
+  { month:4,  ico:'🌺', title:'繁花卡',  text:'五月到处都在开花，\n但我想摘一朵\n刚好开在你笑的那一秒的，\n别处没有。', rarity:'SSR' },
+  { month:5,  ico:'🌞', title:'盛夏卡',  text:'六月的光很烈，\n但晒在我心上的，\n是你回头看我的那一眼。', rarity:'SSR' },
+  { month:6,  ico:'🦟', title:'蝉鸣卡',  text:'蝉叫了一整个夏天，\n我忍了一整个夏天\n没说出口的话——\n想你了。', rarity:'SSR' },
+  { month:7,  ico:'🌠', title:'星夜卡',  text:'八月的流星，\n我许了一个愿。\n不能告诉你，\n说了就不灵了。\n……好吧，和你有关。', rarity:'SSR' },
+  { month:8,  ico:'🌕', title:'月圆卡',  text:'九月的月亮很圆，\n但不如你靠在我肩上时，\n我心里的那个圆。', rarity:'SSR' },
+  { month:9,  ico:'🍁', title:'桂香卡',  text:'十月的风带着桂花味，\n走到哪儿都是甜的。\n就像想到你的时候，\n空气都是软的。', rarity:'SSR' },
+  { month:10, ico:'🍵', title:'暖茶卡',  text:'十一月适合窝着，\n一杯热茶，一部老电影，\n还有你靠在我肩膀上打瞌睡。\n这就够了。', rarity:'SSR' },
+  { month:11, ico:'🎄', title:'雪夜卡',  text:'十二月如果下雪，\n我们一起出去走走吧。\n走着走着，\n一不小心就白头了。', rarity:'SSR' }
+];
+
+/* 判断当前可用的限定卡（节气+当月） */
+function getActiveLimitedCards(){
+  var now = new Date();
+  var mmdd = (now.getMonth()+1<10?'0':'') + (now.getMonth()+1) + '-' + (now.getDate()<10?'0':'') + now.getDate();
+  var active = [];
+  // 节气卡
+  for (var i=0; i<SEASONAL_CARDS.length; i++){
+    var c = SEASONAL_CARDS[i];
+    if (mmdd >= c.openStart && mmdd <= c.openEnd) active.push(c);
+  }
+  // 当月卡
+  for (var j=0; j<MONTHLY_CARDS.length; j++){
+    if (MONTHLY_CARDS[j].month === now.getMonth()) active.push(MONTHLY_CARDS[j]);
+  }
+  return active;
+}
+
+/* 预告：下一个限定卡及距离天数 */
+function getNextLimitedPreview(){
+  var now = new Date();
+  var mmdd = (now.getMonth()+1<10?'0':'') + (now.getMonth()+1) + '-' + (now.getDate()<10?'0':'') + now.getDate();
+  var candidates = [];
+  for (var i=0; i<SEASONAL_CARDS.length; i++){
+    var c = SEASONAL_CARDS[i];
+    if (mmdd < c.openStart) candidates.push({ card:c, openDate:c.openStart, type:'节气' });
+  }
+  // 下个月卡
+  var nextMonth = (now.getMonth()+1) % 12;
+  candidates.push({ card: MONTHLY_CARDS[nextMonth], openDate: (nextMonth+1<10?'0':'')+(nextMonth+1)+'-01', type:'月份' });
+  if (candidates.length === 0) return null;
+  // 选最近的
+  candidates.sort(function(a,b){ return a.openDate < b.openDate ? -1 : 1; });
+  var next = candidates[0];
+  // 算天数
+  var parts = next.openDate.split('-');
+  var target = new Date(now.getFullYear(), parseInt(parts[0])-1, parseInt(parts[1]));
+  var diff = Math.ceil((target - now) / (1000*60*60*24));
+  if (diff < 0) diff = 0;
+  return { card: next.card, days: diff, type: next.type };
+}
+
+/* ===== 每日签语 ===== */
+var DAILY_FORTUNES = [
+  '今天会遇到一个让你心软的瞬间',
+  '适合说一句一直没说出口的话',
+  '今天的幸运色是鸢尾紫',
+  '会有一个意想不到的拥抱',
+  '今天适合慢下来走路',
+  '有人正在想你，只是没说',
+  '今天的天空会特别好看',
+  '会有好事发生，耐心等一等',
+  '今天的你值得被温柔对待',
+  '适合给想念的人发一条消息',
+  '今天的风会替你传达心意',
+  '适合做一个小小的约定',
+  '今天的月亮会替你说晚安',
+  '会有一个让你笑出声的时刻',
+  '今天的世界因你而柔软了一点'
 ];
 
 /* ===== 星空 ===== */
@@ -1062,7 +1404,7 @@ setTimeout(function(){
   // 欢迎语
   var welcomeEl = document.getElementById('welcome');
   var lastVisit = getLastVisitText();
-  welcomeEl.innerHTML = getWelcomeText() + (lastVisit ? '<span class="line2">' + lastVisit + '</span>' : '');
+  welcomeEl.innerHTML = getWelcomeText() + (lastVisit ? '<span class="line2">' + lastVisit + '</span>' : '') + (memory.lastDailyDate !== getTodayStr() ? '<span class="line2">✦ 今日签语待领取</span>' : '<span class="line2">✦ 今日已签 ✓</span>');
   welcomeEl.classList.add('show');
   // 底部加个"看收藏"按钮
   var bar = document.querySelector('.bottom-bar');
@@ -1087,10 +1429,19 @@ function loadMemory(){
       totalFlips: m.totalFlips || 0,
       visitCount: m.visitCount || 0,
       lastVisitTime: m.lastVisitTime || 0,
-      lastCardIdx: m.lastCardIdx || -1
+      lastCardIdx: m.lastCardIdx || -1,
+      lastDailyDate: m.lastDailyDate || '',
+      dailyFortuneIdx: m.dailyFortuneIdx != null ? m.dailyFortuneIdx : null,
+      consecutiveDays: m.consecutiveDays || 0,
+      lastVisitDateStr: m.lastVisitDateStr || '',
+      unlockedHidden: m.unlockedHidden || {},
+      limitedCollected: m.limitedCollected || {},   // 限定卡已收集 {cardId: {time}}
+      lastLimitedDrawDate: m.lastLimitedDrawDate || ''  // 上次限定抽日期
     };
   } catch(e) {
-    return { collected: {}, totalFlips: 0, visitCount: 0, lastVisitTime: 0, lastCardIdx: -1 };
+    return { collected: {}, totalFlips: 0, visitCount: 0, lastVisitTime: 0, lastCardIdx: -1,
+             lastDailyDate: '', dailyFortuneIdx: null, consecutiveDays: 0, lastVisitDateStr: '',
+             unlockedHidden: {}, limitedCollected: {}, lastLimitedDrawDate: '' };
   }
 }
 
@@ -1098,8 +1449,24 @@ function saveMemory(){
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(memory)); } catch(e) {}
 }
 
+function getTodayStr(){
+  var d = new Date();
+  return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+}
+
 function markVisit(){
   memory.visitCount++;
+  var today = getTodayStr();
+  // 连续天数追踪
+  if (memory.lastVisitDateStr && memory.lastVisitDateStr !== today) {
+    var last = new Date(memory.lastVisitDateStr);
+    var diff = Math.floor((new Date(today) - last) / (1000*60*60*24));
+    if (diff === 1) memory.consecutiveDays++;
+    else memory.consecutiveDays = 1;
+  } else if (!memory.lastVisitDateStr) {
+    memory.consecutiveDays = 1;
+  }
+  memory.lastVisitDateStr = today;
   memory.lastVisitTime = Date.now();
   saveMemory();
 }
@@ -1154,27 +1521,286 @@ var collectedCount = document.getElementById('collectedCount');
 var orbitStage = document.getElementById('orbitStage');
 var orbitGrid = document.getElementById('orbitGrid');
 var flash = document.getElementById('flash');
+var limitedBtn = document.getElementById('limitedBtn');
+var limitedPreview = document.getElementById('limitedPreview');
 var welcomeEl = null;
+
+/* 初始化限定卡系统 */
+function initLimitedSystem(){
+  // 按钮状态
+  var canDraw = canDrawLimitedToday();
+  var active = getActiveLimitedCards();
+  if (active.length === 0) {
+    limitedBtn.textContent = '✦ 暂无限定';
+    limitedBtn.classList.add('used');
+  } else if (canDraw) {
+    limitedBtn.textContent = '✦ 今日限定 1/1';
+    limitedBtn.classList.add('available');
+    limitedBtn.classList.remove('used');
+  } else {
+    limitedBtn.textContent = '✦ 今日限定 0/1';
+    limitedBtn.classList.add('used');
+    limitedBtn.classList.remove('available');
+  }
+  // 预告倒计时
+  var next = getNextLimitedPreview();
+  if (next) {
+    limitedPreview.textContent = '距离 ' + next.card.ico + ' ' + next.card.title + ' 开放还有 ' + next.days + ' 天';
+    limitedPreview.classList.add('show');
+  }
+  // 收集进度
+  updateCollectionProgress();
+}
+initLimitedSystem();
+
+// 限定卡池按钮
+limitedBtn.addEventListener('click', function(){
+  if (!canDrawLimitedToday()) {
+    var toast = document.createElement('div');
+    toast.className = 'hidden-unlock-toast';
+    toast.innerHTML = '今天的限定抽已用<small>明天再来吧</small>';
+    document.body.appendChild(toast);
+    setTimeout(function(){ if(toast.parentNode) toast.parentNode.removeChild(toast); }, 2000);
+    return;
+  }
+  var card = drawLimited();
+  if (!card) {
+    var toast2 = document.createElement('div');
+    toast2.className = 'hidden-unlock-toast';
+    toast2.innerHTML = '当前没有可抽的限定卡<small>等下一个节气/月份吧</small>';
+    document.body.appendChild(toast2);
+    setTimeout(function(){ if(toast2.parentNode) toast2.parentNode.removeChild(toast2); }, 2000);
+    return;
+  }
+  // 展示限定卡
+  currentIdx = -99; // 标记限定卡
+  var theCard = document.getElementById('theCard');
+  theCard.className = 'card rarity-ssr';
+  document.getElementById('rarityTag').textContent = 'SSR · 限定';
+  document.getElementById('rarityTag').className = 'rarity-tag ssr';
+  document.getElementById('rarityTag').style.display = 'block';
+  document.getElementById('dailyBanner').style.display = 'none';
+  cKind.textContent = '✦ 限定卡';
+  cIco.textContent = card.ico;
+  cTitle.textContent = card.title;
+  cTitle.style.display = 'block';
+  cText.textContent = card.text;
+  cSub.textContent = '';
+  flowerWrap.style.display = 'none';
+  cardWrap.classList.add('show');
+  triggerPurpleGlow();
+  // 更新按钮
+  limitedBtn.textContent = '✦ 今日限定 0/1';
+  limitedBtn.classList.add('used');
+  limitedBtn.classList.remove('available');
+  updateCollectionProgress();
+});
 
 var busy = false;
 
-function drawCard(idx){
+function getCard(idx){
+  if (idx < CARDS.length) return CARDS[idx];
+  var hi = idx - CARDS.length;
+  return HIDDEN_CARDS[hi] || CARDS[0];
+}
+
+function checkHiddenUnlocks(){
+  // 检查隐藏卡解锁条件，返回新解锁的卡片索引列表
+  var newlyUnlocked = [];
+  var hour = new Date().getHours();
+  for (var i = 0; i < HIDDEN_CARDS.length; i++) {
+    var h = HIDDEN_CARDS[i];
+    var realIdx = CARDS.length + i;
+    if (memory.unlockedHidden[realIdx]) continue; // 已解锁
+    var should = false;
+    if (h.unlockVisit && memory.visitCount >= h.unlockVisit) should = true;
+    if (h.unlockStreak && memory.consecutiveDays >= h.unlockStreak) should = true;
+    if (h.unlockFlips && memory.totalFlips >= h.unlockFlips) should = true;
+    if (should) {
+      memory.unlockedHidden[realIdx] = { time: Date.now() };
+      newlyUnlocked.push(realIdx);
+    }
+  }
+  if (newlyUnlocked.length) saveMemory();
+  return newlyUnlocked;
+}
+
+function smartDraw(){
+  // 检查隐藏卡解锁
+  var newlyUnlocked = checkHiddenUnlocks();
+  // 新解锁的UR卡：50%概率惊喜出现
+  if (newlyUnlocked.length > 0 && Math.random() < 0.5) {
+    return newlyUnlocked[0];
+  }
+  // 夜间晚安卡（UR）：22-5点 20%概率
+  var hour = new Date().getHours();
+  if (hour >= 22 || hour < 5) {
+    if (Math.random() < 0.2) {
+      return CARDS.length + 1; // 晚安卡
+    }
+  }
+  // 已解锁UR卡：10%概率混入
+  var unlockedKeys = [];
+  for (var k in memory.unlockedHidden) unlockedKeys.push(parseInt(k));
+  if (unlockedKeys.length > 0 && Math.random() < 0.1) {
+    return unlockedKeys[Math.floor(Math.random() * unlockedKeys.length)];
+  }
+  // 主抽卡：档位制（UR 5% / SSR 15% / SR 30% / R 50%）
+  var roll = Math.random();
+  var tier;
+  if (roll < 0.05) tier = 'UR';
+  else if (roll < 0.20) tier = 'SSR';
+  else if (roll < 0.50) tier = 'SR';
+  else tier = 'R';
+  // 收集该档位的卡池
+  var pool = [];
+  for (var i = 0; i < CARDS.length; i++) {
+    if (CARDS[i].rarity === tier) pool.push(i);
+  }
+  // UR 档把已解锁隐藏卡也加入池
+  if (tier === 'UR') {
+    for (var u = 0; u < unlockedKeys.length; u++) pool.push(unlockedKeys[u]);
+  }
+  if (pool.length === 0) { tier = 'R'; pool = []; for (var r=0; r<CARDS.length; r++) if (CARDS[r].rarity==='R') pool.push(r); }
+  // 档位内：优先未收集（高收藏量）
+  var uncollected = [];
+  for (var p = 0; p < pool.length; p++) {
+    if (!memory.collected[pool[p]]) uncollected.push(pool[p]);
+  }
+  var chosen;
+  if (uncollected.length > 0) {
+    chosen = uncollected[Math.floor(Math.random() * uncollected.length)];
+  } else {
+    chosen = pool[Math.floor(Math.random() * pool.length)];
+  }
+  return chosen;
+}
+
+/* 限定卡抽卡：每日免费1次，从当前可用限定卡中抽 */
+function canDrawLimitedToday(){
+  var today = getTodayStr();
+  return memory.lastLimitedDrawDate !== today;
+}
+function drawLimited(){
+  if (!canDrawLimitedToday()) return null;
+  var active = getActiveLimitedCards();
+  if (active.length === 0) return null;
+  memory.lastLimitedDrawDate = getTodayStr();
+  // 优先未收集的限定卡
+  var uncollected = [];
+  for (var i = 0; i < active.length; i++) {
+    var id = active[i].id || ('month_' + active[i].month);
+    if (!memory.limitedCollected[id]) uncollected.push(active[i]);
+  }
+  var card = uncollected.length > 0
+    ? uncollected[Math.floor(Math.random() * uncollected.length)]
+    : active[Math.floor(Math.random() * active.length)];
+  var cardId = card.id || ('month_' + card.month);
+  if (!memory.limitedCollected[cardId]) {
+    memory.limitedCollected[cardId] = { time: Date.now() };
+  }
+  saveMemory();
+  return card;
+}
+
+function drawCard(idx, isDaily){
   currentIdx = idx;
   memory.lastCardIdx = idx;
   memory.totalFlips++;
   if (!memory.collected[idx]) {
     memory.collected[idx] = { time: Date.now() };
   }
+  // 每日签记录
+  var today = getTodayStr();
+  if (isDaily) {
+    memory.lastDailyDate = today;
+    memory.dailyFortuneIdx = Math.floor(Math.random() * DAILY_FORTUNES.length);
+  }
   saveMemory();
-  var c = CARDS[idx];
+  var c = getCard(idx);
+  var theCard = document.getElementById('theCard');
+  var dailyBanner = document.getElementById('dailyBanner');
+  // 每日签样式
+  theCard.classList.toggle('daily-card', !!isDaily);
+  if (isDaily && memory.dailyFortuneIdx != null) {
+    var fortune = DAILY_FORTUNES[memory.dailyFortuneIdx];
+    var dateStr = new Date().getMonth()+1 + '月' + new Date().getDate() + '日';
+    dailyBanner.innerHTML = '✦ 今日签语 ✦<span class="daily-date">' + dateStr + ' · ' + fortune + '</span>';
+    dailyBanner.style.display = 'block';
+    dailyBanner.classList.add('show');
+  } else {
+    dailyBanner.style.display = 'none';
+    dailyBanner.classList.remove('show');
+  }
   cKind.textContent = c.kind;
   cIco.textContent = c.ico;
   cTitle.textContent = c.title || '';
   cTitle.style.display = c.title ? 'block' : 'none';
   cText.textContent = c.text;
   cSub.textContent = c.sub || '';
+  // 稀有度角标
+  var rarityTag = document.getElementById('rarityTag');
+  if (rarityTag) {
+    var rar = c.rarity || 'R';
+    rarityTag.textContent = rar;
+    rarityTag.className = 'rarity-tag ' + rar.toLowerCase();
+    rarityTag.style.display = 'block';
+  }
+  // 稀有度边框 + 金光动画
+  theCard.className = 'card';
+  var rar = c.rarity || 'R';
+  if (isDaily) theCard.classList.add('daily-card');
+  theCard.classList.add('rarity-' + rar.toLowerCase());
+  // UR 金光爆发
+  if (rar === 'UR') triggerGoldBurst();
+  else if (rar === 'SSR') triggerPurpleGlow();
   count++;
   counter.textContent = '已翻开 ' + count + ' 张';
+  updateCollectionProgress();
+}
+
+/* UR 金光粒子爆发 */
+function triggerGoldBurst(){
+  var layer = document.getElementById('goldBurstLayer');
+  if (!layer) return;
+  layer.innerHTML = '';
+  for (var i = 0; i < 30; i++) {
+    var p = document.createElement('div');
+    p.className = 'gold-particle';
+    var angle = (i / 30) * Math.PI * 2;
+    var dist = 120 + Math.random() * 80;
+    p.style.left = '50%';
+    p.style.top = '50%';
+    p.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+    p.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+    p.style.animationDelay = (Math.random() * 0.2) + 's';
+    layer.appendChild(p);
+  }
+  layer.classList.add('active');
+  setTimeout(function(){ layer.classList.remove('active'); layer.innerHTML = ''; }, 1500);
+}
+/* SSR 紫光晕染 */
+function triggerPurpleGlow(){
+  var layer = document.getElementById('goldBurstLayer');
+  if (!layer) return;
+  layer.innerHTML = '<div class="purple-glow"></div>';
+  layer.classList.add('active');
+  setTimeout(function(){ layer.classList.remove('active'); layer.innerHTML = ''; }, 1200);
+}
+
+/* 收集进度更新 */
+function updateCollectionProgress(){
+  var normalTotal = CARDS.length + HIDDEN_CARDS.length;
+  var normalCollected = 0;
+  for (var i = 0; i < CARDS.length; i++) if (memory.collected[i]) normalCollected++;
+  for (var h = 0; h < HIDDEN_CARDS.length; h++) if (memory.collected[CARDS.length + h]) normalCollected++;
+  var limitedTotal = SEASONAL_CARDS.length + MONTHLY_CARDS.length;
+  var limitedCollected = 0;
+  for (var k in memory.limitedCollected) limitedCollected++;
+  var total = normalTotal + limitedTotal;
+  var got = normalCollected + limitedCollected;
+  var el = document.getElementById('collectProgress');
+  if (el) el.textContent = '✦ 已收集 ' + got + ' / ' + total;
 }
 
 /* 柔和光粒子：缓慢上升飘散 */
@@ -1222,7 +1848,7 @@ function openOrb(){
   }
   var core = document.querySelector('.core');
   if (core) core.classList.add('scatter-core');
-  // 柔和光粒子（不是暴力爆炸）
+  // 柔和光粒子
   softGlow(cx, cy);
   // 柔和光晕扩散
   var halo = document.createElement('div');
@@ -1231,8 +1857,21 @@ function openOrb(){
   halo.style.top = cy + 'px';
   document.body.appendChild(halo);
   setTimeout(function(){ if(halo.parentNode) halo.parentNode.removeChild(halo); }, 1500);
-  // 随机抽一张卡
-  var drawIdx = Math.floor(Math.random() * CARDS.length);
+  // 智能抽卡（含隐藏卡）
+  var drawIdx = smartDraw();
+  // 检查是否是今日首抽
+  var today = getTodayStr();
+  var isDaily = (memory.lastDailyDate !== today);
+  // 检查隐藏卡解锁通知
+  var newlyUnlocked = checkHiddenUnlocks();
+  if (newlyUnlocked.length > 0) {
+    var hCard = getCard(newlyUnlocked[0]);
+    var toast = document.createElement('div');
+    toast.className = 'hidden-unlock-toast';
+    toast.innerHTML = '✦ 解锁隐藏卡 ✦<small>' + (hCard.title || hCard.ico) + '</small>';
+    document.body.appendChild(toast);
+    setTimeout(function(){ if(toast.parentNode) toast.parentNode.removeChild(toast); }, 2000);
+  }
   setTimeout(function(){
     flowerWrap.style.display = 'none';
     // 清除 scatter 类
@@ -1240,10 +1879,10 @@ function openOrb(){
       petals[k].classList.remove('scatter-' + (k + 1));
     }
     if (core) core.classList.remove('scatter-core');
-    // 直接显示随机卡片
-    drawCard(drawIdx);
+    // 显示卡片
+    drawCard(drawIdx, isDaily);
     cardWrap.classList.add('show');
-    // 卡片出现时再来一波柔和光粒子
+    // 卡片出现时柔和光粒子
     softGlow(innerWidth/2, innerHeight/2);
     setTimeout(function(){ busy = false; }, 400);
   }, 900);
@@ -1285,9 +1924,11 @@ function buildOrbit(){
 function selectOrbitCard(idx, el){
   if (busy) return;
   busy = true;
-  // 随机洗牌：用户点的是位置，实际抽到的内容是随机的
-  var drawIdx = Math.floor(Math.random() * CARDS.length);
-  var c = CARDS[drawIdx];
+  // 智能抽卡（含隐藏卡）
+  var drawIdx = smartDraw();
+  var c = getCard(drawIdx);
+  var today = getTodayStr();
+  var isDaily = (memory.lastDailyDate !== today);
   // 选中卡片：飞向屏幕中央并翻转
   var rect = el.getBoundingClientRect();
   var cx = innerWidth / 2;
@@ -1317,7 +1958,7 @@ function selectOrbitCard(idx, el){
   setTimeout(function(){ softGlow(cx, cy); }, 400);
   // 1s 后打开卡片详情
   setTimeout(function(){
-    drawCard(drawIdx);
+    drawCard(drawIdx, isDaily);
     orbitGrid.innerHTML = '';
     cardWrap.classList.add('show');
     setTimeout(function(){ busy = false; }, 200);
@@ -1388,14 +2029,16 @@ function handleOrbTap(e){
 flower.addEventListener('click', function(e){ e.stopPropagation(); handleOrbTap(e); });
 flower.addEventListener('touchend', function(e){ e.preventDefault(); e.stopPropagation(); handleOrbTap(e); }, {passive:false});
 
-// 再翻一张：直接随机抽卡
+// 再翻一张：智能抽卡
 nextBtn.addEventListener('click', function(){
   if (busy) return;
   busy = true;
   cardWrap.classList.remove('show');
   setTimeout(function(){
-    var drawIdx = Math.floor(Math.random() * CARDS.length);
-    drawCard(drawIdx);
+    var drawIdx = smartDraw();
+    var today = getTodayStr();
+    var isDaily = (memory.lastDailyDate !== today);
+    drawCard(drawIdx, isDaily);
     softGlow(innerWidth/2, innerHeight/2);
     cardWrap.classList.add('show');
     busy = false;
@@ -1428,50 +2071,112 @@ function closeModal(){
 }
 
 function renderCollectList(){
-  var n = 0;
-  for (var k in memory.collected) n++;
-  collectedCount.textContent = n + ' / ' + CARDS.length;
+  // 统计
+  var normalGot = 0, limitedGot = 0;
+  for (var k in memory.collected) normalGot++;
+  for (var l in memory.limitedCollected) limitedGot++;
+  var totalNormal = CARDS.length + HIDDEN_CARDS.length;
+  var totalLimited = SEASONAL_CARDS.length + MONTHLY_CARDS.length;
+  collectedCount.textContent = (normalGot + limitedGot) + ' / ' + (totalNormal + totalLimited);
   collectList.innerHTML = '';
-  if (n === 0) {
+  if (normalGot === 0 && limitedGot === 0) {
     collectList.innerHTML = '<div class="empty">还没收集到任何卡片<br>点光球翻第一张吧 ✨</div>';
     return;
   }
-  for (var i = 0; i < CARDS.length; i++) {
-    var c = CARDS[i];
-    var has = memory.collected[i];
-    var item = document.createElement('div');
-    item.className = 'collect-item' + (has ? '' : ' locked');
-    var desc = c.title || c.text.split('\n')[0];
-    item.innerHTML =
-      '<div class="ci-ico">' + (has ? c.ico : '❓') + '</div>' +
-      '<div class="ci-info">' +
-        '<div class="ci-name">' + (has ? (c.title || c.kind) : '未解锁') + '</div>' +
-        '<div class="ci-desc">' + (has ? desc : '继续翻开试试') + '</div>' +
-      '</div>' +
-      '<div class="ci-kind">' + c.kind + '</div>';
-    if (has) {
-      (function(idx){
-        item.addEventListener('click', function(){
-          // 点击已收藏的卡片，可以直接打开看
-          closeModal();
-          currentIdx = idx;
-          lastIdx = idx;
-          var card = CARDS[idx];
-          cKind.textContent = card.kind;
-          cIco.textContent = card.ico;
-          cTitle.textContent = card.title || '';
-          cTitle.style.display = card.title ? 'block' : 'none';
-          cText.textContent = card.text;
-          cSub.textContent = card.sub || '';
-          updateCollectBtn();
-          flowerWrap.style.display = 'none';
-          cardWrap.classList.add('show');
-        });
-      })(i);
-    }
-    collectList.appendChild(item);
+
+  // 辅助：渲染单张迷你卡
+  function miniCard(ico, name, rar, collected, opts){
+    opts = opts || {};
+    var cls = 'collect-mini-card';
+    if (collected) cls += ' collected';
+    else if (opts.locked) cls += ' locked';
+    if (opts.expired) cls += ' expired';
+    var tag = '<div class="mini-tag ' + (rar||'r').toLowerCase() + '">' + (rar||'R') + '</div>';
+    return '<div class="' + cls + '">' +
+      '<div class="mini-ico">' + (collected || opts.expired ? ico : '') + '</div>' +
+      '<div class="mini-name">' + (collected || opts.expired ? name : '???') + '</div>' +
+      tag + '</div>';
   }
+
+  // UR 传说区（隐藏卡）
+  var urSection = document.createElement('div');
+  urSection.className = 'collect-section';
+  var urGot = 0;
+  for (var u = 0; u < HIDDEN_CARDS.length; u++) if (memory.collected[CARDS.length + u]) urGot++;
+  urSection.innerHTML = '<div class="collect-section-title"><span class="tier-ur">✦ UR 传说</span> ' + urGot + '/' + HIDDEN_CARDS.length + '</div>';
+  for (var ui = 0; ui < HIDDEN_CARDS.length; ui++) {
+    var realIdx = CARDS.length + ui;
+    var hc = HIDDEN_CARDS[ui];
+    var hHas = memory.collected[realIdx];
+    var unlocked = memory.unlockedHidden[realIdx] || hc.nightOnly;
+    urSection.innerHTML += miniCard(hc.ico, hc.title, 'UR', hHas, { locked: !unlocked && !hHas });
+  }
+  collectList.appendChild(urSection);
+
+  // SSR 史诗区
+  var ssrSection = document.createElement('div');
+  ssrSection.className = 'collect-section';
+  var ssrGot = 0, ssrTotal = 0;
+  for (var s1 = 0; s1 < CARDS.length; s1++) if (CARDS[s1].rarity === 'SSR') { ssrTotal++; if (memory.collected[s1]) ssrGot++; }
+  ssrSection.innerHTML = '<div class="collect-section-title"><span class="tier-ssr">✦ SSR 史诗</span> ' + ssrGot + '/' + ssrTotal + '</div>';
+  for (var s2 = 0; s2 < CARDS.length; s2++) {
+    if (CARDS[s2].rarity !== 'SSR') continue;
+    var sHas = memory.collected[s2];
+    ssrSection.innerHTML += miniCard(CARDS[s2].ico, CARDS[s2].title || CARDS[s2].text.split('\n')[0].slice(0,6), 'SSR', sHas, { locked: !sHas });
+  }
+  collectList.appendChild(ssrSection);
+
+  // SR 稀有区
+  var srSection = document.createElement('div');
+  srSection.className = 'collect-section';
+  var srGot = 0, srTotal = 0;
+  for (var r1 = 0; r1 < CARDS.length; r1++) if (CARDS[r1].rarity === 'SR') { srTotal++; if (memory.collected[r1]) srGot++; }
+  srSection.innerHTML = '<div class="collect-section-title"><span class="tier-sr">✦ SR 稀有</span> ' + srGot + '/' + srTotal + '</div>';
+  for (var r2 = 0; r2 < CARDS.length; r2++) {
+    if (CARDS[r2].rarity !== 'SR') continue;
+    var rHas = memory.collected[r2];
+    srSection.innerHTML += miniCard(CARDS[r2].ico, CARDS[r2].title || CARDS[r2].kind, 'SR', rHas, { locked: !rHas });
+  }
+  collectList.appendChild(srSection);
+
+  // R 普通区
+  var rSection = document.createElement('div');
+  rSection.className = 'collect-section';
+  var rGot = 0, rTotal = 0;
+  for (var n1 = 0; n1 < CARDS.length; n1++) if (CARDS[n1].rarity === 'R') { rTotal++; if (memory.collected[n1]) rGot++; }
+  rSection.innerHTML = '<div class="collect-section-title"><span class="tier-r">✦ R 普通</span> ' + rGot + '/' + rTotal + '</div>';
+  for (var n2 = 0; n2 < CARDS.length; n2++) {
+    if (CARDS[n2].rarity !== 'R') continue;
+    var nHas = memory.collected[n2];
+    rSection.innerHTML += miniCard(CARDS[n2].ico, CARDS[n2].title || CARDS[n2].text.split('\n')[0].slice(0,6), 'R', nHas, { locked: !nHas });
+  }
+  collectList.appendChild(rSection);
+
+  // 限定卡区
+  var limSection = document.createElement('div');
+  limSection.className = 'collect-section';
+  limSection.innerHTML = '<div class="collect-section-title"><span class="tier-limited">✦ 限定卡</span> ' + limitedGot + '/' + totalLimited + '</div>';
+  var now = new Date();
+  var mmdd = (now.getMonth()+1<10?'0':'') + (now.getMonth()+1) + '-' + (now.getDate()<10?'0':'') + now.getDate();
+  // 节气卡
+  for (var si = 0; si < SEASONAL_CARDS.length; si++) {
+    var sc = SEASONAL_CARDS[si];
+    var sId = sc.id;
+    var sCollected = memory.limitedCollected[sId];
+    var sExpired = mmdd < sc.openStart || mmdd > sc.openEnd;
+    limSection.innerHTML += miniCard(sc.ico, sc.title, 'SSR', sCollected, { expired: sExpired && !sCollected, locked: !sCollected && !sExpired });
+  }
+  // 月份卡
+  for (var mi = 0; mi < MONTHLY_CARDS.length; mi++) {
+    var mc = MONTHLY_CARDS[mi];
+    var mId = 'month_' + mc.month;
+    var mCollected = memory.limitedCollected[mId];
+    var mExpired = mc.month !== now.getMonth();
+    limSection.innerHTML += miniCard(mc.ico, mc.title, 'SSR', mCollected, { expired: mExpired && !mCollected, locked: !mCollected && !mExpired });
+  }
+  collectList.appendChild(limSection);
 }
 </script>
 </body>
 </html>
+
