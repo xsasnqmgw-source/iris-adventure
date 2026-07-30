@@ -1295,9 +1295,106 @@
     font-weight: 700; letter-spacing: 1px;
     margin-left: 4px; vertical-align: middle;
   }
+
+  /* 密码锁 */
+  .lock-screen {
+    position: fixed; inset: 0; z-index: 9999;
+    display: -webkit-flex; display: flex;
+    -webkit-align-items: center; align-items: center;
+    -webkit-justify-content: center; justify-content: center;
+    background: rgba(8,4,20,0.93);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+  .lock-card {
+    background: -webkit-linear-gradient(160deg, rgba(60,30,110,0.5), rgba(25,12,55,0.7));
+    background: linear-gradient(160deg, rgba(60,30,110,0.5), rgba(25,12,55,0.7));
+    border: 1px solid rgba(180,140,255,0.15);
+    border-radius: 24px;
+    padding: 40px 28px 32px;
+    width: 300px;
+    text-align: center;
+  }
+  .lock-emoji { font-size: 48px; margin-bottom: 10px; }
+  .lock-title {
+    font-size: 22px; font-weight: 700; color: #f0e8ff;
+    margin-bottom: 6px;
+  }
+  .lock-hint { font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 24px; }
+  .lock-input {
+    width: 100%; padding: 12px 16px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    color: #fff; font-size: 16px; text-align: center;
+    outline: none; box-sizing: border-box;
+    -webkit-transition: border-color 0.2s;
+    transition: border-color 0.2s;
+  }
+  .lock-input:focus { border-color: rgba(180,140,255,0.4); }
+  .lock-input::-webkit-input-placeholder { color: rgba(255,255,255,0.2); }
+  .lock-input::placeholder { color: rgba(255,255,255,0.2); }
+  .lock-error { font-size: 12px; color: #ff6b6b; min-height: 20px; margin-top: 8px; }
+  .lock-btn {
+    margin-top: 14px; padding: 12px 0; width: 100%;
+    background: -webkit-linear-gradient(135deg, #7c5cbf, #b388e0);
+    background: linear-gradient(135deg, #7c5cbf, #b388e0);
+    border: none; border-radius: 12px;
+    color: #fff; font-size: 15px; font-weight: 600;
+    cursor: pointer; -webkit-transition: opacity 0.2s;
+    transition: opacity 0.2s;
+  }
+  .lock-btn:active { opacity: 0.7; }
+  .lock-footer { margin-top: 20px; font-size: 11px; color: rgba(255,255,255,0.2); }
+  .lock-shake {
+    -webkit-animation: lockShake 0.4s ease;
+    animation: lockShake 0.4s ease;
+  }
+  @-webkit-keyframes lockShake {
+    0%,100% { -webkit-transform: translateX(0); }
+    20% { -webkit-transform: translateX(-8px); }
+    40% { -webkit-transform: translateX(8px); }
+    60% { -webkit-transform: translateX(-5px); }
+    80% { -webkit-transform: translateX(5px); }
+  }
+  @keyframes lockShake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+  /* 访客记录弹窗 */
+  .visit-log-card { max-height: 70vh; overflow-y: auto; }
+  .visit-log-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #e8d0ff; }
+  .visit-entries { text-align: left; font-size: 13px; line-height: 2; color: rgba(255,255,255,0.65); }
+  .visit-entry { padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .visit-entry:last-child { border-bottom: none; }
+  .visit-entry .vi-date { color: rgba(255,255,255,0.4); font-size: 11px; }
+  .visit-entry .vi-num { display: inline-block; width: 24px; color: rgba(180,140,255,0.5); font-size: 11px; text-align: right; margin-right: 8px; }
 </style>
 </head>
 <body>
+  <!-- 密码锁 -->
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-card">
+      <div class="lock-emoji">🔐</div>
+      <div class="lock-title">给 IRIS</div>
+      <div class="lock-hint">输入密码，开启今日份的惊喜</div>
+      <input class="lock-input" id="lockInput" type="password" placeholder="请输入密码..." autocomplete="off">
+      <div class="lock-error" id="lockError"></div>
+      <button class="lock-btn" id="lockBtn">✨ 开启</button>
+      <div class="lock-footer">第一次来？密码是四个字母 🌸</div>
+    </div>
+  </div>
+  <!-- 访客记录弹窗 -->
+  <div class="lock-screen" id="visitLogModal" style="display:none;z-index:9998;">
+    <div class="lock-card visit-log-card">
+      <div class="visit-log-title">📋 访客记录</div>
+      <div class="visit-entries" id="visitLogEntries"></div>
+      <button class="lock-btn" id="visitLogCloseBtn" style="margin-top:16px;">知道了 ✨</button>
+    </div>
+  </div>
   <canvas id="stars"></canvas>
 
   <div class="stage">
@@ -1784,6 +1881,12 @@ setTimeout(function(){
   btn.textContent = '✦ 收集册';
   btn.addEventListener('click', openModal);
   bar.insertBefore(btn, document.querySelector('.counter'));
+  // 访客记录按钮
+  var logBtn = document.createElement('button');
+  logBtn.className = 'collect-btn show';
+  logBtn.textContent = '📋 访客记录';
+  logBtn.addEventListener('click', function(){ showVisitLog(); });
+  bar.insertBefore(logBtn, document.querySelector('.counter'));
 }, 300);
 
 /* ===== 记忆系统 (localStorage) ===== */
@@ -1870,6 +1973,78 @@ var count = memory.totalFlips;
 var lastIdx = memory.lastCardIdx;
 
 markVisit();
+
+/* ===== 密码锁 & 访客记录 ===== */
+var CORRECT_PASSWORD = 'iris'; // ← 修改密码在这里
+
+function padNum(n){ return n<10?'0'+n:''+n; }
+
+function formatVisitTime(ts){
+  var d = new Date(ts);
+  var now = new Date();
+  var today = now.getFullYear()+'-'+padNum(now.getMonth()+1)+'-'+padNum(now.getDate());
+  var dateStr = d.getFullYear()+'-'+padNum(d.getMonth()+1)+'-'+padNum(d.getDate());
+  var time = padNum(d.getHours())+':'+padNum(d.getMinutes());
+  if (dateStr === today) return '今天 ' + time;
+  var y = new Date(now); y.setDate(now.getDate()-1);
+  var yStr = y.getFullYear()+'-'+padNum(y.getMonth()+1)+'-'+padNum(y.getDate());
+  if (dateStr === yStr) return '昨天 ' + time;
+  return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日 '+time;
+}
+
+function recordVisit(){
+  var log = [];
+  try { var raw = localStorage.getItem('iris_visit_log'); if (raw) log = JSON.parse(raw); } catch(e){}
+  log.push({ ts: Date.now() });
+  localStorage.setItem('iris_visit_log', JSON.stringify(log));
+}
+
+function showVisitLog(){
+  var list = document.getElementById('visitLogEntries');
+  var log = [];
+  try { var raw = localStorage.getItem('iris_visit_log'); if (raw) log = JSON.parse(raw); } catch(e){}
+  if (!log.length) {
+    list.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.3);padding:20px 0;">暂无记录</div>';
+  } else {
+    var html = '';
+    for (var i=log.length-1; i>=0; i--) {
+      html += '<div class="visit-entry"><span class="vi-num">#' + (i+1) + '</span>' + formatVisitTime(log[i].ts) + '</div>';
+    }
+    list.innerHTML = html;
+  }
+  document.getElementById('visitLogModal').style.display = '';
+}
+
+function tryUnlock(){
+  var input = document.getElementById('lockInput');
+  var err = document.getElementById('lockError');
+  if (input.value.trim().toLowerCase() === CORRECT_PASSWORD) {
+    localStorage.setItem('iris_logged_in', '1');
+    document.getElementById('lockScreen').style.display = 'none';
+    recordVisit();
+  } else {
+    err.textContent = '密码不对，再试试 🤔';
+    var card = document.querySelector('.lock-card');
+    card.classList.add('lock-shake');
+    input.value = '';
+    input.focus();
+    setTimeout(function(){ card.classList.remove('lock-shake'); }, 500);
+  }
+}
+
+(function(){
+  if (localStorage.getItem('iris_logged_in')) {
+    document.getElementById('lockScreen').style.display = 'none';
+    recordVisit();
+  } else {
+    document.getElementById('lockBtn').addEventListener('click', tryUnlock);
+    document.getElementById('lockInput').addEventListener('keydown', function(e){ if (e.key === 'Enter') tryUnlock(); });
+    setTimeout(function(){ document.getElementById('lockInput').focus(); }, 300);
+  }
+  document.getElementById('visitLogCloseBtn').addEventListener('click', function(){
+    document.getElementById('visitLogModal').style.display = 'none';
+  });
+})();
 
 /* ===== 交互 ===== */
 var flower = document.getElementById('flower');
