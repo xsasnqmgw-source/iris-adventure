@@ -2207,7 +2207,7 @@ function renderCollectList(){
     var hc = HIDDEN_CARDS[ui];
     var hHas = memory.collected[realIdx];
     var unlocked = memory.unlockedHidden[realIdx] || hc.nightOnly;
-    urSection.innerHTML += miniCard(hc.ico, hc.title, 'UR', hHas, { locked: !unlocked && !hHas });
+    urSection.innerHTML += miniCard(hc.ico, hc.title, 'UR', hHas, { locked: !unlocked && !hHas, idx: realIdx });
   }
   collectList.appendChild(urSection);
 
@@ -2233,7 +2233,7 @@ function renderCollectList(){
   for (var r2 = 0; r2 < CARDS.length; r2++) {
     if (CARDS[r2].rarity !== 'SR') continue;
     var rHas = memory.collected[r2];
-    srSection.innerHTML += miniCard(CARDS[r2].ico, CARDS[r2].title || CARDS[r2].kind, 'SR', rHas, { locked: !rHas });
+    srSection.innerHTML += miniCard(CARDS[r2].ico, CARDS[r2].title || CARDS[r2].kind, 'SR', rHas, { locked: !rHas, idx: r2 });
   }
   collectList.appendChild(srSection);
 
@@ -2273,6 +2273,18 @@ function renderCollectList(){
     limSection.innerHTML += miniCard(mc.ico, mc.title, 'SSR', mCollected, { expired: mExpired && !mCollected, locked: !mCollected && !mExpired });
   }
   collectList.appendChild(limSection);
+  
+  // 点击已收集的卡片 —— 关闭收藏册，展示卡片
+  collectList.onclick = function(e){
+    var card = e.target.closest('.collect-mini-card.collected');
+    if (!card) return;
+    var idx = card.getAttribute('data-idx');
+    if (idx == null) return;
+    closeModal();
+    flowerWrap.style.display = 'none';
+    cardWrap.classList.add('show');
+    drawCard(parseInt(idx), false);
+  };
 }
 </script>
 </body>
