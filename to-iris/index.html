@@ -425,7 +425,7 @@
     -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
     border: 1.5px solid rgba(255,255,255,0.18);
-    border-radius: 24px;
+    border-radius: 18px;
     padding: 32px 24px 24px;
     -webkit-box-shadow: 0 20px 60px rgba(90,58,168,0.5);
     box-shadow: 0 20px 60px rgba(90,58,168,0.5);
@@ -462,6 +462,27 @@
   }
   .card-sub:empty { display: none; }
 
+  /* 卡片左上角关闭按钮 */
+  .card-close {
+    position: absolute; top: 10px; left: 12px;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 1px solid rgba(184,168,232,0.25);
+    background: rgba(30,22,50,0.45);
+    color: rgba(216,200,255,0.7);
+    font-size: 10px; line-height: 1;
+    cursor: pointer; font-family: inherit;
+    display: -webkit-flex; display: flex;
+    -webkit-align-items: center; align-items: center;
+    -webkit-justify-content: center; justify-content: center;
+    z-index: 4;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    transition: all .2s;
+  }
+  .card-close:hover { background: rgba(60,40,90,0.65); color: rgba(232,216,255,0.95); border-color: rgba(184,168,232,0.5); }
+  .card-close:active { -webkit-transform: scale(0.86); transform: scale(0.86); background: rgba(60,40,90,0.7); }
+
   /* ===== 稀有度系统 ===== */
   .rarity-tag {
     position: absolute; top: 12px; right: 14px;
@@ -491,7 +512,7 @@
   }
   /* UR 传说：暗金质感 + 动态流光，靠动效不靠亮度 */
   .card.rarity-ur {
-    border: 2px solid transparent;
+    border: 1.5px solid transparent;
     background:
       -webkit-linear-gradient(160deg, rgba(60,45,20,0.35) 0%, rgba(30,22,10,0.25) 100%) padding-box,
       -webkit-linear-gradient(135deg, #8a6a1a 0%, #d4a017 50%, #8a6a1a 100%) border-box;
@@ -746,7 +767,7 @@
     background: -webkit-linear-gradient(180deg, rgba(30,20,56,0.95) 0%, rgba(18,12,36,0.98) 100%);
     background: linear-gradient(180deg, rgba(30,20,56,0.95) 0%, rgba(18,12,36,0.98) 100%);
     border: 1px solid rgba(184,168,232,0.2);
-    border-radius: 24px 24px 0 0;
+    border-radius: 18px 18px 0 0;
     padding: 24px 20px 28px;
     max-height: 80vh;
     overflow-y: auto;
@@ -784,14 +805,37 @@
     -webkit-flex-direction: column; flex-direction: column;
     gap: 8px;
   }
+  /* 紫色主题滚动条：作用于真正滚动的 .modal-inner 和 .orbit-stage */
+  .modal-inner,
+  .orbit-stage {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(184,168,232,0.4) transparent;
+  }
+  .modal-inner::-webkit-scrollbar,
+  .orbit-stage::-webkit-scrollbar {
+    width: 6px; height: 6px;
+  }
+  .modal-inner::-webkit-scrollbar-track,
+  .orbit-stage::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .modal-inner::-webkit-scrollbar-thumb,
+  .orbit-stage::-webkit-scrollbar-thumb {
+    background: rgba(184,168,232,0.35);
+    border-radius: 6px;
+  }
+  .modal-inner::-webkit-scrollbar-thumb:hover,
+  .orbit-stage::-webkit-scrollbar-thumb:hover {
+    background: rgba(184,168,232,0.55);
+  }
   .collect-item {
     display: -webkit-flex; display: flex;
     -webkit-align-items: center; align-items: center;
     gap: 12px;
-    padding: 12px 14px;
+    padding: 11px 14px;
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(184,168,232,0.12);
-    border-radius: 14px;
+    border-radius: 12px;
   }
   .collect-item.locked { opacity: 0.35; }
   .ci-ico { font-size: 24px; width: 36px; text-align: center; }
@@ -1218,6 +1262,7 @@
   <!-- 卡片 -->
   <div class="card-wrap" id="cardWrap">
     <div class="card" id="theCard">
+      <button class="card-close" id="cardClose" aria-label="关闭">✕</button>
       <div class="rarity-tag" id="rarityTag" style="display:none;">R</div>
       <div class="daily-sign-banner" id="dailyBanner" style="display:none;"></div>
       <div class="card-kind" id="cKind">—</div>
@@ -2097,6 +2142,10 @@ nextBtn.addEventListener('click', function(){
 // 放回去
 closeBtn.addEventListener('click', closeOrb);
 closeBtn.addEventListener('touchend', function(e){ e.preventDefault(); closeOrb(); }, {passive:false});
+// 左上角叉叉关闭
+var cardCloseBtn = document.getElementById('cardClose');
+cardCloseBtn.addEventListener('click', closeOrb);
+cardCloseBtn.addEventListener('touchend', function(e){ e.preventDefault(); closeOrb(); }, {passive:false});
 
 // 收集册
 viewCollectedBtn.addEventListener('click', openModal);
