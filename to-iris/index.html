@@ -419,23 +419,6 @@
   @-webkit-keyframes spin { to { -webkit-transform: rotate(360deg); } }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .tap-hint {
-    position: absolute; top:0; left:0; width:100%; height:100%;
-    display: -webkit-flex; display: flex;
-    -webkit-align-items: center; align-items: center;
-    -webkit-justify-content: center; justify-content: center;
-    font-size: 13px; color: #fff; font-weight: 600;
-    letter-spacing: 2px; font-family: "PingFang SC", sans-serif;
-    text-shadow: 0 1px 8px rgba(90,58,168,0.4);
-    pointer-events: none;
-    z-index: 6;
-    opacity: 0;
-    -webkit-animation: hintPulse 2s ease-in-out 2.5s infinite;
-    animation: hintPulse 2s ease-in-out 2.5s infinite;
-  }
-  @-webkit-keyframes hintPulse { 0%,100% { opacity:.5; } 50% { opacity:1; } }
-  @keyframes hintPulse { 0%,100% { opacity:.5; } 50% { opacity:1; } }
-
   /* 卡片 */
   .card-wrap {
     position: absolute; left: 50%; top: 50%;
@@ -1358,7 +1341,6 @@
           <!-- 花心 -->
           <div class="core"></div>
         </div>
-        <div class="tap-hint"></div>
       </div>
     </div>
 
@@ -2357,14 +2339,21 @@ function handleOrbTap(e){
   setTimeout(function(){ if(ri.parentNode) ri.parentNode.removeChild(ri); }, 700);
   openOrb();
 }
-function onFlowerTap(e){
-  if (e) { if (e.type === 'touchend') e.preventDefault(); e.stopPropagation(); }
-  handleOrbTap(e);
+function isInFlower(el){
+  while (el) { if (el.id === 'flower' || el.id === 'flowerWrap') return true; el = el.parentNode; }
+  return false;
 }
-flower.addEventListener('click', onFlowerTap);
-flower.addEventListener('touchend', onFlowerTap, {passive:false});
-flowerWrap.addEventListener('click', onFlowerTap);
-flowerWrap.addEventListener('touchend', onFlowerTap, {passive:false});
+function onStageTap(e){
+  if (cardWrap.classList.contains('show')) return;
+  if (orbitStage.classList.contains('show')) return;
+  if (isInFlower(e.target)) { handleOrbTap(e); }
+}
+document.addEventListener('click', onStageTap);
+document.addEventListener('touchend', function(e){
+  if (cardWrap.classList.contains('show')) return;
+  if (orbitStage.classList.contains('show')) return;
+  if (isInFlower(e.target)) { e.preventDefault(); handleOrbTap(e); }
+}, {passive:false});
 
 // 再翻一张：智能抽卡
 nextBtn.addEventListener('click', function(){

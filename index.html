@@ -1,693 +1,2279 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>IRIS · 鸢尾花的奇遇</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>给 IRIS</title>
 <style>
-:root {
-  --iris-deep: #5B2D8E;
-  --iris-mid: #8B5FBF;
-  --iris-light: #B89BE0;
-  --iris-soft: #DDCEF2;
-  --iris-gold: #FAC53D;
-  --iris-gold-bright: #FFE48A;
-  --bg-start: #1A1032;
-  --bg-mid: #150C2A;
-  --bg-end: #0E0820;
-  --card-bg: rgba(30, 18, 55, 0.78);
-  --card-border: rgba(140, 110, 200, 0.22);
-  --text: #EDE5FF;
-  --text-dim: #B8A8D8;
-  --safe-bottom: env(safe-area-inset-bottom, 16px);
-}
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { height:100%; }
+  body {
+    font-family: "Songti SC", "Noto Serif SC", "PingFang SC", "Microsoft YaHei", serif;
+    background: radial-gradient(ellipse at 50% 30%, #1a1035 0%, #0d0820 55%, #060412 100%);
+    color: #f0e8ff; min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  canvas {
+    position:fixed; top:0; left:0; right:0; bottom:0;
+    display:block; pointer-events:none; z-index:0;
+  }
 
-* { margin:0; padding:0; box-sizing:border-box; }
+  .stage {
+    position: relative; z-index: 2;
+    width: 100%; height: 100vh;
+    display: -webkit-flex; display: flex;
+    -webkit-flex-direction: column; flex-direction: column;
+    -webkit-align-items: center; align-items: center;
+    -webkit-justify-content: center; justify-content: center;
+    padding: 24px;
+  }
 
-html, body {
-  width: 100%; height: 100%;
-  overflow-x: hidden; overflow-y: auto;
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-  background: var(--bg-start);
-  -webkit-tap-highlight-color: transparent;
-  -webkit-user-select: none; user-select: none;
-  -webkit-font-smoothing: antialiased;
-  -webkit-overflow-scrolling: touch;
-}
+  .signature {
+    position: absolute; top: 40px; left: 0; right: 0;
+    text-align: center;
+    font-size: 12px; letter-spacing: 6px; color: #b8a8e8;
+    opacity: 0; transition: opacity 1s;
+  }
+  .signature.show { opacity: .8; }
 
-#app {
-  width: 100%; min-height: 100vh;
-  position: relative; overflow: hidden;
-}
+  .title {
+    font-size: 22px; font-weight: 500; letter-spacing: 3px;
+    color: #e8d8ff; text-align: center;
+    margin-bottom: 40px;
+    opacity: 0;
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+    transition: opacity .5s, transform .5s;
+  }
+  .title.show { opacity: 1; }
+  .title.hide { opacity: 0; -webkit-transform: translateY(-20px); transform: translateY(-20px); }
 
-/* Background canvas */
-#bgCanvas {
-  position: fixed; top: 0; left: 0;
-  width: 100%; height: 100%;
-  pointer-events: none; z-index: 0;
-}
+  .signature {
+    transition: opacity .5s, transform .5s;
+  }
+  .signature.hide { opacity: 0 !important; -webkit-transform: translateY(-10px); transform: translateY(-10px); }
 
-/* Screens */
-.screen {
-  position: absolute; top: 0; left: 0;
-  width: 100%; min-height: 100vh;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  z-index: 10;
-  transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-  opacity: 0; pointer-events: none;
-  padding: 24px 16px;
-  padding-bottom: calc(24px + var(--safe-bottom));
-}
-.screen.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
-.screen.exit-left  { opacity: 0; transform: translateX(-36px); }
-.screen.exit-right { opacity: 0; transform: translateX(36px); }
-.screen.enter-from-right { opacity: 0; transform: translateX(36px); }
-.screen.enter-from-left  { opacity: 0; transform: translateX(-36px); }
+  .welcome {
+    font-size: 14px; color: #c8a8d8; text-align: center;
+    margin-bottom: 16px; letter-spacing: 1px;
+    opacity: 0; transition: opacity .8s .5s;
+    font-family: "PingFang SC", sans-serif;
+    min-height: 42px; max-height: 80px;
+  }
+  .welcome.show { opacity: .85; }
+  .welcome.hide { opacity: 0; -webkit-transform: translateY(-10px); transform: translateY(-10px); }
+  .welcome .line2 { font-size: 11px; color: #8a7a9a; margin-top: 4px; display: block; }
 
-/* ============ HOME ============ */
-#homeScreen { gap: 4px; padding-top: 36px; }
+  .flower-wrap {
+    position: relative; width: 240px; height: 240px;
+    margin-bottom: 28px;
+    opacity: 0; -webkit-transform: scale(0.6); transform: scale(0.6);
+    transition: opacity 1.5s .3s, transform 1.5s .3s cubic-bezier(.2,.9,.3,1.2);
+  }
+  .flower-wrap.show { opacity: 1; -webkit-transform: scale(1); transform: scale(1); }
 
-/* Iris flower from real SVG */
-.iris-stage {
-  position: relative;
-  width: 160px; height: 190px;
-  margin-bottom: 0;
-  animation: irisFloat 5s ease-in-out infinite;
-}
-.iris-stage svg, .iris-stage img {
-  width: 100%; height: 100%;
-  filter: drop-shadow(0 6px 20px rgba(100,60,180,0.4));
-}
-@keyframes irisFloat {
-  0%,100% { transform: translateY(0) rotate(-1deg); }
-  30%  { transform: translateY(-10px) rotate(1deg); }
-  60%  { transform: translateY(-4px) rotate(-0.5deg); }
-}
+  .flower {
+    position: absolute; top:0; left:0; width:100%; height:100%;
+    cursor: pointer;
+    z-index: 5;
+  }
 
-.home-title {
-  font-size: 24px; font-weight: 700;
-  color: var(--text);
-  letter-spacing: 2px;
-  text-shadow: 0 0 25px rgba(140,110,210,0.5);
-  margin-top: 8px;
-}
-.home-subtitle {
-  font-size: 14px; color: var(--text-dim);
-  margin-bottom: 18px; letter-spacing: 1.5px;
-  margin-top: 6px;
-}
+  /* 中心坐标系：所有花瓣 transform-origin 都在花朵中心 */
+  .lotus {
+    position: absolute; top: 50%; left: 50%;
+    width: 0; height: 0;  /* 0 尺寸的容器，仅作为旋转参考点 */
+  }
 
-/* Cards */
-.options-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  width: 100%; max-width: 360px;
-}
-.option-card {
-  position: relative;
-  background: var(--card-bg);
-  border: 1.5px solid var(--card-border);
-  border-radius: 18px;
-  padding: 16px 12px;
-  cursor: pointer;
-  display: flex; flex-direction: column;
-  align-items: center; gap: 6px;
-  transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
-  overflow: hidden;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-.option-card::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(circle at 50% 30%, rgba(155,120,220,0.15) 0%, transparent 70%);
-  opacity: 0; transition: opacity 0.35s;
-}
-.option-card:active {
-  transform: scale(0.94);
-  border-color: rgba(160,130,220,0.6);
-  box-shadow: 0 0 30px rgba(100,60,180,0.4);
-}
-.option-card:active::before { opacity: 1; }
-.option-card .card-icon {
-  font-size: 34px; position: relative; z-index: 1;
-  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
-}
-.option-card .card-label {
-  font-size: 13px; font-weight: 600;
-  color: var(--text); position: relative; z-index: 1;
-  text-align: center; line-height: 1.3;
-}
-.option-card.full-width { grid-column: 1 / -1; }
+  /* 花瓣公转环：外层和中层各自独立旋转，角速度不同 */
+  .petal-ring {
+    position: absolute; top: 0; left: 0;
+    width: 0; height: 0;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+  }
+  /* 外层：30秒一圈，逆时针，慢 */
+  .outer-ring {
+    -webkit-animation: orbitOuter 30s linear infinite;
+    animation: orbitOuter 30s linear infinite;
+  }
+  /* 中层：18秒一圈，逆时针，快 */
+  .mid-ring {
+    -webkit-animation: orbitMid 18s linear infinite;
+    animation: orbitMid 18s linear infinite;
+  }
+  @-webkit-keyframes orbitOuter { from { -webkit-transform: rotate(0deg); } to { -webkit-transform: rotate(-360deg); } }
+  @keyframes orbitOuter { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+  @-webkit-keyframes orbitMid { from { -webkit-transform: rotate(0deg); } to { -webkit-transform: rotate(-360deg); } }
+  @keyframes orbitMid { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
 
-/* ============ SHARED GAME HEADER ============ */
-.game-header {
-  position: absolute; top: 16px; left: 12px; right: 12px;
-  display: flex; justify-content: space-between;
-  align-items: center; z-index: 20;
-}
-.back-btn {
-  width: 38px; height: 38px; border-radius: 50%;
-  background: rgba(30,18,55,0.75);
-  border: 1px solid rgba(140,110,200,0.28);
-  color: var(--text); font-size: 18px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  transition: all 0.2s;
-}
-.back-btn:active { background: rgba(100,60,170,0.4); transform: scale(0.88); }
-.game-title {
-  font-size: 17px; font-weight: 700;
-  color: var(--text);
-  text-shadow: 0 0 16px rgba(140,110,210,0.4);
-  text-align: center;
-}
+  /* 花瓣：椭圆形，初始贴合中心，旋转出去 */
+  .petal {
+    position: absolute;
+    left: -32px; top: -85px;  /* 中心点对齐莲花中心；椭圆向上 */
+    width: 64px; height: 85px;
+    border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
+    -webkit-transform-origin: 32px 85px;  /* 椭圆底部中心 = 花朵中心 */
+    transform-origin: 32px 85px;
+    opacity: 0;
+    box-shadow: inset -6px -6px 14px rgba(190,120,180,0.3),
+                inset 4px 4px 10px rgba(255,255,255,0.4);
+  }
 
-/* ============ TEMPLE ============ */
-.temple-scene { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
-.temple-icon { font-size: 70px; filter: drop-shadow(0 6px 20px rgba(100,60,180,0.3)); }
-.bell-zone { position: relative; width: 100px; height: 110px; cursor: pointer; }
-.bell-zone .b-emoji { font-size: 64px; display: block; text-align: center; transition: transform 0.08s; }
-.bell-zone .b-emoji.swung { animation: bellSw 0.7s ease-in-out; }
-@keyframes bellSw {
-  0%,100%{transform:rotate(0)} 12%{transform:rotate(-15deg)} 28%{transform:rotate(12deg)}
-  44%{transform:rotate(-9deg)} 60%{transform:rotate(6deg)} 76%{transform:rotate(-3deg)} 90%{transform:rotate(2deg)}
-}
-.bell-zone .ripple { position: absolute; top: 28px; left: 18px; width: 64px; height: 64px;
-  border-radius: 50%; border: 2px solid rgba(250,197,61,0.5); opacity: 0; pointer-events: none; }
-.bell-zone .ripple.go { animation: ripExpand 1.2s ease-out forwards; }
-@keyframes ripExpand { 0%{transform:scale(0.4);opacity:0.9} 100%{transform:scale(3);opacity:0} }
-.hint { font-size: 13px; color: var(--iris-gold); animation: softBeat 2s ease-in-out infinite; }
-@keyframes softBeat { 0%,100%{opacity:0.45} 50%{opacity:1} }
-.worry-num { font-size: 13px; color: var(--text-dim); text-align: center; }
-.worry-msg { font-size: 13px; color: var(--iris-soft); text-align: center; max-width: 280px; line-height: 1.8; min-height: 20px; transition: all 0.4s; }
+  /* 外层大花瓣：12片，粉白色 */
+  .petal.outer {
+    background: linear-gradient(180deg,
+      rgba(255,250,253,0.98) 0%,
+      rgba(255,225,238,0.95) 35%,
+      rgba(240,170,210,0.9) 75%,
+      rgba(210,130,190,0.85) 100%);
+  }
+  .petal.outer.p1  { -webkit-animation: bloomP1  1.2s cubic-bezier(.25,.46,.45,.94) .04s forwards; animation: bloomP1  1.2s cubic-bezier(.25,.46,.45,.94) .04s forwards; }
+  .petal.outer.p2  { -webkit-animation: bloomP2  1.2s cubic-bezier(.25,.46,.45,.94) .08s forwards; animation: bloomP2  1.2s cubic-bezier(.25,.46,.45,.94) .08s forwards; }
+  .petal.outer.p3  { -webkit-animation: bloomP3  1.2s cubic-bezier(.25,.46,.45,.94) .12s forwards; animation: bloomP3  1.2s cubic-bezier(.25,.46,.45,.94) .12s forwards; }
+  .petal.outer.p4  { -webkit-animation: bloomP4  1.2s cubic-bezier(.25,.46,.45,.94) .16s forwards; animation: bloomP4  1.2s cubic-bezier(.25,.46,.45,.94) .16s forwards; }
+  .petal.outer.p5  { -webkit-animation: bloomP5  1.2s cubic-bezier(.25,.46,.45,.94) .20s forwards; animation: bloomP5  1.2s cubic-bezier(.25,.46,.45,.94) .20s forwards; }
+  .petal.outer.p6  { -webkit-animation: bloomP6  1.2s cubic-bezier(.25,.46,.45,.94) .24s forwards; animation: bloomP6  1.2s cubic-bezier(.25,.46,.45,.94) .24s forwards; }
+  .petal.outer.p7  { -webkit-animation: bloomP7  1.2s cubic-bezier(.25,.46,.45,.94) .28s forwards; animation: bloomP7  1.2s cubic-bezier(.25,.46,.45,.94) .28s forwards; }
+  .petal.outer.p8  { -webkit-animation: bloomP8  1.2s cubic-bezier(.25,.46,.45,.94) .32s forwards; animation: bloomP8  1.2s cubic-bezier(.25,.46,.45,.94) .32s forwards; }
+  .petal.outer.p9  { -webkit-animation: bloomP9  1.2s cubic-bezier(.25,.46,.45,.94) .36s forwards; animation: bloomP9  1.2s cubic-bezier(.25,.46,.45,.94) .36s forwards; }
+  .petal.outer.p10 { -webkit-animation: bloomP10 1.2s cubic-bezier(.25,.46,.45,.94) .40s forwards; animation: bloomP10 1.2s cubic-bezier(.25,.46,.45,.94) .40s forwards; }
+  .petal.outer.p11 { -webkit-animation: bloomP11 1.2s cubic-bezier(.25,.46,.45,.94) .44s forwards; animation: bloomP11 1.2s cubic-bezier(.25,.46,.45,.94) .44s forwards; }
+  .petal.outer.p12 { -webkit-animation: bloomP12 1.2s cubic-bezier(.25,.46,.45,.94) .48s forwards; animation: bloomP12 1.2s cubic-bezier(.25,.46,.45,.94) .48s forwards; }
 
-/* ============ RECHARGE ============ */
-.breathe-scene { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
-.breathe-ring {
-  width: 170px; height: 170px; border-radius: 50%;
-  position: relative; display: flex;
-  align-items: center; justify-content: center; cursor: pointer;
-}
-.breathe-ring .r-bg {
-  position: absolute; width: 100%; height: 100%; border-radius: 50%;
-  background: radial-gradient(circle at center, rgba(120,80,200,0.25), rgba(90,60,160,0.06));
-  border: 1.5px solid rgba(150,120,220,0.32);
-  box-shadow: 0 0 40px rgba(100,60,170,0.22);
-}
-.breathe-ring .r-icon {
-  font-size: 52px; z-index: 1;
-  transition: transform 0.6s ease, font-size 0.6s ease;
-}
-.breathe-label { font-size: 16px; color: var(--text); font-weight: 600; text-align: center; transition: all 0.4s; }
-.breathe-sub  { font-size: 12px; color: var(--text-dim); text-align: center; }
-.charge-track { width: 200px; height: 6px; background: rgba(150,120,220,0.16); border-radius: 3px; overflow: hidden; }
-.charge-fill  { height: 100%; background: linear-gradient(90deg, var(--iris-mid), var(--iris-gold)); border-radius: 3px; transition: width 0.4s ease; width: 0%; }
+  /* 中层花瓣：8片，紫色，位置错开 */
+  .petal.mid {
+    width: 50px; height: 65px;
+    left: -25px; top: -65px;
+    -webkit-transform-origin: 25px 65px;
+    transform-origin: 25px 65px;
+    background: linear-gradient(180deg,
+      rgba(248,235,255,0.95) 0%,
+      rgba(220,180,240,0.9) 50%,
+      rgba(170,120,210,0.85) 100%);
+    box-shadow: inset -4px -4px 10px rgba(150,90,180,0.3),
+                inset 3px 3px 8px rgba(255,255,255,0.4);
+  }
+  .petal.mid.m1 { -webkit-animation: bloomM1 1.0s cubic-bezier(.25,.46,.45,.94) .26s forwards; animation: bloomM1 1.0s cubic-bezier(.25,.46,.45,.94) .26s forwards; }
+  .petal.mid.m2 { -webkit-animation: bloomM2 1.0s cubic-bezier(.25,.46,.45,.94) .30s forwards; animation: bloomM2 1.0s cubic-bezier(.25,.46,.45,.94) .30s forwards; }
+  .petal.mid.m3 { -webkit-animation: bloomM3 1.0s cubic-bezier(.25,.46,.45,.94) .34s forwards; animation: bloomM3 1.0s cubic-bezier(.25,.46,.45,.94) .34s forwards; }
+  .petal.mid.m4 { -webkit-animation: bloomM4 1.0s cubic-bezier(.25,.46,.45,.94) .38s forwards; animation: bloomM4 1.0s cubic-bezier(.25,.46,.45,.94) .38s forwards; }
+  .petal.mid.m5 { -webkit-animation: bloomM5 1.0s cubic-bezier(.25,.46,.45,.94) .42s forwards; animation: bloomM5 1.0s cubic-bezier(.25,.46,.45,.94) .42s forwards; }
+  .petal.mid.m6 { -webkit-animation: bloomM6 1.0s cubic-bezier(.25,.46,.45,.94) .46s forwards; animation: bloomM6 1.0s cubic-bezier(.25,.46,.45,.94) .46s forwards; }
+  .petal.mid.m7 { -webkit-animation: bloomM7 1.0s cubic-bezier(.25,.46,.45,.94) .50s forwards; animation: bloomM7 1.0s cubic-bezier(.25,.46,.45,.94) .50s forwards; }
+  .petal.mid.m8 { -webkit-animation: bloomM8 1.0s cubic-bezier(.25,.46,.45,.94) .54s forwards; animation: bloomM8 1.0s cubic-bezier(.25,.46,.45,.94) .54s forwards; }
 
-/* ============ FOOD ============ */
-.food-scene { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; }
-.food-slot {
-  width: 180px; height: 180px;
-  background: var(--card-bg); border-radius: 22px;
-  border: 1.5px solid rgba(150,120,220,0.28);
-  display: flex; align-items: center; justify-content: center; overflow: hidden;
-}
-.food-slot .s-emoji { font-size: 72px; transition: transform 0.08s; }
-.food-slot .s-emoji.roll { animation: slotRoll 0.08s linear infinite; }
-@keyframes slotRoll {
-  0%{transform:translateY(0)} 25%{transform:translateY(-8px)}
-  50%{transform:translateY(0)} 75%{transform:translateY(8px)} 100%{transform:translateY(0)}
-}
-.spin-btn {
-  padding: 12px 36px;
-  background: linear-gradient(135deg, var(--iris-mid), var(--iris-deep));
-  border: none; border-radius: 28px;
-  color: #fff; font-size: 15px; font-weight: 700;
-  cursor: pointer; letter-spacing: 1px;
-  box-shadow: 0 4px 18px rgba(100,60,170,0.4);
-  transition: all 0.25s;
-}
-.spin-btn:active { transform: scale(0.92); }
-.food-result { font-size: 15px; color: var(--iris-gold); text-align: center; font-weight: 600; min-height: 22px; transition: all 0.3s; }
-.food-desc   { font-size: 12px; color: var(--text-dim); text-align: center; max-width: 280px; line-height: 1.6; }
+  /* 花心 */
+  .core {
+    position: absolute; top: 50%; left: 50%;
+    width: 40px; height: 40px;
+    margin-top: -20px; margin-left: -20px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff8e0 0%, #ffd888 45%, #e8a850 100%);
+    box-shadow: 0 0 18px rgba(255,200,120,0.55), inset 0 0 10px rgba(255,255,255,0.5);
+    opacity: 0;
+    -webkit-transform: scale(0);
+    transform: scale(0);
+    -webkit-animation: coreBloom 0.8s cubic-bezier(.34,1.56,.64,1) .50s forwards;
+    animation: coreBloom 0.8s cubic-bezier(.34,1.56,.64,1) .50s forwards;
+    z-index: 6;
+  }
+  .core::before {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    width: 60px; height: 60px; margin: -30px 0 0 -30px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,220,160,0.4) 0%, transparent 70%);
+    -webkit-animation: coreGlow 3s ease-in-out infinite;
+    animation: coreGlow 3s ease-in-out infinite;
+  }
 
-/* ============ PET ============ */
-.pet-scene { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; }
-.pet-stage {
-  width: 150px; height: 150px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; position: relative;
-}
-.pet-stage .p-emoji {
-  font-size: 90px;
-  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
-  filter: drop-shadow(0 5px 14px rgba(0,0,0,0.28));
-}
-.pet-stage .p-emoji.bop { animation: petBop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
-@keyframes petBop {
-  0%,100%{transform:translateY(0) scale(1)} 30%{transform:translateY(-26px) scale(1.1)}
-  60%{transform:translateY(-8px) scale(0.94)} 80%{transform:translateY(-4px) scale(1.02)}
-}
-.pet-stage .hearts { position: absolute; pointer-events: none; font-size: 22px; opacity: 0; }
-.pet-stage .hearts.pop { animation: heartUp 1.4s ease-out forwards; }
-@keyframes heartUp {
-  0%{opacity:1;transform:translateY(0) scale(0.4)} 40%{opacity:1;transform:translateY(-35px) scale(1.1)}
-  100%{opacity:0;transform:translateY(-70px) scale(0.7)}
-}
-.pet-name  { font-size: 15px; color: var(--text); font-weight: 600; }
-.pet-desc  { font-size: 12px; color: var(--text-dim); text-align: center; }
-.pet-nav   { display: flex; gap: 18px; }
-.pet-nav button {
-  width: 40px; height: 40px; border-radius: 50%;
-  background: rgba(30,18,55,0.7);
-  border: 1px solid rgba(140,110,200,0.28);
-  color: var(--text); font-size: 18px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s;
-}
-.pet-nav button:active { background: rgba(100,60,170,0.4); }
+  /* 花粉点：装饰在花心上 */
+  .pollen {
+    position: absolute; top: 50%; left: 50%;
+    width: 3px; height: 3px;
+    margin-top: -1.5px; margin-left: -1.5px;
+    border-radius: 50%; background: #c87028;
+    z-index: 7;
+    opacity: 0;
+    -webkit-animation: pollenShow .8s ease-out 1.8s forwards;
+    animation: pollenShow .8s ease-out 1.8s forwards;
+  }
 
-/* ============ FORTUNE ============ */
-.fortune-scene { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; }
-.fortune-area {
-  position: relative; width: 150px; height: 150px;
-  display: flex; align-items: center; justify-content: center; cursor: pointer;
-}
-.fortune-area .f-core { font-size: 60px; transition: transform 0.3s; }
-.fortune-petals { position: absolute; width: 100%; height: 100%; pointer-events: none; }
-.fortune-petals .fp {
-  position: absolute; font-size: 22px;
-  opacity: 0.75; transition: all 0.55s ease-out;
-}
-.fortune-petals .fp.gone {
-  opacity: 0; transform: translate(var(--fx), var(--fy)) rotate(var(--fr)) scale(0);
-}
-.fortune-msg {
-  font-size: 15px; color: var(--iris-gold);
-  text-align: center; font-weight: 600;
-  min-height: 50px; max-width: 280px;
-  line-height: 1.6; transition: all 0.45s; opacity: 0;
-}
-.fortune-msg.shown { opacity: 1; }
-.fortune-hint { font-size: 12px; color: var(--text-dim); animation: softBeat 2s ease-in-out infinite; }
+  /* 外层花瓣关键帧：统一从逆时针方向 -90deg 展开到各自扇区 */
+  @-webkit-keyframes bloomP1  { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(0deg) scale(1); opacity: .9; } }
+  @keyframes bloomP1  { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(0deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP2  { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(30deg) scale(1); opacity: .9; } }
+  @keyframes bloomP2  { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(30deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP3  { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(60deg) scale(1); opacity: .9; } }
+  @keyframes bloomP3  { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(60deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP4  { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(90deg) scale(1); opacity: .9; } }
+  @keyframes bloomP4  { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(90deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP5  { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(120deg) scale(1); opacity: .9; } }
+  @keyframes bloomP5  { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(120deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP6  { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(150deg) scale(1); opacity: .9; } }
+  @keyframes bloomP6  { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(150deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP7  { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(180deg) scale(1); opacity: .9; } }
+  @keyframes bloomP7  { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(180deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP8  { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(210deg) scale(1); opacity: .9; } }
+  @keyframes bloomP8  { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(210deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP9  { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(240deg) scale(1); opacity: .9; } }
+  @keyframes bloomP9  { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(240deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP10 { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(270deg) scale(1); opacity: .9; } }
+  @keyframes bloomP10 { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(270deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP11 { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(300deg) scale(1); opacity: .9; } }
+  @keyframes bloomP11 { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(300deg) scale(1); opacity: .9; } }
+  @-webkit-keyframes bloomP12 { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(330deg) scale(1); opacity: .9; } }
+  @keyframes bloomP12 { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(330deg) scale(1); opacity: .9; } }
 
-/* ============ PETAL RAIN ============ */
-.petal-drop {
-  position: fixed; pointer-events: none; z-index: 999;
-  animation: petalDrift linear forwards;
-}
-@keyframes petalDrift {
-  0%  { opacity:0; transform:translateY(-30px) rotate(0deg) scale(0.35); }
-  10% { opacity:0.85; transform:translateY(5vh) rotate(40deg) scale(1); }
-  70% { opacity:0.35; }
-  100%{ opacity:0; transform:translateY(105vh) translateX(var(--drift)) rotate(var(--spin)) scale(0.2); }
-}
+  /* 中层：统一从逆时针方向 -90deg 展开 */
+  @-webkit-keyframes bloomM1 { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(22.5deg) scale(1); opacity: .92; } }
+  @keyframes bloomM1 { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(22.5deg) scale(1); opacity: .92; } }
+  @-webkit-keyframes bloomM2 { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(67.5deg) scale(1); opacity: .92; } }
+  @keyframes bloomM2 { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(67.5deg) scale(1); opacity: .92; } }
+  @-webkit-keyframes bloomM3 { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(112.5deg) scale(1); opacity: .92; } }
+  @keyframes bloomM3 { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(112.5deg) scale(1); opacity: .92; } }
+  @-webkit-keyframes bloomM4 { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(157.5deg) scale(1); opacity: .92; } }
+  @keyframes bloomM4 { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(157.5deg) scale(1); opacity: .92; } }
+  @-webkit-keyframes bloomM5 { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(202.5deg) scale(1); opacity: .92; } }
+  @keyframes bloomM5 { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(202.5deg) scale(1); opacity: .92; } }
+  @-webkit-keyframes bloomM6 { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(247.5deg) scale(1); opacity: .92; } }
+  @keyframes bloomM6 { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(247.5deg) scale(1); opacity: .92; } }
+  @-webkit-keyframes bloomM7 { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(292.5deg) scale(1); opacity: .92; } }
+  @keyframes bloomM7 { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(292.5deg) scale(1); opacity: .92; } }
+  @-webkit-keyframes bloomM8 { 0% { -webkit-transform: rotate(-90deg) scale(0); opacity: 0; } 100% { -webkit-transform: rotate(337.5deg) scale(1); opacity: .92; } }
+  @keyframes bloomM8 { 0% { transform: rotate(-90deg) scale(0); opacity: 0; } 100% { transform: rotate(337.5deg) scale(1); opacity: .92; } }
 
-/* WeChat share tip */
-.wx-tip {
-  position: fixed; top: 10px; right: 14px; z-index: 1000;
-  font-size: 12px; color: var(--text-dim);
-  background: rgba(30,18,55,0.82); padding: 6px 12px;
-  border-radius: 10px; pointer-events: none; opacity: 0;
-  transition: opacity 0.35s;
-}
-.wx-tip.on { opacity: 1; }
+  @-webkit-keyframes coreBloom {
+    0% { -webkit-transform: scale(0); opacity: 0; }
+    70% { -webkit-transform: scale(1.2); opacity: 1; }
+    100% { -webkit-transform: scale(1); opacity: 1; }
+  }
+  @keyframes coreBloom {
+    0% { transform: scale(0); opacity: 0; }
+    70% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @-webkit-keyframes coreGlow {
+    0%,100% { -webkit-transform: scale(1); opacity: .65; }
+    50% { -webkit-transform: scale(1.3); opacity: .3; }
+  }
+  @keyframes coreGlow {
+    0%,100% { transform: scale(1); opacity: .65; }
+    50% { transform: scale(1.3); opacity: .3; }
+  }
+  @-webkit-keyframes pollenShow {
+    0% { opacity: 0; -webkit-transform: scale(0); }
+    100% { opacity: 1; -webkit-transform: scale(1); }
+  }
+  @keyframes pollenShow {
+    0% { opacity: 0; transform: scale(0); }
+    100% { opacity: 1; transform: scale(1); }
+  }
 
-/* Responsive */
-@media (min-width: 420px) {
-  .options-grid { max-width: 400px; gap: 12px; }
-  .option-card { padding: 20px 16px; border-radius: 20px; }
-  .option-card .card-icon { font-size: 38px; }
-  .option-card .card-label { font-size: 14px; }
-}
-@media (min-width: 768px) {
-  .options-grid { max-width: 480px; gap: 14px; }
-  .option-card { padding: 26px 20px; }
-  .option-card .card-icon { font-size: 44px; }
-  .option-card .card-label { font-size: 16px; }
-  .home-title { font-size: 30px; }
-  .iris-stage { width: 190px; height: 220px; }
-}
+  .flower.popped {
+    -webkit-animation: flowerPop .55s cubic-bezier(.2,.9,.3,1.2) forwards;
+    animation: flowerPop .55s cubic-bezier(.2,.9,.3,1.2) forwards;
+  }
+  @-webkit-keyframes flowerPop {
+    0% { -webkit-transform: scale(1); opacity: 1; }
+    40% { -webkit-transform: scale(1.2); opacity: .9; }
+    100% { -webkit-transform: scale(0); opacity: 0; }
+  }
+  @keyframes flowerPop {
+    0% { transform: scale(1); opacity: 1; }
+    40% { transform: scale(1.2); opacity: .9; }
+    100% { transform: scale(0); opacity: 0; }
+  }
+
+  /* 花瓣爆开：每片花瓣朝外旋转飞散 */
+  .petal.scatter-1  { -webkit-animation: scatter1  .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter1  .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  .petal.scatter-2  { -webkit-animation: scatter2  .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter2  .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  .petal.scatter-3  { -webkit-animation: scatter3  .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter3  .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  .petal.scatter-4  { -webkit-animation: scatter4  .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter4  .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  .petal.scatter-5  { -webkit-animation: scatter5  .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter5  .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  .petal.scatter-6  { -webkit-animation: scatter6  .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter6  .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  .petal.scatter-7  { -webkit-animation: scatter7  .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter7  .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  .petal.scatter-8  { -webkit-animation: scatter8  .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter8  .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  .petal.scatter-9  { -webkit-animation: scatter9  .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter9  .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  .petal.scatter-10 { -webkit-animation: scatter10 .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter10 .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  .petal.scatter-11 { -webkit-animation: scatter11 .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter11 .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  .petal.scatter-12 { -webkit-animation: scatter12 .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter12 .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  /* 8个中层花瓣 */
+  .petal.scatter-13 { -webkit-animation: scatter13 .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter13 .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  .petal.scatter-14 { -webkit-animation: scatter14 .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter14 .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  .petal.scatter-15 { -webkit-animation: scatter15 .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter15 .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  .petal.scatter-16 { -webkit-animation: scatter16 .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter16 .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  .petal.scatter-17 { -webkit-animation: scatter17 .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter17 .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  .petal.scatter-18 { -webkit-animation: scatter18 .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter18 .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  .petal.scatter-19 { -webkit-animation: scatter19 .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter19 .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+  .petal.scatter-20 { -webkit-animation: scatter20 .9s cubic-bezier(.25,.7,.4,1) forwards !important; animation: scatter20 .9s cubic-bezier(.25,.7,.4,1) forwards !important; }
+
+  @-webkit-keyframes scatter1  { 0% { -webkit-transform: rotate(0deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(45deg) translate(120px, -60px) scale(.2); opacity: 0; } }
+  @keyframes scatter1  { 0% { transform: rotate(0deg) scale(1); opacity: 1; } 100% { transform: rotate(45deg) translate(120px, -60px) scale(.2); opacity: 0; } }
+  @-webkit-keyframes scatter2  { 0% { -webkit-transform: rotate(30deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(90deg) translate(140px, 0) scale(.2); opacity: 0; } }
+  @keyframes scatter2  { 0% { transform: rotate(30deg) scale(1); opacity: 1; } 100% { transform: rotate(90deg) translate(140px, 0) scale(.2); opacity: 0; } }
+  @-webkit-keyframes scatter3  { 0% { -webkit-transform: rotate(60deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(135deg) translate(120px, 60px) scale(.2); opacity: 0; } }
+  @keyframes scatter3  { 0% { transform: rotate(60deg) scale(1); opacity: 1; } 100% { transform: rotate(135deg) translate(120px, 60px) scale(.2); opacity: 0; } }
+  @-webkit-keyframes scatter4  { 0% { -webkit-transform: rotate(90deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(180deg) translate(60px, 120px) scale(.2); opacity: 0; } }
+  @keyframes scatter4  { 0% { transform: rotate(90deg) scale(1); opacity: 1; } 100% { transform: rotate(180deg) translate(60px, 120px) scale(.2); opacity: 0; } }
+  @-webkit-keyframes scatter5  { 0% { -webkit-transform: rotate(120deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(225deg) translate(0, 140px) scale(.2); opacity: 0; } }
+  @keyframes scatter5  { 0% { transform: rotate(120deg) scale(1); opacity: 1; } 100% { transform: rotate(225deg) translate(0, 140px) scale(.2); opacity: 0; } }
+  @-webkit-keyframes scatter6  { 0% { -webkit-transform: rotate(150deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(270deg) translate(-60px, 120px) scale(.2); opacity: 0; } }
+  @keyframes scatter6  { 0% { transform: rotate(150deg) scale(1); opacity: 1; } 100% { transform: rotate(270deg) translate(-60px, 120px) scale(.2); opacity: 0; } }
+  @-webkit-keyframes scatter7  { 0% { -webkit-transform: rotate(180deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(315deg) translate(-120px, 60px) scale(.2); opacity: 0; } }
+  @keyframes scatter7  { 0% { transform: rotate(180deg) scale(1); opacity: 1; } 100% { transform: rotate(315deg) translate(-120px, 60px) scale(.2); opacity: 0; } }
+  @-webkit-keyframes scatter8  { 0% { -webkit-transform: rotate(210deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(360deg) translate(-140px, 0) scale(.2); opacity: 0; } }
+  @keyframes scatter8  { 0% { transform: rotate(210deg) scale(1); opacity: 1; } 100% { transform: rotate(360deg) translate(-140px, 0) scale(.2); opacity: 0; } }
+  @-webkit-keyframes scatter9  { 0% { -webkit-transform: rotate(240deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(405deg) translate(-120px, -60px) scale(.2); opacity: 0; } }
+  @keyframes scatter9  { 0% { transform: rotate(240deg) scale(1); opacity: 1; } 100% { transform: rotate(405deg) translate(-120px, -60px) scale(.2); opacity: 0; } }
+  @-webkit-keyframes scatter10 { 0% { -webkit-transform: rotate(270deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(450deg) translate(-60px, -120px) scale(.2); opacity: 0; } }
+  @keyframes scatter10 { 0% { transform: rotate(270deg) scale(1); opacity: 1; } 100% { transform: rotate(450deg) translate(-60px, -120px) scale(.2); opacity: 0; } }
+  @-webkit-keyframes scatter11 { 0% { -webkit-transform: rotate(300deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(495deg) translate(0, -140px) scale(.2); opacity: 0; } }
+  @keyframes scatter11 { 0% { transform: rotate(300deg) scale(1); opacity: 1; } 100% { transform: rotate(495deg) translate(0, -140px) scale(.2); opacity: 0; } }
+  @-webkit-keyframes scatter12 { 0% { -webkit-transform: rotate(330deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(540deg) translate(60px, -120px) scale(.2); opacity: 0; } }
+  @keyframes scatter12 { 0% { transform: rotate(330deg) scale(1); opacity: 1; } 100% { transform: rotate(540deg) translate(60px, -120px) scale(.2); opacity: 0; } }
+  @-webkit-keyframes scatter13 { 0% { -webkit-transform: rotate(22.5deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(67deg) translate(100px, -100px) scale(.15); opacity: 0; } }
+  @keyframes scatter13 { 0% { transform: rotate(22.5deg) scale(1); opacity: 1; } 100% { transform: rotate(67deg) translate(100px, -100px) scale(.15); opacity: 0; } }
+  @-webkit-keyframes scatter14 { 0% { -webkit-transform: rotate(67.5deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(135deg) translate(130px, 0) scale(.15); opacity: 0; } }
+  @keyframes scatter14 { 0% { transform: rotate(67.5deg) scale(1); opacity: 1; } 100% { transform: rotate(135deg) translate(130px, 0) scale(.15); opacity: 0; } }
+  @-webkit-keyframes scatter15 { 0% { -webkit-transform: rotate(112.5deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(180deg) translate(100px, 100px) scale(.15); opacity: 0; } }
+  @keyframes scatter15 { 0% { transform: rotate(112.5deg) scale(1); opacity: 1; } 100% { transform: rotate(180deg) translate(100px, 100px) scale(.15); opacity: 0; } }
+  @-webkit-keyframes scatter16 { 0% { -webkit-transform: rotate(157.5deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(225deg) translate(0, 130px) scale(.15); opacity: 0; } }
+  @keyframes scatter16 { 0% { transform: rotate(157.5deg) scale(1); opacity: 1; } 100% { transform: rotate(225deg) translate(0, 130px) scale(.15); opacity: 0; } }
+  @-webkit-keyframes scatter17 { 0% { -webkit-transform: rotate(202.5deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(270deg) translate(-100px, 100px) scale(.15); opacity: 0; } }
+  @keyframes scatter17 { 0% { transform: rotate(202.5deg) scale(1); opacity: 1; } 100% { transform: rotate(270deg) translate(-100px, 100px) scale(.15); opacity: 0; } }
+  @-webkit-keyframes scatter18 { 0% { -webkit-transform: rotate(247.5deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(315deg) translate(-130px, 0) scale(.15); opacity: 0; } }
+  @keyframes scatter18 { 0% { transform: rotate(247.5deg) scale(1); opacity: 1; } 100% { transform: rotate(315deg) translate(-130px, 0) scale(.15); opacity: 0; } }
+  @-webkit-keyframes scatter19 { 0% { -webkit-transform: rotate(292.5deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(360deg) translate(-100px, -100px) scale(.15); opacity: 0; } }
+  @keyframes scatter19 { 0% { transform: rotate(292.5deg) scale(1); opacity: 1; } 100% { transform: rotate(360deg) translate(-100px, -100px) scale(.15); opacity: 0; } }
+  @-webkit-keyframes scatter20 { 0% { -webkit-transform: rotate(337.5deg) scale(1); opacity: 1; } 100% { -webkit-transform: rotate(405deg) translate(0, -130px) scale(.15); opacity: 0; } }
+  @keyframes scatter20 { 0% { transform: rotate(337.5deg) scale(1); opacity: 1; } 100% { transform: rotate(405deg) translate(0, -130px) scale(.15); opacity: 0; } }
+
+  /* 花心也爆开 */
+  .core.scatter-core {
+    -webkit-animation: coreScatter .9s ease-out forwards !important;
+    animation: coreScatter .9s ease-out forwards !important;
+  }
+  @-webkit-keyframes coreScatter {
+    0% { -webkit-transform: scale(1); opacity: 1; }
+    100% { -webkit-transform: scale(0) rotate(540deg); opacity: 0; }
+  }
+  @keyframes coreScatter {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0) rotate(540deg); opacity: 0; }
+  }
+
+  .ring {
+    position: absolute; border-radius: 50%;
+    pointer-events: none;
+  }
+  .ring-1 {
+    top: -24px; left: -24px; right: -24px; bottom: -24px;
+    border: 1.5px dashed rgba(255,200,220,0.35);
+    -webkit-animation: spin 20s linear infinite;
+    animation: spin 20s linear infinite;
+  }
+  .ring-2 {
+    top: -52px; left: -52px; right: -52px; bottom: -52px;
+    border: 1px solid rgba(184,168,232,0.2);
+    -webkit-animation: spin 35s linear infinite reverse;
+    animation: spin 35s linear infinite reverse;
+  }
+  @-webkit-keyframes spin { to { -webkit-transform: rotate(360deg); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .tap-hint {
+    position: absolute; top:0; left:0; width:100%; height:100%;
+    display: -webkit-flex; display: flex;
+    -webkit-align-items: center; align-items: center;
+    -webkit-justify-content: center; justify-content: center;
+    font-size: 13px; color: #fff; font-weight: 600;
+    letter-spacing: 2px; font-family: "PingFang SC", sans-serif;
+    text-shadow: 0 1px 8px rgba(90,58,168,0.4);
+    pointer-events: none;
+    z-index: 6;
+    opacity: 0;
+    -webkit-animation: hintPulse 2s ease-in-out 2.5s infinite;
+    animation: hintPulse 2s ease-in-out 2.5s infinite;
+  }
+  @-webkit-keyframes hintPulse { 0%,100% { opacity:.5; } 50% { opacity:1; } }
+  @keyframes hintPulse { 0%,100% { opacity:.5; } 50% { opacity:1; } }
+
+  /* 卡片 */
+  .card-wrap {
+    position: absolute; left: 50%; top: 50%;
+    -webkit-transform: translate(-50%, -50%) scale(0.7);
+    transform: translate(-50%, -50%) scale(0.7);
+    width: 88%; max-width: 340px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .6s cubic-bezier(.2,.9,.3,1), transform .6s cubic-bezier(.2,.9,.3,1.2);
+    z-index: 10;
+  }
+  .card-wrap.show {
+    opacity: 1;
+    -webkit-transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: auto;
+  }
+
+  .card {
+    background: -webkit-linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 100%);
+    background: linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 100%);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border: 1.5px solid rgba(255,255,255,0.18);
+    border-radius: 18px;
+    padding: 32px 24px 24px;
+    -webkit-box-shadow: 0 20px 60px rgba(90,58,168,0.5);
+    box-shadow: 0 20px 60px rgba(90,58,168,0.5);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content:""; position:absolute; top:0; left:0; right:0; height:2px;
+    background: -webkit-linear-gradient(left, transparent, #ffd1a8, #e8a8d8, #b8a8e8, transparent);
+    background: linear-gradient(90deg, transparent, #ffd1a8, #e8a8d8, #b8a8e8, transparent);
+    opacity: .6;
+  }
+
+  .card-kind {
+    font-size: 11px; letter-spacing: 5px; color: #d8a8ff;
+    margin-bottom: 16px; font-family: "PingFang SC", sans-serif;
+  }
+  .card-ico { font-size: 42px; margin-bottom: 12px; }
+  .card-title {
+    font-size: 20px; font-weight: 600; color: #fff;
+    margin-bottom: 10px; letter-spacing: 1px;
+    font-family: "PingFang SC", sans-serif;
+  }
+  .card-text {
+    font-size: 15px; line-height: 1.85; color: #e0d4f0;
+    white-space: pre-line;
+  }
+  .card-sub {
+    font-size: 12px; color: #9a86c4; margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(184,168,232,0.15);
+    font-family: "PingFang SC", sans-serif;
+  }
+  .card-sub:empty { display: none; }
+
+  /* 卡片左上角关闭按钮 */
+  .card-close {
+    position: absolute; top: 10px; left: 12px;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 1px solid rgba(184,168,232,0.25);
+    background: rgba(30,22,50,0.45);
+    color: rgba(216,200,255,0.7);
+    font-size: 10px; line-height: 1;
+    cursor: pointer; font-family: inherit;
+    display: -webkit-flex; display: flex;
+    -webkit-align-items: center; align-items: center;
+    -webkit-justify-content: center; justify-content: center;
+    z-index: 4;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    transition: all .2s;
+  }
+  .card-close:hover { background: rgba(60,40,90,0.65); color: rgba(232,216,255,0.95); border-color: rgba(184,168,232,0.5); }
+  .card-close:active { -webkit-transform: scale(0.86); transform: scale(0.86); background: rgba(60,40,90,0.7); }
+
+  /* ===== 稀有度系统 ===== */
+  .rarity-tag {
+    position: absolute; top: 12px; right: 14px;
+    font-size: 9px; font-weight: 700; letter-spacing: 1px;
+    padding: 3px 8px; border-radius: 6px;
+    font-family: "PingFang SC", sans-serif;
+    z-index: 3;
+  }
+  .rarity-tag.r { background: rgba(184,168,232,0.2); color: #b8a8e8; }
+  .rarity-tag.sr { background: rgba(100,160,255,0.25); color: #8ac8ff; }
+  .rarity-tag.ssr { background: rgba(200,130,255,0.3); color: #e8a8ff; }
+  .rarity-tag.ur {
+    background: linear-gradient(135deg, #d4a017, #b8860b);
+    color: #2a1a00;
+    -webkit-animation: urShine 2.4s ease-in-out infinite;
+    animation: urShine 2.4s ease-in-out infinite;
+  }
+  @-webkit-keyframes urShine { 0%,100% { box-shadow: 0 0 4px rgba(212,160,23,0.4); } 50% { box-shadow: 0 0 10px rgba(255,180,0,0.55); } }
+  @keyframes urShine { 0%,100% { box-shadow: 0 0 4px rgba(212,160,23,0.4); } 50% { box-shadow: 0 0 10px rgba(255,180,0,0.55); } }
+
+  /* 稀有度边框 */
+  .card.rarity-r { border-color: rgba(255,255,255,0.18); }
+  .card.rarity-sr { border-color: rgba(100,160,255,0.4); box-shadow: 0 20px 60px rgba(60,100,200,0.4); }
+  .card.rarity-ssr {
+    border-color: rgba(200,130,255,0.5);
+    box-shadow: 0 20px 60px rgba(140,60,200,0.5), 0 0 30px rgba(200,130,255,0.3);
+  }
+  /* UR 传说：暗金质感 + 动态流光，靠动效不靠亮度 */
+  .card.rarity-ur {
+    border: 1.5px solid transparent;
+    background:
+      -webkit-linear-gradient(160deg, rgba(60,45,20,0.35) 0%, rgba(30,22,10,0.25) 100%) padding-box,
+      -webkit-linear-gradient(135deg, #8a6a1a 0%, #d4a017 50%, #8a6a1a 100%) border-box;
+    background:
+      linear-gradient(160deg, rgba(60,45,20,0.35) 0%, rgba(30,22,10,0.25) 100%) padding-box,
+      linear-gradient(135deg, #8a6a1a 0%, #d4a017 50%, #8a6a1a 100%) border-box;
+    box-shadow: 0 20px 50px rgba(100,70,0,0.35);
+    -webkit-animation: urBreath 3.5s ease-in-out infinite;
+    animation: urBreath 3.5s ease-in-out infinite;
+  }
+  /* 呼吸光晕：缓慢明暗，不是一直亮 */
+  @-webkit-keyframes urBreath {
+    0%,100% { box-shadow: 0 20px 50px rgba(100,70,0,0.3), 0 0 0 rgba(255,180,0,0); }
+    50% { box-shadow: 0 20px 50px rgba(100,70,0,0.3), 0 0 28px rgba(255,180,0,0.22); }
+  }
+  @keyframes urBreath {
+    0%,100% { box-shadow: 0 20px 50px rgba(100,70,0,0.3), 0 0 0 rgba(255,180,0,0); }
+    50% { box-shadow: 0 20px 50px rgba(100,70,0,0.3), 0 0 28px rgba(255,180,0,0.22); }
+  }
+  /* 横扫流光带：柔化，不刺眼 */
+  .card.rarity-ur::before {
+    background: linear-gradient(90deg, transparent, rgba(255,215,0,0.35), rgba(255,140,0,0.22), rgba(255,215,0,0.35), transparent);
+    opacity: 0.5;
+  }
+  /* 表面镭射扫光：斜向柔光带缓慢扫过，screen 混合只加亮不遮文字 */
+  .card.rarity-ur::after {
+    content: '';
+    position: absolute; top: 0; left: -50%;
+    width: 40%; height: 100%;
+    background: linear-gradient(100deg, transparent 0%, rgba(255,235,180,0.12) 50%, transparent 100%);
+    -webkit-transform: skewX(-20deg);
+    transform: skewX(-20deg);
+    mix-blend-mode: screen;
+    -webkit-animation: urSweep 4.5s ease-in-out infinite;
+    animation: urSweep 4.5s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  @-webkit-keyframes urSweep {
+    0% { left: -50%; }
+    55%,100% { left: 120%; }
+  }
+  @keyframes urSweep {
+    0% { left: -50%; }
+    55%,100% { left: 120%; }
+  }
+
+  /* UR 金光粒子爆发层 */
+  .gold-burst-layer {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 150;
+    opacity: 0;
+  }
+  .gold-burst-layer.active { opacity: 1; }
+  .gold-particle {
+    position: absolute; width: 6px; height: 6px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff8d0 0%, #ffd700 50%, transparent 100%);
+    box-shadow: 0 0 10px #ffd700;
+    -webkit-animation: goldFly 1.5s cubic-bezier(.15,.6,.3,1) forwards;
+    animation: goldFly 1.5s cubic-bezier(.15,.6,.3,1) forwards;
+  }
+  @-webkit-keyframes goldFly {
+    0% { -webkit-transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    50% { opacity: 1; }
+    100% { -webkit-transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.2); opacity: 0; }
+  }
+  @keyframes goldFly {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    50% { opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.2); opacity: 0; }
+  }
+  .purple-glow {
+    position: absolute; top: 50%; left: 50%;
+    width: 300px; height: 300px;
+    margin: -150px 0 0 -150px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,130,255,0.4) 0%, transparent 70%);
+    -webkit-animation: purplePulse 1.2s ease-out forwards;
+    animation: purplePulse 1.2s ease-out forwards;
+  }
+  @-webkit-keyframes purplePulse {
+    0% { -webkit-transform: scale(0.3); opacity: 0; }
+    40% { opacity: 1; }
+    100% { -webkit-transform: scale(1.5); opacity: 0; }
+  }
+  @keyframes purplePulse {
+    0% { transform: scale(0.3); opacity: 0; }
+    40% { opacity: 1; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+
+  /* 收集进度 */
+  .collect-progress {
+    font-size: 10px; color: #d8c8ff; letter-spacing: 1px;
+    font-family: "PingFang SC", sans-serif;
+    opacity: 0.8;
+  }
+
+  /* 限定卡池按钮 */
+  .limited-btn {
+    background: linear-gradient(135deg, rgba(255,180,100,0.2), rgba(232,168,216,0.2));
+    border: 1px solid rgba(255,180,100,0.4);
+    color: #ffd8a8;
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 11px; letter-spacing: 1px;
+    cursor: pointer; font-family: inherit;
+    position: relative;
+  }
+  .limited-btn:active { transform: scale(0.95); }
+  .limited-btn.available {
+    -webkit-animation: limitedPulse 2s ease-in-out infinite;
+    animation: limitedPulse 2s ease-in-out infinite;
+  }
+  .limited-btn.used { opacity: 0.5; }
+  @-webkit-keyframes limitedPulse { 0%,100% { box-shadow: 0 0 0 rgba(255,180,100,0.4); } 50% { box-shadow: 0 0 16px rgba(255,180,100,0.7); } }
+  @keyframes limitedPulse { 0%,100% { box-shadow: 0 0 0 rgba(255,180,100,0.4); } 50% { box-shadow: 0 0 16px rgba(255,180,100,0.7); } }
+
+  /* 限定卡预告 */
+  .limited-preview {
+    position: absolute; bottom: 60px; left: 0; right: 0;
+    text-align: center;
+    font-size: 10px; color: #9a86c4; letter-spacing: 1px;
+    font-family: "PingFang SC", sans-serif;
+    opacity: 0; transition: opacity .6s;
+    pointer-events: none;
+  }
+  .limited-preview.show { opacity: 0.7; }
+
+  /* 收集册稀有度分组 */
+  .collect-section { margin-bottom: 20px; }
+  .collect-section-title {
+    font-size: 11px; letter-spacing: 2px; margin-bottom: 10px;
+    padding-bottom: 6px; border-bottom: 1px solid rgba(184,168,232,0.12);
+    font-family: "PingFang SC", sans-serif;
+  }
+  .collect-section-title .tier-ur { color: #ffd700; }
+  .collect-section-title .tier-ssr { color: #e8a8ff; }
+  .collect-section-title .tier-sr { color: #8ac8ff; }
+  .collect-section-title .tier-r { color: #b8a8e8; }
+  .collect-section-title .tier-limited { color: #ffb878; }
+  .collect-mini-card {
+    display: inline-block; width: 60px; vertical-align: top;
+    margin: 4px 6px; text-align: center;
+  }
+  .collect-mini-card .mini-ico {
+    font-size: 24px; width: 48px; height: 48px; line-height: 48px;
+    border-radius: 10px; margin: 0 auto 4px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(184,168,232,0.15);
+  }
+  .collect-mini-card.collected .mini-ico { background: rgba(255,220,180,0.1); }
+  .collect-mini-card.locked .mini-ico {
+    background: rgba(255,255,255,0.02);
+    color: transparent;
+  }
+  .collect-mini-card.locked .mini-ico::before { content: '?'; color: rgba(154,134,196,0.4); font-size: 18px; }
+  .collect-mini-card.expired .mini-ico { opacity: 0.3; filter: grayscale(1); }
+  .collect-mini-card .mini-name {
+    font-size: 8px; color: #9a86c4; letter-spacing: 0.5px;
+    font-family: "PingFang SC", sans-serif;
+  }
+  .collect-mini-card.expired .mini-name::after { content: ' · 绝版'; color: #8a6a5a; }
+  .collect-mini-card .mini-tag {
+    font-size: 7px; margin-top: 1px;
+  }
+  .collect-mini-card .mini-tag.ur { color: #ffd700; }
+  .collect-mini-card .mini-tag.ssr { color: #e8a8ff; }
+  .collect-mini-card .mini-tag.sr { color: #8ac8ff; }
+  .collect-mini-card .mini-tag.r { color: #b8a8e8; }
+
+  .actions {
+    margin-top: 18px;
+    display: -webkit-flex; display: flex;
+    gap: 8px; -webkit-justify-content: center; justify-content: center;
+    -webkit-flex-wrap: wrap; flex-wrap: wrap;
+  }
+  .btn {
+    padding: 10px 18px; border: none; border-radius: 999px;
+    background: -webkit-linear-gradient(left, #d8a8ff 0%, #8a6ac8 100%);
+    background: linear-gradient(135deg, #d8a8ff 0%, #8a6ac8 100%);
+    color: #fff; font-size: 13px; font-weight: 600;
+    font-family: "PingFang SC", sans-serif;
+    cursor: pointer;
+    -webkit-box-shadow: 0 6px 16px rgba(138,106,200,0.35);
+    box-shadow: 0 6px 16px rgba(138,106,200,0.35);
+    transition: transform .15s;
+  }
+  .btn:active { -webkit-transform: scale(0.95); transform: scale(0.95); }
+  .btn.ghost {
+    background: transparent;
+    border: 1.5px solid rgba(184,168,232,0.4);
+    -webkit-box-shadow: none; box-shadow: none;
+  }
+
+  /* 底部栏 */
+  .bottom-bar {
+    position: absolute; bottom: 32px; left: 0; right: 0;
+    display: -webkit-flex; display: flex;
+    -webkit-justify-content: center; justify-content: center;
+    -webkit-align-items: center; align-items: center;
+    -webkit-flex-wrap: wrap; flex-wrap: wrap;
+    gap: 8px 12px;
+    padding: 0 16px;
+    font-family: "PingFang SC", sans-serif;
+    transition: opacity .4s, transform .4s;
+  }
+  /* 移动端适配 */
+  @media (max-width: 380px) {
+    .bottom-bar { gap: 6px 10px; bottom: 24px; }
+    .counter { font-size: 10px; letter-spacing: 2px; }
+    .collect-progress { font-size: 9px; letter-spacing: 0.5px; }
+    .limited-btn { padding: 5px 11px; font-size: 10px; letter-spacing: 0.5px; }
+    .rarity-tag { top: 8px; right: 10px; font-size: 8px; padding: 2px 6px; }
+    .limited-preview { bottom: 70px; font-size: 9px; padding: 0 20px; }
+    .collect-mini-card { width: 52px; margin: 3px 4px; }
+    .collect-mini-card .mini-ico { width: 42px; height: 42px; line-height: 42px; font-size: 20px; }
+    .collect-mini-card .mini-name { font-size: 7px; }
+  }
+  .bottom-bar.hide { opacity: 0; -webkit-transform: translateY(16px); transform: translateY(16px); pointer-events: none; }
+  .counter {
+    font-size: 11px; color: #7a6a9a;
+    letter-spacing: 3px;
+    opacity: 0; transition: opacity 1s 1.2s;
+  }
+  .counter.show { opacity: .7; }
+  .collect-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(184,168,232,0.25);
+    color: #d8c8ff;
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 11px; letter-spacing: 1px;
+    cursor: pointer; font-family: inherit;
+    opacity: 0; transition: opacity 1s 1.3s;
+  }
+  .collect-btn.show { opacity: .9; }
+  .collect-btn:active { -webkit-transform: scale(0.95); transform: scale(0.95); }
+
+  /* 收集册弹层 */
+  .modal {
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    background: rgba(6,4,18,0.85);
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    z-index: 100;
+    display: none;
+    -webkit-align-items: flex-end; align-items: flex-end;
+    -webkit-justify-content: center; justify-content: center;
+  }
+  .modal.show { display: -webkit-flex; display: flex; }
+  .modal-inner {
+    width: 100%; max-width: 480px;
+    background: -webkit-linear-gradient(180deg, rgba(30,20,56,0.95) 0%, rgba(18,12,36,0.98) 100%);
+    background: linear-gradient(180deg, rgba(30,20,56,0.95) 0%, rgba(18,12,36,0.98) 100%);
+    border: 1px solid rgba(184,168,232,0.2);
+    border-radius: 18px 18px 0 0;
+    padding: 24px 20px 28px;
+    max-height: 80vh;
+    overflow-y: auto;
+    -webkit-transform: translateY(100%); transform: translateY(100%);
+    transition: transform .4s cubic-bezier(.2,.9,.3,1);
+  }
+  .modal.show .modal-inner { -webkit-transform: translateY(0); transform: translateY(0); }
+
+  .modal-header {
+    display: -webkit-flex; display: flex;
+    -webkit-justify-content: space-between; justify-content: space-between;
+    -webkit-align-items: center; align-items: center;
+    margin-bottom: 16px;
+  }
+  .modal-title {
+    font-size: 16px; font-weight: 700; color: #e8d8ff;
+    font-family: "PingFang SC", sans-serif;
+  }
+  .modal-title small {
+    display: block; font-size: 10px; color: #7a6a9a;
+    letter-spacing: 2px; font-weight: 400; margin-top: 2px;
+  }
+  .modal-close {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: none; color: #d8c8ff;
+    font-size: 16px; cursor: pointer;
+    display: -webkit-flex; display: flex;
+    -webkit-align-items: center; align-items: center;
+    -webkit-justify-content: center; justify-content: center;
+  }
+
+  .collect-list {
+    display: -webkit-flex; display: flex;
+    -webkit-flex-direction: column; flex-direction: column;
+    gap: 8px;
+  }
+  /* 紫色主题滚动条：作用于真正滚动的 .modal-inner 和 .orbit-stage */
+  .modal-inner,
+  .orbit-stage {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(184,168,232,0.4) transparent;
+  }
+  .modal-inner::-webkit-scrollbar,
+  .orbit-stage::-webkit-scrollbar {
+    width: 6px; height: 6px;
+  }
+  .modal-inner::-webkit-scrollbar-track,
+  .orbit-stage::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .modal-inner::-webkit-scrollbar-thumb,
+  .orbit-stage::-webkit-scrollbar-thumb {
+    background: rgba(184,168,232,0.35);
+    border-radius: 6px;
+  }
+  .modal-inner::-webkit-scrollbar-thumb:hover,
+  .orbit-stage::-webkit-scrollbar-thumb:hover {
+    background: rgba(184,168,232,0.55);
+  }
+  .collect-item {
+    display: -webkit-flex; display: flex;
+    -webkit-align-items: center; align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(184,168,232,0.12);
+    border-radius: 12px;
+  }
+  .collect-item.locked { opacity: 0.35; }
+  .ci-ico { font-size: 24px; width: 36px; text-align: center; }
+  .ci-info { -webkit-flex: 1; flex: 1; min-width: 0; }
+  .ci-name { font-size: 14px; font-weight: 600; color: #f0e8ff; font-family: "PingFang SC", sans-serif; }
+  .ci-desc {
+    font-size: 11px; color: #9a86c4; margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-family: "PingFang SC", sans-serif;
+  }
+  .ci-kind {
+    font-size: 9px; color: #b8a8e8;
+    padding: 2px 6px; border-radius: 4px;
+    background: rgba(184,168,232,0.15);
+    font-family: "PingFang SC", sans-serif;
+    letter-spacing: 1px;
+  }
+
+  .empty {
+    text-align: center; padding: 40px 20px;
+    color: #7a6a9a; font-size: 13px;
+    font-family: "PingFang SC", sans-serif;
+  }
+
+  /* 柔和光粒子：缓慢飘散上升 */
+  .glow-particle {
+    position: fixed; pointer-events: none; z-index: 50;
+    border-radius: 50%;
+    -webkit-animation: glowFloat 3s ease-out forwards;
+    animation: glowFloat 3s ease-out forwards;
+    -webkit-filter: blur(1px);
+    filter: blur(1px);
+  }
+  @-webkit-keyframes glowFloat {
+    0% { opacity: 0; -webkit-transform: translate(0, 0) scale(0.5); }
+    20% { opacity: 1; }
+    100% { opacity: 0; -webkit-transform: translate(var(--dx), var(--dy)) scale(1.5); }
+  }
+  @keyframes glowFloat {
+    0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+    20% { opacity: 1; }
+    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.5); }
+  }
+
+  /* 柔和光晕扩散 */
+  .halo-soft {
+    position: fixed; pointer-events: none; z-index: 49;
+    width: 20px; height: 20px;
+    margin: -10px 0 0 -10px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,220,240,0.6) 0%, rgba(232,168,216,0.3) 40%, transparent 70%);
+    -webkit-animation: haloSpread 1.5s ease-out forwards;
+    animation: haloSpread 1.5s ease-out forwards;
+  }
+  @-webkit-keyframes haloSpread {
+    0% { -webkit-transform: scale(0.5); opacity: 0; }
+    30% { opacity: 1; }
+    100% { -webkit-transform: scale(15); opacity: 0; }
+  }
+  @keyframes haloSpread {
+    0% { transform: scale(0.5); opacity: 0; }
+    30% { opacity: 1; }
+    100% { transform: scale(15); opacity: 0; }
+  }
+
+  /* ========== 卡牌网格选择 ========== */
+  .orbit-stage {
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    z-index: 60;
+    display: none;
+    -webkit-perspective: 1200px; perspective: 1200px;
+    -webkit-tap-highlight-color: transparent;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 60px 16px 80px;
+  }
+  .orbit-stage.show {
+    display: -webkit-flex; display: flex;
+    -webkit-flex-direction: column; flex-direction: column;
+    -webkit-align-items: center; align-items: center;
+  }
+
+  .orbit-grid {
+    display: -webkit-flex; display: flex;
+    -webkit-flex-wrap: wrap; flex-wrap: wrap;
+    -webkit-justify-content: center; justify-content: center;
+    gap: 12px;
+    max-width: 420px;
+  }
+
+  .orbit-card {
+    position: relative;
+    width: 88px; height: 124px;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    cursor: pointer;
+    -webkit-transition: -webkit-transform 0.4s cubic-bezier(.2,.8,.2,1), opacity 0.3s;
+    transition: transform 0.4s cubic-bezier(.2,.8,.2,1), opacity 0.3s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .orbit-card:active { -webkit-transform: scale(0.92); transform: scale(0.92); }
+
+  .orbit-face {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 10px;
+    -webkit-box-shadow: 0 6px 18px rgba(120,80,180,0.4), 0 0 12px rgba(232,160,210,0.2);
+    box-shadow: 0 6px 18px rgba(120,80,180,0.4), 0 0 12px rgba(232,160,210,0.2);
+    overflow: hidden;
+  }
+  .orbit-face.front {
+    background: linear-gradient(160deg,
+      rgba(255,235,245,0.95) 0%,
+      rgba(255,200,225,0.92) 40%,
+      rgba(200,150,210,0.9) 100%);
+    display: -webkit-flex; display: flex;
+    -webkit-flex-direction: column; flex-direction: column;
+    -webkit-align-items: center; align-items: center;
+    -webkit-justify-content: center; justify-content: center;
+    color: #4a2860;
+    font-family: "PingFang SC", sans-serif;
+  }
+  .orbit-face.front::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.5) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .orbit-face.back {
+    background: linear-gradient(160deg, #2a1850 0%, #1a0a3a 100%);
+    -webkit-transform: rotateY(180deg);
+    transform: rotateY(180deg);
+  }
+
+  .orbit-ico {
+    font-size: 32px;
+    margin-bottom: 4px;
+    -webkit-filter: drop-shadow(0 2px 6px rgba(120,80,180,0.4));
+    filter: drop-shadow(0 2px 6px rgba(120,80,180,0.4));
+    position: relative; z-index: 1;
+    line-height: 1;
+  }
+  .orbit-kind {
+    font-size: 7px; letter-spacing: 1px;
+    color: #6a3878; font-weight: 600;
+    position: relative; z-index: 1;
+    text-align: center;
+  }
+  /* 已收集标记 */
+  .orbit-card.collected .orbit-face.front::after {
+    content: '✦'; position: absolute;
+    top: 3px; right: 4px;
+    font-size: 8px;
+    color: #d8a860;
+  }
+
+  /* 顶部指引 */
+  .orbit-tip {
+    text-align: center; color: #b8a8d8;
+    font-size: 12px; letter-spacing: 4px;
+    font-family: "PingFang SC", sans-serif;
+    margin-bottom: 20px;
+    opacity: 0;
+    -webkit-animation: tipIn .6s ease-out forwards;
+    animation: tipIn .6s ease-out forwards;
+  }
+  @-webkit-keyframes tipIn { to { opacity: 0.8; } }
+  @keyframes tipIn { to { opacity: 0.8; } }
+
+  .orbit-cta {
+    text-align: center; color: #8a7aa8;
+    font-size: 11px; letter-spacing: 2px;
+    font-family: "PingFang SC", sans-serif;
+    margin-top: 16px;
+    opacity: 0;
+    -webkit-animation: tipIn .6s ease-out .4s forwards;
+    animation: tipIn .6s ease-out .4s forwards;
+  }
+
+  /* 选中飞出动画 */
+  .orbit-card.selected {
+    z-index: 10;
+    pointer-events: none;
+  }
+  .orbit-card.faded {
+    opacity: 0 !important;
+    pointer-events: none;
+    -webkit-transform: scale(0.5) !important;
+    transform: scale(0.5) !important;
+  }
+
+  /* 卡片入场前的遮罩（黑屏过渡） */
+  .flash {
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,220,240,0.95) 50%, rgba(120,80,180,0.9) 100%);
+    z-index: 200;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .flash.go {
+    -webkit-animation: flashAnim 1s ease-out forwards;
+    animation: flashAnim 1s ease-out forwards;
+  }
+  @-webkit-keyframes flashAnim {
+    0%   { opacity: 0; -webkit-transform: scale(0.3); }
+    25%  { opacity: 1; -webkit-transform: scale(1.3); }
+    55%  { opacity: .95; -webkit-transform: scale(2.2); }
+    100% { opacity: 0; -webkit-transform: scale(4.5); }
+  }
+  @keyframes flashAnim {
+    0%   { opacity: 0; transform: scale(0.3); }
+    25%  { opacity: 1; transform: scale(1.3); }
+    55%  { opacity: .95; transform: scale(2.2); }
+    100% { opacity: 0; transform: scale(4.5); }
+  }
+
+  /* 光环冲击波 */
+  .shockwave {
+    position: fixed;
+    top: 50%; left: 50%;
+    width: 100px; height: 100px;
+    margin: -50px 0 0 -50px;
+    border: 2px solid rgba(255,200,240,.85);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 199;
+    -webkit-animation: shockwaveAnim .9s ease-out forwards;
+    animation: shockwaveAnim .9s ease-out forwards;
+  }
+  .shockwave.sw-2 {
+    border-color: rgba(216,180,255,.7);
+    -webkit-animation-delay: .12s;
+    animation-delay: .12s;
+  }
+  .shockwave.sw-3 {
+    border-color: rgba(255,220,180,.6);
+    -webkit-animation-delay: .24s;
+    animation-delay: .24s;
+  }
+  @-webkit-keyframes shockwaveAnim {
+    0%   { -webkit-transform: scale(0); opacity: 1; }
+    100% { -webkit-transform: scale(8); opacity: 0; }
+  }
+  @keyframes shockwaveAnim {
+    0%   { transform: scale(0); opacity: 1; }
+    100% { transform: scale(8); opacity: 0; }
+  }
+
+  /* 屏幕震动 */
+  .shake { -webkit-animation: shakeAnim .35s ease-out; animation: shakeAnim .35s ease-out; }
+  @-webkit-keyframes shakeAnim {
+    0%, 100% { -webkit-transform: translate(0,0); }
+    20% { -webkit-transform: translate(-4px, 3px); }
+    40% { -webkit-transform: translate(5px, -2px); }
+    60% { -webkit-transform: translate(-3px, -4px); }
+    80% { -webkit-transform: translate(2px, 3px); }
+  }
+  @keyframes shakeAnim {
+    0%, 100% { transform: translate(0,0); }
+    20% { transform: translate(-4px, 3px); }
+    40% { transform: translate(5px, -2px); }
+    60% { transform: translate(-3px, -4px); }
+    80% { transform: translate(2px, 3px); }
+  }
+
+  /* 卡片辐射光线 */
+  .ray {
+    position: absolute; top: 50%; left: 50%;
+    width: 2px; height: 80px;
+    margin: -40px 0 0 -1px;
+    background: linear-gradient(180deg, transparent, #fff, transparent);
+    -webkit-transform-origin: 50% 50%;
+    transform-origin: 50% 50%;
+    pointer-events: none;
+    -webkit-animation: rayShot .7s ease-out forwards;
+    animation: rayShot .7s ease-out forwards;
+    opacity: 0;
+  }
+  @-webkit-keyframes rayShot {
+    0%   { opacity: 1; -webkit-transform: rotate(var(--ang, 0deg)) translateY(-30px) scaleY(.3); }
+    100% { opacity: 0; -webkit-transform: rotate(var(--ang, 0deg)) translateY(-180px) scaleY(1.4); }
+  }
+  @keyframes rayShot {
+    0%   { opacity: 1; transform: rotate(var(--ang, 0deg)) translateY(-30px) scaleY(.3); }
+    100% { opacity: 0; transform: rotate(var(--ang, 0deg)) translateY(-180px) scaleY(1.4); }
+  }
+
+  /* ===== 每日一签 ===== */
+  .daily-badge {
+    position: absolute; top: -8px; right: -8px;
+    background: linear-gradient(135deg, #ffd888, #e8a850);
+    color: #4a2860; font-size: 9px; font-weight: 700;
+    padding: 2px 8px; border-radius: 10px;
+    letter-spacing: 1px; font-family: "PingFang SC", sans-serif;
+    box-shadow: 0 2px 8px rgba(232,168,80,0.4);
+    z-index: 8;
+  }
+  .daily-sign-banner {
+    text-align: center; padding: 6px 0;
+    font-size: 11px; color: #e8a850;
+    letter-spacing: 2px; font-family: "PingFang SC", sans-serif;
+    margin-bottom: 8px;
+    opacity: 0; transition: opacity .5s .8s;
+  }
+  .daily-sign-banner.show { opacity: .9; }
+  .daily-sign-banner .daily-date {
+    font-size: 10px; color: #9a86c4; letter-spacing: 1px;
+    display: block; margin-top: 2px;
+  }
+  .card.daily-card {
+    border-color: rgba(232,168,80,0.35);
+    box-shadow: 0 20px 60px rgba(232,168,80,0.35), 0 0 30px rgba(255,200,120,0.15);
+  }
+  .card.daily-card::after {
+    content: '今 日 一 签';
+    position: absolute; top: 8px; right: 12px;
+    font-size: 8px; letter-spacing: 2px;
+    color: #e8a850; opacity: .7;
+    font-family: "PingFang SC", sans-serif;
+  }
+
+  /* ===== 隐藏卡 ===== */
+  .hidden-unlock-toast {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, rgba(255,200,120,0.95), rgba(232,168,80,0.95));
+    color: #4a2860; padding: 16px 28px; border-radius: 16px;
+    font-size: 14px; font-weight: 600; letter-spacing: 2px;
+    font-family: "PingFang SC", sans-serif;
+    box-shadow: 0 12px 40px rgba(232,168,80,0.5);
+    z-index: 300; text-align: center;
+    -webkit-animation: toastPop 2s cubic-bezier(.2,.9,.3,1) forwards;
+    animation: toastPop 2s cubic-bezier(.2,.9,.3,1) forwards;
+  }
+  .hidden-unlock-toast small {
+    display: block; font-size: 10px; font-weight: 400;
+    letter-spacing: 1px; margin-top: 4px; opacity: .7;
+  }
+  @-webkit-keyframes toastPop {
+    0% { opacity: 0; -webkit-transform: translate(-50%, -50%) scale(0.5); }
+    15% { opacity: 1; -webkit-transform: translate(-50%, -50%) scale(1.05); }
+    30% { -webkit-transform: translate(-50%, -50%) scale(1); }
+    75% { opacity: 1; }
+    100% { opacity: 0; -webkit-transform: translate(-50%, -50%) scale(0.9) translateY(-20px); }
+  }
+  @keyframes toastPop {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    15% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+    30% { transform: translate(-50%, -50%) scale(1); }
+    75% { opacity: 1; }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9) translateY(-20px); }
+  }
+  .collect-item.hidden-card {
+    border-color: rgba(232,168,80,0.3);
+    background: rgba(232,168,80,0.06);
+  }
+  .ci-badge {
+    font-size: 8px; color: #e8a850; letter-spacing: 1px;
+    background: rgba(232,168,80,0.12); padding: 1px 5px;
+    border-radius: 4px; font-family: "PingFang SC", sans-serif;
+  }
 </style>
 </head>
 <body>
+  <canvas id="stars"></canvas>
 
-<div id="app">
-  <canvas id="bgCanvas"></canvas>
+  <div class="stage">
+    <div class="signature" id="sig">— to IRIS —</div>
 
-  <!-- ===== HOME SCREEN ===== -->
-  <div class="screen active" id="homeScreen">
-    <!-- Real iris flower SVG from public domain -->
-    <div class="iris-stage">
-      <img src="iris-purple.svg" alt="鸢尾花">
+    <div class="title" id="title">点一下光</div>
+
+    <div class="welcome" id="welcome"></div>
+
+    <div class="flower-wrap" id="flowerWrap">
+      <div class="ring ring-1"></div>
+      <div class="ring ring-2"></div>
+      <div class="flower" id="flower">
+        <div class="lotus">
+          <!-- 外层花瓣 12片（公转环：30s/圈 逆时针） -->
+          <div class="petal-ring outer-ring">
+            <div class="petal outer p1"></div>
+            <div class="petal outer p2"></div>
+            <div class="petal outer p3"></div>
+            <div class="petal outer p4"></div>
+            <div class="petal outer p5"></div>
+            <div class="petal outer p6"></div>
+            <div class="petal outer p7"></div>
+            <div class="petal outer p8"></div>
+            <div class="petal outer p9"></div>
+            <div class="petal outer p10"></div>
+            <div class="petal outer p11"></div>
+            <div class="petal outer p12"></div>
+          </div>
+          <!-- 中层花瓣 8片（公转环：18s/圈 逆时针） -->
+          <div class="petal-ring mid-ring">
+            <div class="petal mid m1"></div>
+            <div class="petal mid m2"></div>
+            <div class="petal mid m3"></div>
+            <div class="petal mid m4"></div>
+            <div class="petal mid m5"></div>
+            <div class="petal mid m6"></div>
+            <div class="petal mid m7"></div>
+            <div class="petal mid m8"></div>
+          </div>
+          <!-- 花心 -->
+          <div class="core"></div>
+        </div>
+        <div class="tap-hint"></div>
+      </div>
     </div>
 
-    <h1 class="home-title">IRIS · 鸢尾花的奇遇</h1>
-    <p class="home-subtitle">今天，你想去哪里？</p>
+    <div class="bottom-bar">
+      <div class="counter" id="counter">已翻开 0 张</div>
+      <div class="collect-progress" id="collectProgress">✦ 已收集 0 / 42</div>
+      <button class="limited-btn" id="limitedBtn">✦ 限定卡池</button>
+    </div>
+    <div class="limited-preview" id="limitedPreview"></div>
+  </div>
 
-    <div class="options-grid">
-      <div class="option-card" data-screen="temple">
-        <span class="card-icon">🏛️</span><span class="card-label">寺庙消灾</span>
+  <!-- UR/SSR 特效层 -->
+  <div class="gold-burst-layer" id="goldBurstLayer"></div>
+
+  <!-- 卡片 -->
+  <div class="card-wrap" id="cardWrap">
+    <div class="card" id="theCard">
+      <button class="card-close" id="cardClose" aria-label="关闭">✕</button>
+      <div class="rarity-tag" id="rarityTag" style="display:none;">R</div>
+      <div class="daily-sign-banner" id="dailyBanner" style="display:none;"></div>
+      <div class="card-kind" id="cKind">—</div>
+      <div class="card-ico" id="cIco">✨</div>
+      <div class="card-title" id="cTitle">—</div>
+      <div class="card-text" id="cText">—</div>
+      <div class="card-sub" id="cSub"></div>
+
+      <div class="actions">
+        <button class="btn" id="nextBtn">再翻一张 ↻</button>
       </div>
-      <div class="option-card" data-screen="recharge">
-        <span class="card-icon">🔋</span><span class="card-label">默默充电</span>
-      </div>
-      <div class="option-card" data-screen="food">
-        <span class="card-icon">🍜</span><span class="card-label">大吃特吃</span>
-      </div>
-      <div class="option-card" data-screen="pet">
-        <span class="card-icon">🦔</span><span class="card-label">异宠店</span>
-      </div>
-      <div class="option-card full-width" data-screen="fortune">
-        <span class="card-icon">🌸</span><span class="card-label">备用方法 · 鸢尾占卜</span>
+      <div class="actions" style="margin-top:10px;">
+        <button class="btn ghost" id="closeBtn" style="font-size:13px; padding:10px 22px; min-width:100px;">← 放回去</button>
+        <button class="btn ghost" id="viewCollected" style="font-size:11px; padding:6px 14px;">看收藏册</button>
       </div>
     </div>
   </div>
 
-  <!-- ===== TEMPLE SCREEN ===== -->
-  <div class="screen" id="templeScreen">
-    <div class="game-header">
-      <button class="back-btn" onclick="goHome()">←</button>
-      <span class="game-title">🏛️ 寺庙消灾</span><div style="width:38px"></div>
-    </div>
-    <div class="temple-scene">
-      <div class="temple-icon">⛩️</div>
-      <div class="bell-zone" id="bellZone">
-        <span class="b-emoji" id="bellEmoji">🔔</span>
-        <div class="ripple" id="rippleRing"></div>
-      </div>
-      <div class="hint">👆 敲响钟声，驱散烦恼</div>
-      <div class="worry-num" id="worryNum">✨ 还有 <b>5</b> 个烦恼等待消散</div>
-      <div class="worry-msg" id="worryMsg"></div>
-    </div>
+  <!-- 卡牌抽签 -->
+  <div class="orbit-stage" id="orbitStage">
+    <div class="orbit-tip">选 一 张 · 听 天 意</div>
+    <div class="orbit-grid" id="orbitGrid"></div>
+    <div class="orbit-cta">点 击 任 意 卡 牌 翻 签</div>
   </div>
 
-  <!-- ===== RECHARGE SCREEN ===== -->
-  <div class="screen" id="rechargeScreen">
-    <div class="game-header">
-      <button class="back-btn" onclick="goHome()">←</button>
-      <span class="game-title">🔋 默默充电</span><div style="width:38px"></div>
-    </div>
-    <div class="breathe-scene">
-      <div class="breathe-ring" id="breatheRing">
-        <div class="r-bg"></div>
-        <span class="r-icon" id="bloomIcon">🪷</span>
-      </div>
-      <div class="breathe-label" id="breatheLabel">准备好了吗？</div>
-      <div class="breathe-sub" id="breatheSub">跟着鸢尾花的节奏呼吸</div>
-      <div class="charge-track"><div class="charge-fill" id="chargeFill"></div></div>
-    </div>
-  </div>
+  <div class="flash" id="flash"></div>
 
-  <!-- ===== FOOD SCREEN ===== -->
-  <div class="screen" id="foodScreen">
-    <div class="game-header">
-      <button class="back-btn" onclick="goHome()">←</button>
-      <span class="game-title">🍜 大吃特吃</span><div style="width:38px"></div>
-    </div>
-    <div class="food-scene">
-      <div class="food-slot"><span class="s-emoji" id="slotEmoji">🍜</span></div>
-      <button class="spin-btn" id="spinBtn">🎰 今天吃什么？</button>
-      <div class="food-result" id="foodResult"></div>
-      <div class="food-desc" id="foodDesc"></div>
+  <!-- 收集册弹层 -->
+  <div class="modal" id="modal">
+    <div class="modal-inner">
+      <div class="modal-header">
+        <div class="modal-title">
+          收集册
+          <small id="collectedCount">0 / 22</small>
+        </div>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+      <div class="collect-list" id="collectList"></div>
     </div>
   </div>
-
-  <!-- ===== PET SCREEN ===== -->
-  <div class="screen" id="petScreen">
-    <div class="game-header">
-      <button class="back-btn" onclick="goHome()">←</button>
-      <span class="game-title">🦔 异宠店</span><div style="width:38px"></div>
-    </div>
-    <div class="pet-scene">
-      <div class="pet-stage" id="petStage">
-        <span class="p-emoji" id="petEmoji">🦔</span>
-        <span class="hearts" id="heartPop">💜</span>
-      </div>
-      <div class="pet-name" id="petName">小刺刺 · 非洲迷你刺猬</div>
-      <div class="pet-desc" id="petDesc">戳戳我，我会很开心！</div>
-      <div class="pet-nav">
-        <button id="prevPet">◀</button>
-        <button id="nextPet">▶</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== FORTUNE SCREEN ===== -->
-  <div class="screen" id="fortuneScreen">
-    <div class="game-header">
-      <button class="back-btn" onclick="goHome()">←</button>
-      <span class="game-title">🌸 鸢尾占卜</span><div style="width:38px"></div>
-    </div>
-    <div class="fortune-scene">
-      <div class="fortune-area" id="fortuneArea">
-        <span class="f-core">🌸</span>
-        <div class="fortune-petals" id="fortunePetals"></div>
-      </div>
-      <div class="fortune-hint" id="fortuneHint">👆 点一下鸢尾花，摘一片花瓣</div>
-      <div class="fortune-msg" id="fortuneMsg"></div>
-    </div>
-  </div>
-</div>
 
 <script>
-// ── BG PARTICLES ──
-const canvas = document.getElementById('bgCanvas');
-const ctx = canvas.getContext('2d');
-let W, H;
-function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-window.addEventListener('resize', resize); resize();
+/* ===== 卡片内容库 ===== */
+var CARDS = [
+  // 一句心意 (7) — SSR×4 金句 + R×3 日常
+  { kind:'一句心意', ico:'💫', title:'', text:'IRIS，你知道吗，\n光是想起你的名字，\n今天就变得比昨天好一点了。', sub:'', rarity:'R' },
+  { kind:'一句心意', ico:'🌙', title:'', text:'月亮不会奔向你，\n但我会。\n不远万里的那种。', sub:'', rarity:'SSR' },
+  { kind:'一句心意', ico:'🌸', title:'', text:'如果是去见你，\n我一定是用跑的。\n你不用跑，我来就好。', sub:'', rarity:'SSR' },
+  { kind:'一句心意', ico:'⭐', title:'', text:'你是我藏在星星里的浪漫，\n是我等了好久的光。', sub:'', rarity:'R' },
+  { kind:'一句心意', ico:'🍃', title:'', text:'风很温柔，花很浪漫，\n你很特别，我很喜欢。', sub:'', rarity:'R' },
+  { kind:'一句心意', ico:'✨', title:'', text:'遇见你以后，\n我所有的"随便"，\n其实都是"只要你在就好"。', sub:'', rarity:'SSR' },
+  { kind:'一句心意', ico:'🦋', title:'', text:'你身上有光，\n我抓来看看，\n然后就不想放了。', sub:'', rarity:'SSR' },
+  // 今天去哪儿 (9) — SR×4 场景 + R×5 日常
+  { kind:'今天去哪儿', ico:'⛩️', title:'寺庙祈福', text:'一起去庙里走一圈吧，\n不求别的，\n就求你今天开开心心。', sub:'挑个下午，人少的时候去最舒服', rarity:'SR' },
+  { kind:'今天去哪儿', ico:'🦎', title:'异宠店', text:'去看那些奇奇怪怪的小家伙吧，\n蜥蜴、守宫、角蛙……\n看看你敢不敢摸一下。', sub:'记得问店员能不能上手，别偷偷摸', rarity:'R' },
+  { kind:'今天去哪儿', ico:'⛰️', title:'岳麓山', text:'上山！\n爱晚亭坐一会儿，\n看日落慢慢把天染成橘色。', sub:'下午3点出发，刚好赶上日落', rarity:'SR' },
+  { kind:'今天去哪儿', ico:'🎨', title:'湖南美术馆', text:'看展去。\n不用懂，\n就一起慢慢逛，假装很文艺。', sub:'记得提前预约，周一别去', rarity:'SR' },
+  { kind:'今天去哪儿', ico:'📷', title:'谢子龙影像馆', text:'拍照圣地，\n给你拍一组好看的，\n朋友圈有素材了。', sub:'下午光线最棒，穿浅色更出片', rarity:'SR' },
+  { kind:'今天去哪儿', ico:'☕', title:'泊麓山咖啡书吧', text:'找个靠窗位置，\n各看各的书，\n偶尔抬头对视一下就好。', sub:'4楼有山景位，先到先得', rarity:'R' },
+  { kind:'今天去哪儿', ico:'🍜', title:'麓山南觅食', text:'从头吃到尾，\n糖油粑粑、臭豆腐、烤冷面……\n我请客，你负责吃。', sub:'别吃太饱，后面还有好几家', rarity:'R' },
+  { kind:'今天去哪儿', ico:'🌊', title:'橘子洲散步', text:'湘江边走一走，\n吹吹风，\n什么烦恼都没了。', sub:'建议坐观光车，走完全程腿会废', rarity:'R' },
+  { kind:'今天去哪儿', ico:'📖', title:'止间书店', text:'安静的一下午，\n一本书，一杯咖啡，\n还有你。', sub:'二楼有咖啡区，更安静', rarity:'R' },
+  // 小小挑战 (6) — SR×3 互动 + R×3 轻松
+  { kind:'小小挑战', ico:'🎯', title:'对视十秒', text:'现在，\n看着我的眼睛，\n不许笑，不许躲。\n……\n好，你输了。', sub:'输了的人请喝奶茶', rarity:'SR' },
+  { kind:'小小挑战', ico:'🎵', title:'猜歌名', text:'我哼一句，\n你猜是什么歌。\n猜不出来就……\n让我弹你脑门一下。', sub:'我跑调了你也得猜', rarity:'R' },
+  { kind:'小小挑战', ico:'📸', title:'拍一张奇怪的合照', text:'做个最丑的表情，\n三二一，咔嚓。\n这张照片我存了。', sub:'不许删，以后要拿来笑你', rarity:'SR' },
+  { kind:'小小挑战', ico:'🤫', title:'用眼神对话', text:'接下来一分钟，\n谁都不许说话，\n只用眼神交流。\n看看你能不能猜到我在想什么。', sub:'提示：我想的一定是好吃的', rarity:'R' },
+  { kind:'小小挑战', ico:'🎲', title:'真心话大冒险', text:'石头剪刀布，\n输的人选一个：\n真心话还是大冒险？', sub:'我先来，我选……你猜', rarity:'SR' },
+  { kind:'小小挑战', ico:'🍬', title:'分享耳机', text:'一人一只耳机，\n听同一首歌，\n什么都不说也挺好。', sub:'我推荐的歌不许说难听', rarity:'R' }
+];
 
-const bgP = [];
-class Petal {
-  constructor(init) {
-    this.x = Math.random() * W;
-    this.y = init ? Math.random() * H : -20;
-    this.w = Math.random() * 7 + 3;
-    this.h = this.w * 2.2;
-    this.vy = Math.random() * 0.35 + 0.12;
-    this.vx = (Math.random() - 0.5) * 0.3;
-    this.rot = Math.random() * 360;
-    this.vr = (Math.random() - 0.5) * 0.35;
-    this.alpha = Math.random() * 0.32 + 0.06;
-    this.purple = Math.random() < 0.6;
+/* ===== 隐藏卡（UR 传说级）===== */
+var HIDDEN_CARDS = [
+  { kind:'✦ 传说', ico:'🌟', title:'缘分卡', text:'第七次相遇——\n这不是巧合，\n是缘分在替我们计数。', sub:'第7次访问解锁', unlockVisit: 7, rarity:'UR' },
+  { kind:'✦ 传说', ico:'🌙', title:'晚安卡', text:'夜深了，\n如果你还没睡，\n那就......晚安。\n梦里见。', sub:'晚上22点后概率获得', nightOnly: true, rarity:'UR' },
+  { kind:'✦ 传说', ico:'🤝', title:'约定卡', text:'连续三天都来了，\n那我们约定——\n明天，\n也要见面。', sub:'连续3天访问解锁', unlockStreak: 3, rarity:'UR' },
+  { kind:'✦ 传说', ico:'💌', title:'真心卡', text:'其实每一张卡片，\n都是同一句话：\n我想你了。', sub:'翻开20张解锁', unlockFlips: 20, rarity:'UR' }
+];
+
+/* ===== 限定卡（时间跨度钩子，每月/节气只开1张）===== */
+/* 节气卡：4张，各开放30天窗口 */
+var SEASONAL_CARDS = [
+  { id:'spring', ico:'🌱', title:'迎春卡', text:'春天来了，\n我们去看看第一朵花开。\n它会替我告诉你——\n新的一年，我在。', openStart:'01-20', openEnd:'02-19', rarity:'SSR' },
+  { id:'summer', ico:'🍉', title:'初夏卡', text:'蝉鸣起来的时候，\n我想和你一起吃西瓜。\n甜的给你，\n籽我来吐。', openStart:'05-06', openEnd:'06-05', rarity:'SSR' },
+  { id:'autumn', ico:'🍂', title:'落叶卡', text:'踩落叶的声音，\n是我们专属的秋天 BGM。\n嘎吱嘎吱，\n像在替我们说悄悄话。', openStart:'08-08', openEnd:'09-07', rarity:'SSR' },
+  { id:'winter', ico:'❄️', title:'围炉卡', text:'天冷了，\n但靠近你的时候很暖。\n这个冬天，\n我不想到处跑，\n只想待在你旁边。', openStart:'11-08', openEnd:'12-07', rarity:'SSR' }
+];
+/* 月份卡：12张，每月1张，错过等明年 */
+var MONTHLY_CARDS = [
+  { month:0,  ico:'🎆', title:'新年卡',  text:'新的一年，\n第一个想见的人是你。\n烟花再好看，\n也不如你抬头时的眼睛。', rarity:'SSR' },
+  { month:1,  ico:'🌷', title:'春日卡',  text:'二月的风开始软了，\n像你笑起来的样子。\n这个春天，\n我预定了。', rarity:'SSR' },
+  { month:2,  ico:'🌸', title:'樱花卡',  text:'樱花飘落的速度\n是秒速五厘米，\n而我走向你的速度——\n是能用跑就绝不走。', rarity:'SSR' },
+  { month:3,  ico:'🌧️', title:'雨季卡',  text:'四月的雨，\n打在伞上噼里啪啦。\n一把伞两个人，\n肩膀挨着肩膀，\n这就是最好的晴天。', rarity:'SSR' },
+  { month:4,  ico:'🌺', title:'繁花卡',  text:'五月到处都在开花，\n但我想摘一朵\n刚好开在你笑的那一秒的，\n别处没有。', rarity:'SSR' },
+  { month:5,  ico:'🌞', title:'盛夏卡',  text:'六月的光很烈，\n但晒在我心上的，\n是你回头看我的那一眼。', rarity:'SSR' },
+  { month:6,  ico:'🦗', title:'蝉鸣卡',  text:'蝉叫了一整个夏天，\n我忍了一整个夏天\n没说出口的话——\n想你了。', rarity:'SSR' },
+  { month:7,  ico:'🌠', title:'星夜卡',  text:'八月的流星，\n我许了一个愿。\n不能告诉你，\n说了就不灵了。\n……好吧，和你有关。', rarity:'SSR' },
+  { month:8,  ico:'🌕', title:'月圆卡',  text:'九月的月亮很圆，\n但不如你靠在我肩上时，\n我心里的那个圆。', rarity:'SSR' },
+  { month:9,  ico:'🍁', title:'桂香卡',  text:'十月的风带着桂花味，\n走到哪儿都是甜的。\n就像想到你的时候，\n空气都是软的。', rarity:'SSR' },
+  { month:10, ico:'🍵', title:'暖茶卡',  text:'十一月适合窝着，\n一杯热茶，一部老电影，\n还有你靠在我肩膀上打瞌睡。\n这就够了。', rarity:'SSR' },
+  { month:11, ico:'🎄', title:'雪夜卡',  text:'十二月如果下雪，\n我们一起出去走走吧。\n走着走着，\n一不小心就白头了。', rarity:'SSR' }
+];
+
+/* 判断当前可用的限定卡（节气+当月） */
+function getActiveLimitedCards(){
+  var now = new Date();
+  var mmdd = (now.getMonth()+1<10?'0':'') + (now.getMonth()+1) + '-' + (now.getDate()<10?'0':'') + now.getDate();
+  var active = [];
+  // 节气卡
+  for (var i=0; i<SEASONAL_CARDS.length; i++){
+    var c = SEASONAL_CARDS[i];
+    if (mmdd >= c.openStart && mmdd <= c.openEnd) active.push(c);
   }
-  update() {
-    this.y += this.vy; this.x += this.vx + Math.sin(this.y * 0.02) * 0.12;
-    this.rot += this.vr;
-    if (this.y > H + 30) { this.y = -20; this.x = Math.random() * W; }
+  // 当月卡
+  for (var j=0; j<MONTHLY_CARDS.length; j++){
+    if (MONTHLY_CARDS[j].month === now.getMonth()) active.push(MONTHLY_CARDS[j]);
   }
-  draw(ctx) {
-    ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rot * Math.PI / 180);
-    ctx.globalAlpha = this.alpha;
-    ctx.fillStyle = this.purple ? 'rgba(155,120,215,1)' : 'rgba(250,197,61,0.75)';
-    ctx.beginPath(); ctx.ellipse(0, 0, this.w, this.h, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.restore();
-  }
+  return active;
 }
-for (let i = 0; i < 40; i++) bgP.push(new Petal(true));
-(function loop() {
-  ctx.clearRect(0, 0, W, H);
-  const g = ctx.createLinearGradient(0, 0, 0, H);
-  g.addColorStop(0, '#1A1032'); g.addColorStop(0.45, '#150C2A'); g.addColorStop(1, '#0E0820');
-  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-  bgP.forEach(p => { p.update(); p.draw(ctx); });
-  requestAnimationFrame(loop);
-})();
 
-// ── SCREEN NAV ──
-let currentScreen = 'home';
-function showScreen(id, dir) {
-  const oldEl = document.getElementById(currentScreen + 'Screen');
-  const newEl = document.getElementById(id + 'Screen');
-  if (!oldEl || !newEl || currentScreen === id) return;
-  ['exit-left','exit-right','enter-from-right','enter-from-left'].forEach(c => {
-    oldEl.classList.remove(c); newEl.classList.remove(c);
+/* 预告：下一个限定卡及距离天数 */
+function getNextLimitedPreview(){
+  var now = new Date();
+  var mmdd = (now.getMonth()+1<10?'0':'') + (now.getMonth()+1) + '-' + (now.getDate()<10?'0':'') + now.getDate();
+  var candidates = [];
+  for (var i=0; i<SEASONAL_CARDS.length; i++){
+    var c = SEASONAL_CARDS[i];
+    if (mmdd < c.openStart) candidates.push({ card:c, openDate:c.openStart, type:'节气' });
+  }
+  // 下个月卡
+  var nextMonth = (now.getMonth()+1) % 12;
+  candidates.push({ card: MONTHLY_CARDS[nextMonth], openDate: (nextMonth+1<10?'0':'')+(nextMonth+1)+'-01', type:'月份' });
+  if (candidates.length === 0) return null;
+  // 选最近的
+  candidates.sort(function(a,b){ return a.openDate < b.openDate ? -1 : 1; });
+  var next = candidates[0];
+  // 算天数
+  var parts = next.openDate.split('-');
+  var target = new Date(now.getFullYear(), parseInt(parts[0])-1, parseInt(parts[1]));
+  var diff = Math.ceil((target - now) / (1000*60*60*24));
+  if (diff < 0) diff = 0;
+  return { card: next.card, days: diff, type: next.type };
+}
+
+/* ===== 每日签语 ===== */
+var DAILY_FORTUNES = [
+  '今天会遇到一个让你心软的瞬间',
+  '适合说一句一直没说出口的话',
+  '今天的幸运色是鸢尾紫',
+  '会有一个意想不到的拥抱',
+  '今天适合慢下来走路',
+  '有人正在想你，只是没说',
+  '今天的天空会特别好看',
+  '会有好事发生，耐心等一等',
+  '今天的你值得被温柔对待',
+  '适合给想念的人发一条消息',
+  '今天的风会替你传达心意',
+  '适合做一个小小的约定',
+  '今天的月亮会替你说晚安',
+  '会有一个让你笑出声的时刻',
+  '今天的世界因你而柔软了一点'
+];
+
+/* ===== 星空 ===== */
+var canvas = document.getElementById('stars');
+var ctx = canvas.getContext('2d');
+var W, H;
+function resize(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+resize();
+addEventListener('resize', resize);
+
+var stars = [];
+for (var i=0; i<150; i++){
+  stars.push({
+    x: Math.random()*W, y: Math.random()*H,
+    r: Math.random()*1.6 + 0.2,
+    vx: (Math.random()-0.5)*0.08, vy: (Math.random()-0.5)*0.08,
+    a: Math.random()*0.6 + 0.2,
+    tw: Math.random()*Math.PI*2,
+    tws: 0.02 + Math.random()*0.03
   });
-  if (dir === 'forward') { oldEl.classList.add('exit-left'); newEl.classList.add('enter-from-right'); }
-  else { oldEl.classList.add('exit-right'); newEl.classList.add('enter-from-left'); }
-  oldEl.classList.remove('active'); newEl.classList.add('active');
-  setTimeout(() => { oldEl.classList.remove('exit-left','exit-right'); newEl.classList.remove('enter-from-right','enter-from-left'); }, 450);
-  currentScreen = id;
 }
-function goHome() { showScreen('home', 'back'); resetAll(); }
+var meteors = [];
 
-// ── PETAL BURST ──
-function burst(n) {
-  const emojis = ['💜','🌸','🪻','🔮','✨','💫','🍃'];
-  for (let i = 0; i < n; i++) {
-    const el = document.createElement('span'); el.className = 'petal-drop';
-    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-    el.style.left = (Math.random() * 80 + 8) + '%';
-    el.style.top = -(Math.random() * 50 + 10) + 'px';
-    el.style.animationDuration = (Math.random() * 2.5 + 3) + 's';
-    el.style.setProperty('--drift', (Math.random() - 0.5) * 100 + 'px');
-    el.style.setProperty('--spin', (Math.random() * 360) + 'deg');
-    el.style.fontSize = (Math.random() * 14 + 14) + 'px';
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 6000);
+function tick(){
+  ctx.clearRect(0,0,W,H);
+  for (var i=0; i<stars.length; i++){
+    var s = stars[i];
+    s.x += s.vx; s.y += s.vy;
+    if (s.x<0) s.x=W; if (s.x>W) s.x=0;
+    if (s.y<0) s.y=H; if (s.y>H) s.y=0;
+    s.tw += s.tws;
+    var alpha = s.a * (0.5 + 0.5*Math.sin(s.tw));
+    ctx.beginPath();
+    ctx.fillStyle = '#fff';
+    ctx.globalAlpha = alpha;
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  // 流星
+  if (Math.random() < 0.006 && meteors.length < 3) {
+    meteors.push({
+      x: Math.random()*W*0.6, y: Math.random()*H*0.3,
+      vx: 6 + Math.random()*4, vy: 3 + Math.random()*2,
+      len: 80 + Math.random()*60, a: 1
+    });
+  }
+  for (var j = meteors.length - 1; j >= 0; j--) {
+    var m = meteors[j];
+    m.x += m.vx; m.y += m.vy; m.a -= 0.015;
+    if (m.a <= 0 || m.x > W) { meteors.splice(j, 1); continue; }
+    var grad = ctx.createLinearGradient(m.x, m.y, m.x - m.len, m.y - m.len*0.5);
+    grad.addColorStop(0, 'rgba(255,255,255,' + m.a + ')');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(m.x, m.y);
+    ctx.lineTo(m.x - m.len, m.y - m.len*0.5);
+    ctx.stroke();
+  }
+  requestAnimationFrame(tick);
+}
+tick();
+
+/* ===== 入场动画 ===== */
+setTimeout(function(){
+  document.getElementById('sig').classList.add('show');
+  document.getElementById('title').classList.add('show');
+  document.getElementById('flowerWrap').classList.add('show');
+  document.getElementById('counter').classList.add('show');
+  // 欢迎语
+  var welcomeEl = document.getElementById('welcome');
+  var lastVisit = getLastVisitText();
+  welcomeEl.innerHTML = getWelcomeText() + (lastVisit ? '<span class="line2">' + lastVisit + '</span>' : '') + (memory.lastDailyDate !== getTodayStr() ? '<span class="line2">✦ 今日签语待领取</span>' : '<span class="line2">✦ 今日已签 ✓</span>');
+  welcomeEl.classList.add('show');
+  // 底部加个"看收藏"按钮
+  var bar = document.querySelector('.bottom-bar');
+  var btn = document.createElement('button');
+  btn.className = 'collect-btn show';
+  btn.id = 'viewCollectedBottom';
+  btn.textContent = '✦ 收集册';
+  btn.addEventListener('click', openModal);
+  bar.insertBefore(btn, document.querySelector('.counter'));
+}, 300);
+
+/* ===== 记忆系统 (localStorage) ===== */
+var STORAGE_KEY = 'iris_memory_v1';
+var memory = loadMemory();
+
+function loadMemory(){
+  try {
+    var s = localStorage.getItem(STORAGE_KEY);
+    var m = s ? JSON.parse(s) : {};
+    return {
+      collected: m.collected || {},
+      totalFlips: m.totalFlips || 0,
+      visitCount: m.visitCount || 0,
+      lastVisitTime: m.lastVisitTime || 0,
+      lastCardIdx: m.lastCardIdx || -1,
+      lastDailyDate: m.lastDailyDate || '',
+      dailyFortuneIdx: m.dailyFortuneIdx != null ? m.dailyFortuneIdx : null,
+      consecutiveDays: m.consecutiveDays || 0,
+      lastVisitDateStr: m.lastVisitDateStr || '',
+      unlockedHidden: m.unlockedHidden || {},
+      limitedCollected: m.limitedCollected || {},   // 限定卡已收集 {cardId: {time}}
+      lastLimitedDrawDate: m.lastLimitedDrawDate || ''  // 上次限定抽日期
+    };
+  } catch(e) {
+    return { collected: {}, totalFlips: 0, visitCount: 0, lastVisitTime: 0, lastCardIdx: -1,
+             lastDailyDate: '', dailyFortuneIdx: null, consecutiveDays: 0, lastVisitDateStr: '',
+             unlockedHidden: {}, limitedCollected: {}, lastLimitedDrawDate: '' };
   }
 }
 
-// ── CARD CLICK ──
-document.querySelectorAll('.option-card').forEach(card => {
-  card.addEventListener('click', function() {
-    const screen = this.dataset.screen;
-    burst(12); showScreen(screen, 'forward');
-    if (screen === 'temple') initTemple();
-    else if (screen === 'recharge') initRecharge();
-    else if (screen === 'food') initFood();
-    else if (screen === 'pet') initPet();
-    else if (screen === 'fortune') initFortune();
-  });
-});
-
-// ── TEMPLE ──
-const worries = ['工作上的一点小疲惫','深夜辗转反侧的失眠','莫名其妙涌上来的焦虑','和别人比较后的小失落','对未来的那一点点迷茫'];
-let wi = 0, tOn = false;
-function initTemple() { wi = 0; tOn = true;
-  document.getElementById('worryNum').innerHTML = '✨ 还有 <b>' + worries.length + '</b> 个烦恼等待消散';
-  document.getElementById('worryMsg').textContent = '深呼吸，准备好迎接平静了吗？';
+function saveMemory(){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(memory)); } catch(e) {}
 }
-document.getElementById('bellZone').addEventListener('click', function() {
-  if (!tOn || currentScreen !== 'temple') return;
-  const bell = document.getElementById('bellEmoji'), ripple = document.getElementById('rippleRing');
-  const msg = document.getElementById('worryMsg'), num = document.getElementById('worryNum');
-  bell.classList.remove('swung'); void bell.offsetWidth; bell.classList.add('swung');
-  ripple.classList.remove('go'); void ripple.offsetWidth; ripple.classList.add('go');
-  burst(8);
-  if (wi < worries.length) {
-    msg.textContent = '「' + worries[wi] + '」—— 被钟声带走了 ✨'; wi++;
-    const rem = worries.length - wi;
-    if (rem > 0) num.innerHTML = '✨ 还有 <b>' + rem + '</b> 个烦恼等待消散';
-    else { num.innerHTML = '🎉 <b>全部消散！</b>'; msg.textContent = '所有烦恼都随鸢尾花瓣飘走了～\nIRIS，你是最棒的！💜'; tOn = false; setTimeout(() => burst(25), 350); }
+
+function getTodayStr(){
+  var d = new Date();
+  return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+}
+
+function markVisit(){
+  memory.visitCount++;
+  var today = getTodayStr();
+  // 连续天数追踪
+  if (memory.lastVisitDateStr && memory.lastVisitDateStr !== today) {
+    var last = new Date(memory.lastVisitDateStr);
+    var diff = Math.floor((new Date(today) - last) / (1000*60*60*24));
+    if (diff === 1) memory.consecutiveDays++;
+    else memory.consecutiveDays = 1;
+  } else if (!memory.lastVisitDateStr) {
+    memory.consecutiveDays = 1;
   }
+  memory.lastVisitDateStr = today;
+  memory.lastVisitTime = Date.now();
+  saveMemory();
+}
+
+function getWelcomeText(){
+  var visits = memory.visitCount;
+  if (visits === 1) return '初次见面，请多指教 ✨';
+  if (visits === 2) return '又见面了，很高兴你还来 🌸';
+  if (visits === 3) return '第三次了，你是不是喜欢上这里了？ 😊';
+  if (visits === 5) return '五连打卡！我开始期待每天见到你了 🥰';
+  if (visits === 10) return '十次了！你是我的常客了 🎉';
+  if (visits > 10) return '第 ' + visits + ' 次相遇，谢谢你一直陪着我 💞';
+  var msgs = ['好久不见，想我了吗？ 💫', '欢迎回来，今天想翻哪张？ 🌙', '又见面啦，今天天气真好 🍃', '等你好久了，点一下吧 ✨'];
+  return msgs[(visits - 1) % msgs.length];
+}
+
+function getLastVisitText(){
+  if (!memory.lastVisitTime) return '';
+  var diff = Date.now() - memory.lastVisitTime;
+  var hours = Math.floor(diff / (1000 * 60 * 60));
+  var days = Math.floor(hours / 24);
+  if (days > 0) return '上次见面是 ' + days + ' 天前';
+  if (hours > 0) return '上次见面是 ' + hours + ' 小时前';
+  if (Math.floor(diff / 60000) > 0) return '上次见面是几分钟前';
+  return '刚见过面，这么快又来啦';
+}
+
+var collected = memory.collected;
+var currentIdx = -1;
+var count = memory.totalFlips;
+var lastIdx = memory.lastCardIdx;
+
+markVisit();
+
+/* ===== 交互 ===== */
+var flower = document.getElementById('flower');
+var flowerWrap = document.getElementById('flowerWrap');
+var cardWrap = document.getElementById('cardWrap');
+var cKind = document.getElementById('cKind');
+var cIco = document.getElementById('cIco');
+var cTitle = document.getElementById('cTitle');
+var cText = document.getElementById('cText');
+var cSub = document.getElementById('cSub');
+var counter = document.getElementById('counter');
+var nextBtn = document.getElementById('nextBtn');
+var closeBtn = document.getElementById('closeBtn');
+var viewCollectedBtn = document.getElementById('viewCollected');
+var modal = document.getElementById('modal');
+var modalClose = document.getElementById('modalClose');
+var collectList = document.getElementById('collectList');
+var collectedCount = document.getElementById('collectedCount');
+var orbitStage = document.getElementById('orbitStage');
+var orbitGrid = document.getElementById('orbitGrid');
+var flash = document.getElementById('flash');
+var limitedBtn = document.getElementById('limitedBtn');
+var limitedPreview = document.getElementById('limitedPreview');
+var welcomeEl = null;
+
+/* 初始化限定卡系统 */
+function initLimitedSystem(){
+  // 按钮状态
+  var canDraw = canDrawLimitedToday();
+  var active = getActiveLimitedCards();
+  if (active.length === 0) {
+    limitedBtn.textContent = '✦ 暂无限定';
+    limitedBtn.classList.add('used');
+  } else if (canDraw) {
+    limitedBtn.textContent = '✦ 今日限定 1/1';
+    limitedBtn.classList.add('available');
+    limitedBtn.classList.remove('used');
+  } else {
+    limitedBtn.textContent = '✦ 今日限定 0/1';
+    limitedBtn.classList.add('used');
+    limitedBtn.classList.remove('available');
+  }
+  // 预告倒计时
+  var next = getNextLimitedPreview();
+  if (next) {
+    limitedPreview.textContent = '距离 ' + next.card.ico + ' ' + next.card.title + ' 开放还有 ' + next.days + ' 天';
+    limitedPreview.classList.add('show');
+  }
+  // 收集进度
+  updateCollectionProgress();
+}
+initLimitedSystem();
+
+// 限定卡池按钮
+limitedBtn.addEventListener('click', function(){
+  if (!canDrawLimitedToday()) {
+    var toast = document.createElement('div');
+    toast.className = 'hidden-unlock-toast';
+    toast.innerHTML = '今天的限定抽已用<small>明天再来吧</small>';
+    document.body.appendChild(toast);
+    setTimeout(function(){ if(toast.parentNode) toast.parentNode.removeChild(toast); }, 2000);
+    return;
+  }
+  var card = drawLimited();
+  if (!card) {
+    var toast2 = document.createElement('div');
+    toast2.className = 'hidden-unlock-toast';
+    toast2.innerHTML = '当前没有可抽的限定卡<small>等下一个节气/月份吧</small>';
+    document.body.appendChild(toast2);
+    setTimeout(function(){ if(toast2.parentNode) toast2.parentNode.removeChild(toast2); }, 2000);
+    return;
+  }
+  // 展示限定卡
+  currentIdx = -99; // 标记限定卡
+  var theCard = document.getElementById('theCard');
+  theCard.className = 'card rarity-ssr';
+  document.getElementById('rarityTag').textContent = 'SSR · 限定';
+  document.getElementById('rarityTag').className = 'rarity-tag ssr';
+  document.getElementById('rarityTag').style.display = 'block';
+  document.getElementById('dailyBanner').style.display = 'none';
+  cKind.textContent = '✦ 限定卡';
+  cIco.textContent = card.ico;
+  cTitle.textContent = card.title;
+  cTitle.style.display = 'block';
+  cText.textContent = card.text;
+  cSub.textContent = '';
+  flowerWrap.style.display = 'none';
+  cardWrap.classList.add('show');
+  triggerPurpleGlow();
+  // 更新按钮
+  limitedBtn.textContent = '✦ 今日限定 0/1';
+  limitedBtn.classList.add('used');
+  limitedBtn.classList.remove('available');
+  updateCollectionProgress();
 });
 
-// ── RECHARGE ──
-let phase = 0, cycles = 0, bOn = false, bt = null;
-const pm = {
-  0:{l:'准备好了吗？',s:'跟着鸢尾花的节奏呼吸',sc:1,ic:'🪷'},
-  1:{l:'吸气……',s:'慢慢吸 ~ 4 秒',sc:1.55,ic:'🌸'},
-  2:{l:'屏住呼吸',s:'保持住 ~ 7 秒',sc:1.55,ic:'🌺'},
-  3:{l:'呼气……',s:'缓缓呼 ~ 8 秒',sc:1,ic:'🪷'}
-};
-function initRecharge() { clearBt(); phase=0; cycles=0; bOn=true; applyPhase(); document.getElementById('chargeFill').style.width='0%'; }
-function clearBt() { if(bt){clearTimeout(bt);bt=null;} }
-function applyPhase() {
-  const p=pm[phase];
-  document.getElementById('breatheLabel').textContent=p.l;
-  document.getElementById('breatheSub').textContent=p.s;
-  const icon=document.getElementById('bloomIcon');
-  icon.textContent=p.ic; icon.style.transform='scale('+p.sc+')'; icon.style.fontSize=(52*p.sc)+'px';
+var busy = false;
+
+function getCard(idx){
+  if (idx < CARDS.length) return CARDS[idx];
+  var hi = idx - CARDS.length;
+  return HIDDEN_CARDS[hi] || CARDS[0];
 }
-function runCycle() {
-  if(!bOn||currentScreen!=='recharge')return;
-  switch(phase){
-    case 0: phase=1;applyPhase();burst(4);bt=setTimeout(runCycle,4000);break;
-    case 1: phase=2;applyPhase();bt=setTimeout(runCycle,7000);break;
-    case 2: phase=3;applyPhase();bt=setTimeout(runCycle,8000);break;
-    case 3: cycles++; document.getElementById('chargeFill').style.width=Math.min(cycles*25,100)+'%';
-      if(cycles>=4){document.getElementById('breatheLabel').textContent='🔋 充满电了！';document.getElementById('breatheSub').textContent='IRIS，你现在能量满满 ✨';
-        const icon=document.getElementById('bloomIcon');icon.textContent='🌷';icon.style.transform='scale(1.65)';icon.style.fontSize='72px';bOn=false;burst(20);return;}
-      phase=1;applyPhase();burst(3);bt=setTimeout(runCycle,4000);break;
+
+function checkHiddenUnlocks(){
+  // 检查隐藏卡解锁条件，返回新解锁的卡片索引列表
+  var newlyUnlocked = [];
+  var hour = new Date().getHours();
+  for (var i = 0; i < HIDDEN_CARDS.length; i++) {
+    var h = HIDDEN_CARDS[i];
+    var realIdx = CARDS.length + i;
+    if (memory.unlockedHidden[realIdx]) continue; // 已解锁
+    var should = false;
+    if (h.unlockVisit && memory.visitCount >= h.unlockVisit) should = true;
+    if (h.unlockStreak && memory.consecutiveDays >= h.unlockStreak) should = true;
+    if (h.unlockFlips && memory.totalFlips >= h.unlockFlips) should = true;
+    if (should) {
+      memory.unlockedHidden[realIdx] = { time: Date.now() };
+      newlyUnlocked.push(realIdx);
+    }
+  }
+  if (newlyUnlocked.length) saveMemory();
+  return newlyUnlocked;
+}
+
+function smartDraw(){
+  // 检查隐藏卡解锁
+  var newlyUnlocked = checkHiddenUnlocks();
+  // 新解锁的UR卡：50%概率惊喜出现
+  if (newlyUnlocked.length > 0 && Math.random() < 0.5) {
+    return newlyUnlocked[0];
+  }
+  // 夜间晚安卡（UR）：22-5点 20%概率
+  var hour = new Date().getHours();
+  if (hour >= 22 || hour < 5) {
+    if (Math.random() < 0.2) {
+      return CARDS.length + 1; // 晚安卡
+    }
+  }
+  // 已解锁UR卡：10%概率混入
+  var unlockedKeys = [];
+  for (var k in memory.unlockedHidden) unlockedKeys.push(parseInt(k));
+  if (unlockedKeys.length > 0 && Math.random() < 0.1) {
+    return unlockedKeys[Math.floor(Math.random() * unlockedKeys.length)];
+  }
+  // 主抽卡：档位制（UR 5% / SSR 15% / SR 30% / R 50%）
+  var roll = Math.random();
+  var tier;
+  if (roll < 0.05) tier = 'UR';
+  else if (roll < 0.20) tier = 'SSR';
+  else if (roll < 0.50) tier = 'SR';
+  else tier = 'R';
+  // 收集该档位的卡池
+  var pool = [];
+  for (var i = 0; i < CARDS.length; i++) {
+    if (CARDS[i].rarity === tier) pool.push(i);
+  }
+  // UR 档把已解锁隐藏卡也加入池
+  if (tier === 'UR') {
+    for (var u = 0; u < unlockedKeys.length; u++) pool.push(unlockedKeys[u]);
+  }
+  if (pool.length === 0) { tier = 'R'; pool = []; for (var r=0; r<CARDS.length; r++) if (CARDS[r].rarity==='R') pool.push(r); }
+  // 档位内：优先未收集（高收藏量）
+  var uncollected = [];
+  for (var p = 0; p < pool.length; p++) {
+    if (!memory.collected[pool[p]]) uncollected.push(pool[p]);
+  }
+  var chosen;
+  if (uncollected.length > 0) {
+    chosen = uncollected[Math.floor(Math.random() * uncollected.length)];
+  } else {
+    chosen = pool[Math.floor(Math.random() * pool.length)];
+  }
+  return chosen;
+}
+
+/* 限定卡抽卡：每日免费1次，从当前可用限定卡中抽 */
+function canDrawLimitedToday(){
+  var today = getTodayStr();
+  return memory.lastLimitedDrawDate !== today;
+}
+function drawLimited(){
+  if (!canDrawLimitedToday()) return null;
+  var active = getActiveLimitedCards();
+  if (active.length === 0) return null;
+  memory.lastLimitedDrawDate = getTodayStr();
+  // 优先未收集的限定卡
+  var uncollected = [];
+  for (var i = 0; i < active.length; i++) {
+    var id = active[i].id || ('month_' + active[i].month);
+    if (!memory.limitedCollected[id]) uncollected.push(active[i]);
+  }
+  var card = uncollected.length > 0
+    ? uncollected[Math.floor(Math.random() * uncollected.length)]
+    : active[Math.floor(Math.random() * active.length)];
+  var cardId = card.id || ('month_' + card.month);
+  if (!memory.limitedCollected[cardId]) {
+    memory.limitedCollected[cardId] = { time: Date.now() };
+  }
+  saveMemory();
+  return card;
+}
+
+function drawCard(idx, isDaily){
+  currentIdx = idx;
+  memory.lastCardIdx = idx;
+  memory.totalFlips++;
+  if (!memory.collected[idx]) {
+    memory.collected[idx] = { time: Date.now() };
+  }
+  // 每日签记录
+  var today = getTodayStr();
+  if (isDaily) {
+    memory.lastDailyDate = today;
+    memory.dailyFortuneIdx = Math.floor(Math.random() * DAILY_FORTUNES.length);
+  }
+  saveMemory();
+  var c = getCard(idx);
+  var theCard = document.getElementById('theCard');
+  var dailyBanner = document.getElementById('dailyBanner');
+  // 每日签样式
+  theCard.classList.toggle('daily-card', !!isDaily);
+  if (isDaily && memory.dailyFortuneIdx != null) {
+    var fortune = DAILY_FORTUNES[memory.dailyFortuneIdx];
+    var dateStr = new Date().getMonth()+1 + '月' + new Date().getDate() + '日';
+    dailyBanner.innerHTML = '✦ 今日签语 ✦<span class="daily-date">' + dateStr + ' · ' + fortune + '</span>';
+    dailyBanner.style.display = 'block';
+    dailyBanner.classList.add('show');
+  } else {
+    dailyBanner.style.display = 'none';
+    dailyBanner.classList.remove('show');
+  }
+  cKind.textContent = c.kind;
+  cIco.textContent = c.ico;
+  cTitle.textContent = c.title || '';
+  cTitle.style.display = c.title ? 'block' : 'none';
+  cText.textContent = c.text;
+  cSub.textContent = c.sub || '';
+  // 稀有度角标
+  var rarityTag = document.getElementById('rarityTag');
+  if (rarityTag) {
+    var rar = c.rarity || 'R';
+    rarityTag.textContent = rar;
+    rarityTag.className = 'rarity-tag ' + rar.toLowerCase();
+    rarityTag.style.display = 'block';
+  }
+  // 稀有度边框 + 金光动画
+  theCard.className = 'card';
+  var rar = c.rarity || 'R';
+  if (isDaily) theCard.classList.add('daily-card');
+  theCard.classList.add('rarity-' + rar.toLowerCase());
+  // UR 金光爆发
+  if (rar === 'UR') triggerGoldBurst();
+  else if (rar === 'SSR') triggerPurpleGlow();
+  count++;
+  counter.textContent = '已翻开 ' + count + ' 张';
+  updateCollectionProgress();
+}
+
+/* UR 金光粒子爆发 */
+function triggerGoldBurst(){
+  var layer = document.getElementById('goldBurstLayer');
+  if (!layer) return;
+  layer.innerHTML = '';
+  for (var i = 0; i < 30; i++) {
+    var p = document.createElement('div');
+    p.className = 'gold-particle';
+    var angle = (i / 30) * Math.PI * 2;
+    var dist = 120 + Math.random() * 80;
+    p.style.left = '50%';
+    p.style.top = '50%';
+    p.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+    p.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+    p.style.animationDelay = (Math.random() * 0.2) + 's';
+    layer.appendChild(p);
+  }
+  layer.classList.add('active');
+  setTimeout(function(){ layer.classList.remove('active'); layer.innerHTML = ''; }, 1500);
+}
+/* SSR 紫光晕染 */
+function triggerPurpleGlow(){
+  var layer = document.getElementById('goldBurstLayer');
+  if (!layer) return;
+  layer.innerHTML = '<div class="purple-glow"></div>';
+  layer.classList.add('active');
+  setTimeout(function(){ layer.classList.remove('active'); layer.innerHTML = ''; }, 1200);
+}
+
+/* 收集进度更新 */
+function updateCollectionProgress(){
+  var normalTotal = CARDS.length + HIDDEN_CARDS.length;
+  var normalCollected = 0;
+  for (var i = 0; i < CARDS.length; i++) if (memory.collected[i]) normalCollected++;
+  for (var h = 0; h < HIDDEN_CARDS.length; h++) if (memory.collected[CARDS.length + h]) normalCollected++;
+  var limitedTotal = SEASONAL_CARDS.length + MONTHLY_CARDS.length;
+  var limitedCollected = 0;
+  for (var k in memory.limitedCollected) limitedCollected++;
+  var total = normalTotal + limitedTotal;
+  var got = normalCollected + limitedCollected;
+  var el = document.getElementById('collectProgress');
+  if (el) el.textContent = '✦ 已收集 ' + got + ' / ' + total;
+}
+
+/* 柔和光粒子：缓慢上升飘散 */
+function softGlow(cx, cy){
+  var colors = ['rgba(255,209,168,0.8)','rgba(232,168,216,0.8)','rgba(184,168,232,0.7)','rgba(168,216,255,0.6)','rgba(255,245,232,0.9)'];
+  for (var i = 0; i < 24; i++) {
+    (function(delay){
+      setTimeout(function(){
+        var ang = Math.random() * Math.PI * 2;
+        var dist = 60 + Math.random() * 120;
+        var b = document.createElement('div');
+        b.className = 'glow-particle';
+        b.style.left = cx + 'px';
+        b.style.top = cy + 'px';
+        var size = 3 + Math.random()*4;
+        b.style.width = size + 'px';
+        b.style.height = size + 'px';
+        b.style.background = colors[Math.floor(Math.random()*colors.length)];
+        b.style.setProperty('--dx', (Math.cos(ang) * dist) + 'px');
+        b.style.setProperty('--dy', (Math.sin(ang) * dist - 100) + 'px');
+        document.body.appendChild(b);
+        setTimeout(function(){ if(b.parentNode) b.parentNode.removeChild(b); }, 3000);
+      }, delay);
+    })(i * 40);
   }
 }
-document.getElementById('breatheRing').addEventListener('click',function(){if(!bOn){initRecharge();setTimeout(()=>runCycle(),500);return;}if(phase===0)runCycle();});
 
-// ── FOOD ──
-const foods = [
-  {e:'🍜',n:'热腾腾的拉面',d:'一碗浓郁豚骨拉面，配上溏心蛋和叉烧，暖到心里！今天就出发～'},
-  {e:'🍣',n:'精致寿司拼盘',d:'三文鱼、金枪鱼、鳗鱼…新鲜到发光！约上朋友去吃日料吧～'},
-  {e:'🍕',n:'芝士瀑布披萨',d:'拉丝拉到天花板！碳水使人快乐，今天别委屈自己～'},
-  {e:'🌮',n:'墨西哥塔可',d:'酸辣开胃，一口一个！换个口味尝尝异国风情～'},
-  {e:'🍰',n:'草莓奶油蛋糕',d:'甜食治愈一切。下午茶配拿铁，完美的 me time～'},
-  {e:'🍲',n:'咕噜咕噜小火锅',d:'毛肚虾滑肥牛冲冲冲！一个人也可以很丰盛～'},
-  {e:'🍗',n:'酥脆多汁炸鸡',d:'咔嚓咔嚓的声音就是幸福～配冰可乐，双倍快乐！'},
-  {e:'🍦',n:'梦幻三球冰淇淋',d:'香草+抹茶+草莓，夏天的快乐就是这么简单！'},
-  {e:'🥟',n:'热乎手工饺子',d:'皮薄馅大蘸醋吃，简单朴实但超满足～'},
-  {e:'🧋',n:'黑糖珍珠奶茶',d:'Q弹珍珠+浓郁奶茶=快乐水！今天就去买一杯犒劳自己。'},
-  {e:'🍝',n:'奶油培根意面',d:'白酱裹着每根意面，浓郁绵密。找个有格调的小店～'},
-  {e:'🥩',n:'滋滋作响的牛排',d:'五分熟切开是完美的粉红色，今天值得一顿大餐！'}
-];
-let spinOn=false, spinT=null;
-function initFood() { stopSpin(); spinOn=false; document.getElementById('foodResult').textContent=''; document.getElementById('foodDesc').textContent=''; document.getElementById('slotEmoji').textContent='🍜'; document.getElementById('slotEmoji').classList.remove('roll'); }
-function stopSpin() { if(spinT){clearInterval(spinT);spinT=null;} }
-document.getElementById('spinBtn').addEventListener('click',function(){
-  if(spinOn||currentScreen!=='food')return; spinOn=true;
-  const slot=document.getElementById('slotEmoji'), r=document.getElementById('foodResult'), d=document.getElementById('foodDesc');
-  r.textContent=''; d.textContent=''; slot.classList.add('roll');
-  let tick=0;
-  spinT=setInterval(()=>{slot.textContent=foods[Math.floor(Math.random()*foods.length)].e;tick++;
-    if(tick>=22){stopSpin();slot.classList.remove('roll');
-      const pick=foods[Math.floor(Math.random()*foods.length)];slot.textContent=pick.e;
-      r.textContent='🎯 '+pick.n; d.textContent=pick.d; spinOn=false; burst(10);}},75);
+function openOrb(){
+  if (busy) return;
+  busy = true;
+  var rect = flower.getBoundingClientRect();
+  var cx = rect.left + rect.width/2;
+  var cy = rect.top + rect.height/2;
+  // 标题和底部栏柔和淡出
+  document.getElementById('title').classList.add('hide');
+  document.getElementById('sig').classList.add('hide');
+  document.getElementById('welcome').classList.add('hide');
+  document.querySelector('.bottom-bar').classList.add('hide');
+  // 花朵柔和缩小
+  flower.classList.add('popped');
+  // 花瓣柔和飘散
+  var petals = document.querySelectorAll('.petal');
+  for (var i = 0; i < petals.length; i++) {
+    petals[i].classList.add('scatter-' + (i + 1));
+  }
+  var core = document.querySelector('.core');
+  if (core) core.classList.add('scatter-core');
+  // 柔和光粒子
+  softGlow(cx, cy);
+  // 柔和光晕扩散
+  var halo = document.createElement('div');
+  halo.className = 'halo-soft';
+  halo.style.left = cx + 'px';
+  halo.style.top = cy + 'px';
+  document.body.appendChild(halo);
+  setTimeout(function(){ if(halo.parentNode) halo.parentNode.removeChild(halo); }, 1500);
+  // 智能抽卡（含隐藏卡）
+  var drawIdx = smartDraw();
+  // 检查是否是今日首抽
+  var today = getTodayStr();
+  var isDaily = (memory.lastDailyDate !== today);
+  // 检查隐藏卡解锁通知
+  var newlyUnlocked = checkHiddenUnlocks();
+  if (newlyUnlocked.length > 0) {
+    var hCard = getCard(newlyUnlocked[0]);
+    var toast = document.createElement('div');
+    toast.className = 'hidden-unlock-toast';
+    toast.innerHTML = '✦ 解锁隐藏卡 ✦<small>' + (hCard.title || hCard.ico) + '</small>';
+    document.body.appendChild(toast);
+    setTimeout(function(){ if(toast.parentNode) toast.parentNode.removeChild(toast); }, 2000);
+  }
+  setTimeout(function(){
+    flowerWrap.style.display = 'none';
+    // 清除 scatter 类
+    for (var k = 0; k < petals.length; k++) {
+      petals[k].classList.remove('scatter-' + (k + 1));
+    }
+    if (core) core.classList.remove('scatter-core');
+    // 显示卡片
+    drawCard(drawIdx, isDaily);
+    cardWrap.classList.add('show');
+    // 卡片出现时柔和光粒子
+    softGlow(innerWidth/2, innerHeight/2);
+    setTimeout(function(){ busy = false; }, 400);
+  }, 900);
+}
+
+function buildOrbit(){
+  orbitGrid.innerHTML = '';
+  var n = CARDS.length;
+  for (var i = 0; i < n; i++) {
+    var card = document.createElement('div');
+    card.className = 'orbit-card';
+    // 背面（朝上，用户看到的神秘图案）
+    var back = document.createElement('div');
+    back.className = 'orbit-face back';
+    back.innerHTML = '<div class="card-back-pattern">✦</div>';
+    // 正面（翻开后显示内容）
+    var c = CARDS[i];
+    var front = document.createElement('div');
+    front.className = 'orbit-face front';
+    front.innerHTML =
+      '<div class="orbit-kind">' + c.kind + '</div>' +
+      '<div class="orbit-ico">' + c.ico + '</div>';
+    card.appendChild(back);
+    card.appendChild(front);
+    // 已收集标记
+    if (memory.collected[i]) card.classList.add('collected');
+    (function(idx, el){
+      el.addEventListener('click', function(e){
+        e.stopPropagation();
+        if (busy) return;
+        selectOrbitCard(idx, el);
+      });
+    })(i, card);
+    orbitGrid.appendChild(card);
+  }
+}
+
+/* ===== 选中卡片：飞出翻牌 ===== */
+function selectOrbitCard(idx, el){
+  if (busy) return;
+  busy = true;
+  // 智能抽卡（含隐藏卡）
+  var drawIdx = smartDraw();
+  var c = getCard(drawIdx);
+  var today = getTodayStr();
+  var isDaily = (memory.lastDailyDate !== today);
+  // 选中卡片：飞向屏幕中央并翻转
+  var rect = el.getBoundingClientRect();
+  var cx = innerWidth / 2;
+  var cy = innerHeight / 2;
+  var dx = cx - (rect.left + rect.width / 2);
+  var dy = cy - (rect.top + rect.height / 2);
+  el.style.transition = 'transform 0.9s cubic-bezier(.4,0,.2,1), opacity 0.7s';
+  el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) rotateY(720deg) scale(2.2)';
+  el.style.zIndex = '200';
+  // 翻转中途更新正面内容
+  setTimeout(function(){
+    var front = el.querySelector('.orbit-face.front');
+    front.innerHTML =
+      '<div class="orbit-kind">' + c.kind + '</div>' +
+      '<div class="orbit-ico">' + c.ico + '</div>';
+  }, 300);
+  // 其他卡片淡出
+  var all = orbitGrid.querySelectorAll('.orbit-card');
+  for (var i = 0; i < all.length; i++) {
+    if (all[i] !== el) {
+      all[i].style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
+      all[i].style.opacity = '0';
+      all[i].style.transform = 'scale(0.4) rotateY(180deg)';
+    }
+  }
+  // 柔和光粒子
+  setTimeout(function(){ softGlow(cx, cy); }, 400);
+  // 1s 后打开卡片详情
+  setTimeout(function(){
+    drawCard(drawIdx, isDaily);
+    orbitGrid.innerHTML = '';
+    cardWrap.classList.add('show');
+    setTimeout(function(){ busy = false; }, 200);
+  }, 950);
+}
+
+function showOrbit(){
+  buildOrbit();
+  orbitStage.classList.add('show');
+  // 入场动画：从远处飞入
+  var cards = orbitGrid.querySelectorAll('.orbit-card');
+  for (var i = 0; i < cards.length; i++) {
+    cards[i].style.opacity = '0';
+    cards[i].style.transform = 'translateZ(-400px) scale(0.3) rotateY(180deg)';
+    cards[i].style.transition = 'none';
+  }
+  setTimeout(function(){
+    for (var i = 0; i < cards.length; i++) {
+      (function(card, idx){
+        setTimeout(function(){
+          card.style.transition = 'transform 0.5s cubic-bezier(.3,1.2,.4,1), opacity 0.4s';
+          card.style.opacity = '';
+          card.style.transform = '';
+        }, idx * 20);
+      })(cards[i], i);
+    }
+    setTimeout(function(){ busy = false; }, cards.length * 20 + 500);
+  }, 50);
+}
+
+function hideOrbit(){
+  orbitStage.classList.remove('show');
+  orbitGrid.innerHTML = '';
+}
+
+function closeOrb(){
+  if (busy) return;
+  busy = true;
+  cardWrap.classList.remove('show');
+  setTimeout(function(){
+    hideOrbit();
+    flowerWrap.style.display = '';
+    flower.classList.remove('popped');
+    // 重新触发花朵绽放动画（通过克隆节点重置CSS动画）
+    var lotus = flower.querySelector('.lotus');
+    if (lotus) {
+      var newLotus = lotus.cloneNode(true);
+      lotus.parentNode.replaceChild(newLotus, lotus);
+    }
+    // 标题和底部栏恢复
+    document.getElementById('title').classList.remove('hide');
+    document.getElementById('sig').classList.remove('hide');
+    document.getElementById('welcome').classList.remove('hide');
+    document.querySelector('.bottom-bar').classList.remove('hide');
+    busy = false;
+  }, 400);
+}
+
+// 点击光球（兼容桌面和移动端）
+var lastTap = 0;
+function handleOrbTap(e){
+  if (e) e.preventDefault();
+  var now = Date.now();
+  if (now - lastTap < 500) return;
+  lastTap = now;
+  openOrb();
+}
+flower.addEventListener('click', function(e){ e.stopPropagation(); handleOrbTap(e); });
+flower.addEventListener('touchend', function(e){ e.preventDefault(); e.stopPropagation(); handleOrbTap(e); }, {passive:false});
+
+// 再翻一张：智能抽卡
+nextBtn.addEventListener('click', function(){
+  if (busy) return;
+  busy = true;
+  cardWrap.classList.remove('show');
+  setTimeout(function(){
+    var drawIdx = smartDraw();
+    var today = getTodayStr();
+    var isDaily = (memory.lastDailyDate !== today);
+    drawCard(drawIdx, isDaily);
+    softGlow(innerWidth/2, innerHeight/2);
+    cardWrap.classList.add('show');
+    busy = false;
+  }, 400);
 });
 
-// ── PET ──
-const pets = [
-  {e:'🦔',n:'小刺刺·非洲迷你刺猬',d:'虽然浑身是刺，但肚子超软！戳戳它会缩成小球～'},
-  {e:'🦎',n:'小鳞鳞·豹纹守宫',d:'眼睛大大笑起来像天使。喜欢趴在温暖的手心里～'},
-  {e:'🐍',n:'小卷卷·玉米蛇',d:'滑溜溜凉丝丝，其实超温顺！缠在手上像活的项链～'},
-  {e:'🦜',n:'小彩彩·玄凤鹦鹉',d:'头顶一撮呆毛，开心时会吹口哨。最喜欢被摸摸头～'},
-  {e:'🐇',n:'小绒绒·安哥拉兔',d:'毛茸茸一团云朵！耳朵长长鼻子一耸一耸超治愈～'},
-  {e:'🐹',n:'小圆圆·仓鼠',d:'腮帮子塞满食物最治愈！跑轮小能手停不下来～'},
-  {e:'🦋',n:'小翅膀·大蓝闪蝶',d:'翅膀闪着蓝色磷光，停在指尖时时间都慢了～'},
-  {e:'🐠',n:'小泡泡·泰国斗鱼',d:'鳍像丝绸一样飘舞，看它游泳就能发呆好久好久～'}
-];
-let pIdx=0;
-function initPet(){pIdx=0;renderPet();}
-function renderPet(){const p=pets[pIdx];document.getElementById('petEmoji').textContent=p.e;document.getElementById('petName').textContent=p.n;document.getElementById('petDesc').textContent=p.d;}
-function boop(){
-  const el=document.getElementById('petEmoji'),h=document.getElementById('heartPop');
-  el.classList.remove('bop');void el.offsetWidth;el.classList.add('bop');
-  h.classList.remove('pop');void h.offsetWidth;h.classList.add('pop');burst(5);
-}
-document.getElementById('petStage').addEventListener('click',boop);
-document.getElementById('prevPet').addEventListener('click',function(e){e.stopPropagation();pIdx=(pIdx-1+pets.length)%pets.length;renderPet();burst(3);});
-document.getElementById('nextPet').addEventListener('click',function(e){e.stopPropagation();pIdx=(pIdx+1)%pets.length;renderPet();burst(3);});
+// 放回去
+closeBtn.addEventListener('click', closeOrb);
+closeBtn.addEventListener('touchend', function(e){ e.preventDefault(); closeOrb(); }, {passive:false});
+// 左上角叉叉关闭
+var cardCloseBtn = document.getElementById('cardClose');
+cardCloseBtn.addEventListener('click', closeOrb);
+cardCloseBtn.addEventListener('touchend', function(e){ e.preventDefault(); closeOrb(); }, {passive:false});
 
-// ── FORTUNE ──
-const fortunes = [
-  '今天会有意想不到的好事发生 💫','你笑起来的样子最好看，多笑笑吧～','有一份礼物正在路上向你赶来 🎁',
-  '你重视的人，同样也在重视着你 💜','偶尔放空自己，也是一种重要的能力','你已经做得很好了，不用给自己太大压力',
-  '今天适合给自己买一个小礼物 🛍️','想吃的东西就去吃，想去的地方就去吧！','你的努力有人看在眼里，别着急 🌟',
-  '今晚的月色会很美，记得抬头看看 🌙','明天醒来，一切都会比今天更好一点','你是被爱着的，永远不要怀疑这一点 💝',
-  '有时候慢慢来，反而比较快 🌿','今天可能会收到一条让你开心的消息 💌','相信直觉，它会带你去对的地方 🧭'
-];
-let uf=[], fOn=false;
-function initFortune(){uf=[];fOn=true;document.getElementById('fortuneMsg').textContent='';document.getElementById('fortuneMsg').classList.remove('shown');document.getElementById('fortuneHint').textContent='👆 点一下鸢尾花，摘一片花瓣';document.getElementById('fortuneHint').style.opacity='1';buildP();}
-function buildP(){
-  const l=document.getElementById('fortunePetals');l.innerHTML='';
-  const em=['💜','🪻','🌸','💮'];
-  for(let i=0;i<8;i++){const el=document.createElement('span');el.className='fp';el.textContent=em[Math.floor(Math.random()*em.length)];const a=(i/8)*360*Math.PI/180;const d=48+Math.random()*28;el.style.left=(75+Math.cos(a)*d-11)+'px';el.style.top=(75+Math.sin(a)*d-11)+'px';l.appendChild(el);}
-}
-document.getElementById('fortuneArea').addEventListener('click',function(){
-  if(!fOn||currentScreen!=='fortune')return;
-  const ps=document.querySelectorAll('.fp'),alive=Array.from(ps).filter(p=>!p.classList.contains('gone'));
-  if(!alive.length){document.getElementById('fortuneMsg').textContent='';document.getElementById('fortuneMsg').classList.remove('shown');document.getElementById('fortuneHint').textContent='👆 再摘一轮花瓣吧～';document.getElementById('fortuneHint').style.opacity='1';uf=[];buildP();return;}
-  const pick=alive[Math.floor(Math.random()*alive.length)],a=Math.random()*Math.PI*2,d=60+Math.random()*70;
-  pick.style.setProperty('--fx',Math.cos(a)*d+'px');pick.style.setProperty('--fy',Math.sin(a)*d-30+'px');pick.style.setProperty('--fr',(Math.random()-0.5)*360+'deg');pick.classList.add('gone');
-  let av=fortunes.filter((_,i)=>!uf.includes(i));if(!av.length){uf=[];av=fortunes;}
-  const msg=av[Math.floor(Math.random()*av.length)];uf.push(fortunes.indexOf(msg));
-  document.getElementById('fortuneMsg').textContent='🔮 '+msg;document.getElementById('fortuneMsg').classList.add('shown');
-  const st=Array.from(ps).filter(p=>!p.classList.contains('gone'));
-  document.getElementById('fortuneHint').textContent=st.length<=1?'👆 再点一下开启新一轮':'👆 再摘一片花瓣';
-  burst(5);
+// 收集册
+viewCollectedBtn.addEventListener('click', openModal);
+modalClose.addEventListener('click', closeModal);
+modal.addEventListener('click', function(e){
+  if (e.target === modal) closeModal();
 });
 
-// ── RESET ──
-function resetAll(){clearBt();stopSpin();tOn=false;bOn=false;spinOn=false;fOn=false;}
+function openModal(){
+  renderCollectList();
+  modal.style.display = 'flex';
+  setTimeout(function(){
+    modal.classList.add('show');
+  }, 10);
+}
+function closeModal(){
+  modal.classList.remove('show');
+  setTimeout(function(){
+    modal.style.display = 'none';
+  }, 400);
+}
 
-// ── WECHAT ──
-if(/micromessenger/i.test(navigator.userAgent)){const tip=document.createElement('div');tip.className='wx-tip on';tip.textContent='💡 点击右上角 ··· 分享给朋友';document.body.appendChild(tip);setTimeout(()=>tip.classList.remove('on'),5000);}
+function renderCollectList(){
+  // 统计
+  var normalGot = 0, limitedGot = 0;
+  for (var k in memory.collected) normalGot++;
+  for (var l in memory.limitedCollected) limitedGot++;
+  var totalNormal = CARDS.length + HIDDEN_CARDS.length;
+  var totalLimited = SEASONAL_CARDS.length + MONTHLY_CARDS.length;
+  collectedCount.textContent = (normalGot + limitedGot) + ' / ' + (totalNormal + totalLimited);
+  collectList.innerHTML = '';
+  if (normalGot === 0 && limitedGot === 0) {
+    collectList.innerHTML = '<div class="empty">还没收集到任何卡片<br>点光球翻第一张吧 ✨</div>';
+    return;
+  }
 
-// Prevent double-tap zoom
-document.addEventListener('dblclick',function(e){if(e.target.closest('.option-card,button,.bell-zone,.breathe-ring,.fortune-area,.pet-stage,.pet-nav button,.spin-btn'))e.preventDefault();},{passive:false});
+  // 辅助：渲染单张迷你卡
+  function miniCard(ico, name, rar, collected, opts){
+    opts = opts || {};
+    var cls = 'collect-mini-card';
+    if (collected) cls += ' collected';
+    else if (opts.locked) cls += ' locked';
+    if (opts.expired) cls += ' expired';
+    var tag = '<div class="mini-tag ' + (rar||'r').toLowerCase() + '">' + (rar||'R') + '</div>';
+    return '<div class="' + cls + '">' +
+      '<div class="mini-ico">' + (collected || opts.expired ? ico : '') + '</div>' +
+      '<div class="mini-name">' + (collected || opts.expired ? name : '???') + '</div>' +
+      tag + '</div>';
+  }
+
+  // UR 传说区（隐藏卡）
+  var urSection = document.createElement('div');
+  urSection.className = 'collect-section';
+  var urGot = 0;
+  for (var u = 0; u < HIDDEN_CARDS.length; u++) if (memory.collected[CARDS.length + u]) urGot++;
+  urSection.innerHTML = '<div class="collect-section-title"><span class="tier-ur">✦ UR 传说</span> ' + urGot + '/' + HIDDEN_CARDS.length + '</div>';
+  for (var ui = 0; ui < HIDDEN_CARDS.length; ui++) {
+    var realIdx = CARDS.length + ui;
+    var hc = HIDDEN_CARDS[ui];
+    var hHas = memory.collected[realIdx];
+    var unlocked = memory.unlockedHidden[realIdx] || hc.nightOnly;
+    urSection.innerHTML += miniCard(hc.ico, hc.title, 'UR', hHas, { locked: !unlocked && !hHas });
+  }
+  collectList.appendChild(urSection);
+
+  // SSR 史诗区
+  var ssrSection = document.createElement('div');
+  ssrSection.className = 'collect-section';
+  var ssrGot = 0, ssrTotal = 0;
+  for (var s1 = 0; s1 < CARDS.length; s1++) if (CARDS[s1].rarity === 'SSR') { ssrTotal++; if (memory.collected[s1]) ssrGot++; }
+  ssrSection.innerHTML = '<div class="collect-section-title"><span class="tier-ssr">✦ SSR 史诗</span> ' + ssrGot + '/' + ssrTotal + '</div>';
+  for (var s2 = 0; s2 < CARDS.length; s2++) {
+    if (CARDS[s2].rarity !== 'SSR') continue;
+    var sHas = memory.collected[s2];
+    ssrSection.innerHTML += miniCard(CARDS[s2].ico, CARDS[s2].title || CARDS[s2].text.split('\n')[0].slice(0,6), 'SSR', sHas, { locked: !sHas });
+  }
+  collectList.appendChild(ssrSection);
+
+  // SR 稀有区
+  var srSection = document.createElement('div');
+  srSection.className = 'collect-section';
+  var srGot = 0, srTotal = 0;
+  for (var r1 = 0; r1 < CARDS.length; r1++) if (CARDS[r1].rarity === 'SR') { srTotal++; if (memory.collected[r1]) srGot++; }
+  srSection.innerHTML = '<div class="collect-section-title"><span class="tier-sr">✦ SR 稀有</span> ' + srGot + '/' + srTotal + '</div>';
+  for (var r2 = 0; r2 < CARDS.length; r2++) {
+    if (CARDS[r2].rarity !== 'SR') continue;
+    var rHas = memory.collected[r2];
+    srSection.innerHTML += miniCard(CARDS[r2].ico, CARDS[r2].title || CARDS[r2].kind, 'SR', rHas, { locked: !rHas });
+  }
+  collectList.appendChild(srSection);
+
+  // R 普通区
+  var rSection = document.createElement('div');
+  rSection.className = 'collect-section';
+  var rGot = 0, rTotal = 0;
+  for (var n1 = 0; n1 < CARDS.length; n1++) if (CARDS[n1].rarity === 'R') { rTotal++; if (memory.collected[n1]) rGot++; }
+  rSection.innerHTML = '<div class="collect-section-title"><span class="tier-r">✦ R 普通</span> ' + rGot + '/' + rTotal + '</div>';
+  for (var n2 = 0; n2 < CARDS.length; n2++) {
+    if (CARDS[n2].rarity !== 'R') continue;
+    var nHas = memory.collected[n2];
+    rSection.innerHTML += miniCard(CARDS[n2].ico, CARDS[n2].title || CARDS[n2].text.split('\n')[0].slice(0,6), 'R', nHas, { locked: !nHas });
+  }
+  collectList.appendChild(rSection);
+
+  // 限定卡区
+  var limSection = document.createElement('div');
+  limSection.className = 'collect-section';
+  limSection.innerHTML = '<div class="collect-section-title"><span class="tier-limited">✦ 限定卡</span> ' + limitedGot + '/' + totalLimited + '</div>';
+  var now = new Date();
+  var mmdd = (now.getMonth()+1<10?'0':'') + (now.getMonth()+1) + '-' + (now.getDate()<10?'0':'') + now.getDate();
+  // 节气卡
+  for (var si = 0; si < SEASONAL_CARDS.length; si++) {
+    var sc = SEASONAL_CARDS[si];
+    var sId = sc.id;
+    var sCollected = memory.limitedCollected[sId];
+    var sExpired = mmdd < sc.openStart || mmdd > sc.openEnd;
+    limSection.innerHTML += miniCard(sc.ico, sc.title, 'SSR', sCollected, { expired: sExpired && !sCollected, locked: !sCollected && !sExpired });
+  }
+  // 月份卡
+  for (var mi = 0; mi < MONTHLY_CARDS.length; mi++) {
+    var mc = MONTHLY_CARDS[mi];
+    var mId = 'month_' + mc.month;
+    var mCollected = memory.limitedCollected[mId];
+    var mExpired = mc.month !== now.getMonth();
+    limSection.innerHTML += miniCard(mc.ico, mc.title, 'SSR', mCollected, { expired: mExpired && !mCollected, locked: !mCollected && !mExpired });
+  }
+  collectList.appendChild(limSection);
+}
 </script>
 </body>
 </html>
