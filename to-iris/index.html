@@ -693,9 +693,23 @@
     display: -webkit-flex; display: flex;
     -webkit-justify-content: center; justify-content: center;
     -webkit-align-items: center; align-items: center;
-    gap: 12px;
+    -webkit-flex-wrap: wrap; flex-wrap: wrap;
+    gap: 8px 12px;
+    padding: 0 16px;
     font-family: "PingFang SC", sans-serif;
     transition: opacity .4s, transform .4s;
+  }
+  /* 移动端适配 */
+  @media (max-width: 380px) {
+    .bottom-bar { gap: 6px 10px; bottom: 24px; }
+    .counter { font-size: 10px; letter-spacing: 2px; }
+    .collect-progress { font-size: 9px; letter-spacing: 0.5px; }
+    .limited-btn { padding: 5px 11px; font-size: 10px; letter-spacing: 0.5px; }
+    .rarity-tag { top: 8px; right: 10px; font-size: 8px; padding: 2px 6px; }
+    .limited-preview { bottom: 70px; font-size: 9px; padding: 0 20px; }
+    .collect-mini-card { width: 52px; margin: 3px 4px; }
+    .collect-mini-card .mini-ico { width: 42px; height: 42px; line-height: 42px; font-size: 20px; }
+    .collect-mini-card .mini-name { font-size: 7px; }
   }
   .bottom-bar.hide { opacity: 0; -webkit-transform: translateY(16px); transform: translateY(16px); pointer-events: none; }
   .counter {
