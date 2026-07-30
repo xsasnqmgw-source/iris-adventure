@@ -274,8 +274,42 @@
   }
 
   .flower.popped {
-    -webkit-animation: flowerPop .55s cubic-bezier(.2,.9,.3,1.2) forwards;
-    animation: flowerPop .55s cubic-bezier(.2,.9,.3,1.2) forwards;
+    -webkit-animation: flowerPop .4s cubic-bezier(.2,.9,.3,1.2) forwards;
+    animation: flowerPop .4s cubic-bezier(.2,.9,.3,1.2) forwards;
+  }
+
+  .tap-ripple {
+    position: absolute; top: 50%; left: 50%;
+    width: 24px; height: 24px;
+    margin: -12px 0 0 -12px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.5);
+    -webkit-animation: rippleExpand .6s ease-out forwards;
+    animation: rippleExpand .6s ease-out forwards;
+    pointer-events: none; z-index: 8;
+  }
+  @-webkit-keyframes rippleExpand {
+    0% { -webkit-transform: scale(0.5); opacity: 1; }
+    100% { -webkit-transform: scale(3); opacity: 0; }
+  }
+  @keyframes rippleExpand {
+    0% { transform: scale(0.5); opacity: 1; }
+    100% { transform: scale(3); opacity: 0; }
+  }
+
+  .busy-shake {
+    -webkit-animation: busyShake .35s ease-out !important;
+    animation: busyShake .35s ease-out !important;
+  }
+  @-webkit-keyframes busyShake {
+    0%,100% { -webkit-transform: translateX(0); }
+    25% { -webkit-transform: translateX(-4px); }
+    75% { -webkit-transform: translateX(4px); }
+  }
+  @keyframes busyShake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
   }
   @-webkit-keyframes flowerPop {
     0% { -webkit-transform: scale(1); opacity: 1; }
@@ -717,9 +751,13 @@
     -webkit-flex-wrap: wrap; flex-wrap: wrap;
     gap: 8px 12px;
     padding: 0 16px;
+    padding-bottom: calc(0px + env(safe-area-inset-bottom, 0px));
     font-family: "PingFang SC", sans-serif;
     transition: opacity .4s, transform .4s;
   }
+
+  .actions-divider { height: 2px; background: rgba(184,168,232,0.08); margin: 12px 0 10px; }
+
   /* 移动端适配 */
   @media (max-width: 380px) {
     .bottom-bar { gap: 6px 10px; bottom: 24px; }
@@ -1198,6 +1236,82 @@
     background: rgba(232,168,80,0.12); padding: 1px 5px;
     border-radius: 4px; font-family: "PingFang SC", sans-serif;
   }
+
+  /* ===== 剧情故事 ===== */
+  .story-overlay {
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    background: rgba(6,4,18,0.8);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    z-index: 250;
+    display: none;
+    -webkit-align-items: center; align-items: center;
+    -webkit-justify-content: center; justify-content: center;
+    padding: 24px;
+  }
+  .story-overlay.show { display: -webkit-flex; display: flex; }
+  .story-card {
+    width: 100%; max-width: 340px;
+    background: -webkit-linear-gradient(160deg, rgba(50,35,80,0.95) 0%, rgba(30,20,55,0.98) 100%);
+    background: linear-gradient(160deg, rgba(50,35,80,0.95) 0%, rgba(30,20,55,0.98) 100%);
+    border: 1.5px solid rgba(255,200,120,0.25);
+    border-radius: 18px;
+    padding: 32px 24px 28px;
+    text-align: center;
+    -webkit-box-shadow: 0 20px 60px rgba(120,60,160,0.5);
+    box-shadow: 0 20px 60px rgba(120,60,160,0.5);
+    position: relative;
+    -webkit-transform: scale(0.8) translateY(20px);
+    transform: scale(0.8) translateY(20px);
+    opacity: 0;
+    transition: transform .45s cubic-bezier(.2,.9,.3,1), opacity .45s ease-out;
+  }
+  .story-overlay.show .story-card {
+    -webkit-transform: scale(1) translateY(0);
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  .story-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background: -webkit-linear-gradient(left, transparent, rgba(255,215,0,0.4), rgba(255,180,100,0.4), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255,215,0,0.4), rgba(255,180,100,0.4), transparent);
+  }
+  .story-close {
+    position: absolute; top: 8px; left: 10px;
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 1px solid rgba(184,168,232,0.2);
+    background: rgba(30,22,50,0.5);
+    color: rgba(216,200,255,0.6);
+    font-size: 11px; line-height: 1;
+    cursor: pointer; font-family: inherit;
+    display: -webkit-flex; display: flex;
+    -webkit-align-items: center; align-items: center;
+    -webkit-justify-content: center; justify-content: center;
+  }
+  .story-close:active { -webkit-transform: scale(0.86); transform: scale(0.86); }
+  .story-icon { font-size: 48px; margin-bottom: 10px; }
+  .story-title {
+    font-size: 20px; font-weight: 600; color: #ffe8c8;
+    letter-spacing: 2px; font-family: "PingFang SC", sans-serif;
+    margin-bottom: 14px;
+  }
+  .story-divider {
+    width: 40px; height: 2px;
+    background: rgba(255,200,120,0.25);
+    margin: 0 auto 16px;
+    border-radius: 2px;
+  }
+  .story-text {
+    font-size: 15px; line-height: 2; color: #e0d4f0;
+    white-space: pre-line; font-family: "Songti SC", "Noto Serif SC", serif;
+    letter-spacing: 0.5px;
+  }
+  .story-new-badge {
+    display: inline-block;
+    font-size: 7px; background: #e8a850; color: #4a2860;
+    padding: 1px 5px; border-radius: 4px;
+    font-weight: 700; letter-spacing: 1px;
+    margin-left: 4px; vertical-align: middle;
+  }
 </style>
 </head>
 <body>
@@ -1244,7 +1358,7 @@
           <!-- 花心 -->
           <div class="core"></div>
         </div>
-        <div class="tap-hint"></div>
+        <div class="tap-hint">轻 触 花 蕊</div>
       </div>
     </div>
 
@@ -1272,11 +1386,12 @@
       <div class="card-sub" id="cSub"></div>
 
       <div class="actions">
-        <button class="btn" id="nextBtn">再翻一张 ↻</button>
+        <button class="btn" id="nextBtn">再来一张 ↻</button>
       </div>
-      <div class="actions" style="margin-top:10px;">
-        <button class="btn ghost" id="closeBtn" style="font-size:13px; padding:10px 22px; min-width:100px;">← 放回去</button>
-        <button class="btn ghost" id="viewCollected" style="font-size:11px; padding:6px 14px;">看收藏册</button>
+      <div class="actions-divider"></div>
+      <div class="actions" style="margin-top:6px;">
+        <button class="btn ghost" id="closeBtn" style="font-size:12px; padding:8px 18px; min-width:80px;">← 返回</button>
+        <button class="btn ghost" id="viewCollected" style="font-size:11px; padding:6px 14px;">✦ 收集册</button>
       </div>
     </div>
   </div>
@@ -1424,6 +1539,55 @@ var DAILY_FORTUNES = [
   '今天的月亮会替你说晚安',
   '会有一个让你笑出声的时刻',
   '今天的世界因你而柔软了一点'
+];
+
+/* ===== 剧情链系统 ===== */
+var STORY_CHAINS = [
+  {
+    id: 'heart_collector',
+    name: '心动收集',
+    icon: '💖',
+    desc: '集齐全部 4 张「一句心意」SSR',
+    condition: function(m){
+      var need = [1, 2, 5, 6];
+      for (var i=0; i<need.length; i++) { if (!m.collected[need[i]]) return false; }
+      return true;
+    },
+    story: { title: '写给心动', text: '你收集了所有的心意卡片。\n\n其实每一张翻开的卡片，\n都是同一句没说完的话——\n\n「我喜欢你。」\n\n只是我换了一百种方式说，\n希望你能听懂其中一种。\n\n——愿你永远保有这份心动的勇气。' }
+  },
+  {
+    id: 'collector_master',
+    name: '收集大师',
+    icon: '🏆',
+    desc: '累计收集 20 张卡片',
+    condition: function(m){
+      var n = 0; for (var k in m.collected) n++;
+      return n >= 20;
+    },
+    story: { title: '收藏的意义', text: '你翻开了 20 张卡片，\n把满满一册的回忆都收进了心里。\n\n有些话平时说不出口，\n但卡片替我说了。\n\n谢谢你愿意一张一张地翻，\n也谢谢你愿意相信，\n这个世界上还有人用心写卡片。\n\n——致 collector' }
+  },
+  {
+    id: 'old_friend',
+    name: '老友记',
+    icon: '🤝',
+    desc: '累计访问 10 次',
+    condition: function(m){
+      return m.visitCount >= 10;
+    },
+    story: { title: '第十次相遇', text: '这是你第十次来到这里。\n\n从第一次的好奇，\n到现在的习惯，\n这里已经成了我们之间的秘密基地。\n\n有些人见一面就记住了，\n有些地方来一次就离不开了。\n\n——谢谢你，一直在。' }
+  },
+  {
+    id: 'sr_explorer',
+    name: '全能行者',
+    icon: '🗺️',
+    desc: '集齐全部「今天去哪儿」SR 卡',
+    condition: function(m){
+      var need = [7, 9, 10, 11];
+      for (var i=0; i<need.length; i++) { if (!m.collected[need[i]]) return false; }
+      return true;
+    },
+    story: { title: '走遍四方', text: '你已经把长沙所有想去的地方\n都收集了一遍。\n\n但其实去哪里都不重要，\n重要的是——\n和你一起去。\n\n下一站，我们想去哪里？' }
+  }
 ];
 
 /* ===== 星空 ===== */
@@ -1851,6 +2015,7 @@ function drawCard(idx, isDaily){
   count++;
   counter.textContent = '已翻开 ' + count + ' 张';
   updateCollectionProgress();
+  checkStoryChains();
 }
 
 /* UR 金光粒子爆发 */
@@ -1881,6 +2046,57 @@ function triggerPurpleGlow(){
   layer.classList.add('active');
   setTimeout(function(){ layer.classList.remove('active'); layer.innerHTML = ''; }, 1200);
 }
+
+/* ===== 剧情链检查 ===== */
+function checkStoryChains(){
+  if (!memory.unlockedStories) memory.unlockedStories = {};
+  var newly = [];
+  for (var i = 0; i < STORY_CHAINS.length; i++) {
+    var chain = STORY_CHAINS[i];
+    if (memory.unlockedStories[chain.id]) continue;
+    if (chain.condition(memory)) {
+      memory.unlockedStories[chain.id] = { time: Date.now() };
+      newly.push(chain);
+    }
+  }
+  if (newly.length) {
+    saveMemory();
+    for (var j = 0; j < newly.length; j++) {
+      showStoryToast(newly[j]);
+    }
+  }
+}
+function showStoryToast(chain){
+  var toast = document.createElement('div');
+  toast.className = 'hidden-unlock-toast';
+  toast.innerHTML = '✦ 解锁剧情 ✦<small>' + chain.icon + ' ' + chain.name + '</small>';
+  document.body.appendChild(toast);
+  setTimeout(function(){ if(toast.parentNode) toast.parentNode.removeChild(toast); }, 2800);
+}
+
+/* ===== 剧情阅读器 ===== */
+function showStory(chainId){
+  var chain;
+  for (var i = 0; i < STORY_CHAINS.length; i++) {
+    if (STORY_CHAINS[i].id === chainId) { chain = STORY_CHAINS[i]; break; }
+  }
+  if (!chain) return;
+  document.getElementById('storyIcon').textContent = chain.icon;
+  document.getElementById('storyTitle').textContent = chain.story.title;
+  document.getElementById('storyText').textContent = chain.story.text;
+  var overlay = document.getElementById('storyOverlay');
+  overlay.style.display = 'flex';
+  setTimeout(function(){ overlay.classList.add('show'); }, 10);
+}
+function closeStoryOverlay(){
+  var overlay = document.getElementById('storyOverlay');
+  overlay.classList.remove('show');
+  setTimeout(function(){ overlay.style.display = 'none'; }, 400);
+}
+document.getElementById('storyClose').addEventListener('click', closeStoryOverlay);
+document.getElementById('storyOverlay').addEventListener('click', function(e){
+  if (e.target === this) closeStoryOverlay();
+});
 
 /* 收集进度更新 */
 function updateCollectionProgress(){
@@ -1978,8 +2194,8 @@ function openOrb(){
     cardWrap.classList.add('show');
     // 卡片出现时柔和光粒子
     softGlow(innerWidth/2, innerHeight/2);
-    setTimeout(function(){ busy = false; }, 400);
-  }, 900);
+    setTimeout(function(){ busy = false; }, 200);
+  }, 600);
 }
 
 function buildOrbit(){
@@ -2029,7 +2245,7 @@ function selectOrbitCard(idx, el){
   var cy = innerHeight / 2;
   var dx = cx - (rect.left + rect.width / 2);
   var dy = cy - (rect.top + rect.height / 2);
-  el.style.transition = 'transform 0.9s cubic-bezier(.4,0,.2,1), opacity 0.7s';
+  el.style.transition = 'transform 0.6s cubic-bezier(.4,0,.2,1), opacity 0.7s';
   el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) rotateY(720deg) scale(2.2)';
   el.style.zIndex = '200';
   // 翻转中途更新正面内容
@@ -2055,8 +2271,8 @@ function selectOrbitCard(idx, el){
     drawCard(drawIdx, isDaily);
     orbitGrid.innerHTML = '';
     cardWrap.classList.add('show');
-    setTimeout(function(){ busy = false; }, 200);
-  }, 950);
+    setTimeout(function(){ busy = false; }, 100);
+  }, 650);
 }
 
 function showOrbit(){
@@ -2115,9 +2331,19 @@ function closeOrb(){
 var lastTap = 0;
 function handleOrbTap(e){
   if (e) e.preventDefault();
+  if (busy) {
+    var el = document.querySelector('.flower-wrap');
+    if (el) { el.classList.remove('busy-shake'); void el.offsetWidth; el.classList.add('busy-shake'); }
+    return;
+  }
   var now = Date.now();
   if (now - lastTap < 500) return;
   lastTap = now;
+  var wrap = document.getElementById('flowerWrap');
+  var ri = document.createElement('div');
+  ri.className = 'tap-ripple';
+  wrap.appendChild(ri);
+  setTimeout(function(){ if(ri.parentNode) ri.parentNode.removeChild(ri); }, 700);
   openOrb();
 }
 flower.addEventListener('click', function(e){ e.stopPropagation(); handleOrbTap(e); });
@@ -2190,9 +2416,10 @@ function renderCollectList(){
     else if (opts.locked) cls += ' locked';
     if (opts.expired) cls += ' expired';
     var tag = '<div class="mini-tag ' + (rar||'r').toLowerCase() + '">' + (rar||'R') + '</div>';
+    var showContent = collected || opts.expired || !opts.locked;
     return '<div class="' + cls + '">' +
-      '<div class="mini-ico">' + (collected || opts.expired ? ico : '') + '</div>' +
-      '<div class="mini-name">' + (collected || opts.expired ? name : '???') + '</div>' +
+      '<div class="mini-ico">' + (showContent ? ico : '') + '</div>' +
+      '<div class="mini-name">' + (showContent ? name : '???') + '</div>' +
       tag + '</div>';
   }
 
@@ -2207,7 +2434,7 @@ function renderCollectList(){
     var hc = HIDDEN_CARDS[ui];
     var hHas = memory.collected[realIdx];
     var unlocked = memory.unlockedHidden[realIdx] || hc.nightOnly;
-    urSection.innerHTML += miniCard(hc.ico, hc.title, 'UR', hHas, { locked: !unlocked && !hHas, idx: realIdx });
+    urSection.innerHTML += miniCard(hc.ico, hc.title, 'UR', hHas, { locked: !unlocked && !hHas });
   }
   collectList.appendChild(urSection);
 
@@ -2233,7 +2460,7 @@ function renderCollectList(){
   for (var r2 = 0; r2 < CARDS.length; r2++) {
     if (CARDS[r2].rarity !== 'SR') continue;
     var rHas = memory.collected[r2];
-    srSection.innerHTML += miniCard(CARDS[r2].ico, CARDS[r2].title || CARDS[r2].kind, 'SR', rHas, { locked: !rHas, idx: r2 });
+    srSection.innerHTML += miniCard(CARDS[r2].ico, CARDS[r2].title || CARDS[r2].kind, 'SR', rHas, { locked: !rHas });
   }
   collectList.appendChild(srSection);
 
@@ -2273,19 +2500,49 @@ function renderCollectList(){
     limSection.innerHTML += miniCard(mc.ico, mc.title, 'SSR', mCollected, { expired: mExpired && !mCollected, locked: !mCollected && !mExpired });
   }
   collectList.appendChild(limSection);
-  
-  // 点击已收集的卡片 —— 关闭收藏册，展示卡片
-  collectList.onclick = function(e){
-    var card = e.target.closest('.collect-mini-card.collected');
-    if (!card) return;
-    var idx = card.getAttribute('data-idx');
-    if (idx == null) return;
-    closeModal();
-    flowerWrap.style.display = 'none';
-    cardWrap.classList.add('show');
-    drawCard(parseInt(idx), false);
-  };
+
+  // 剧情故事区
+  if (!memory.unlockedStories) memory.unlockedStories = {};
+  var storySection = document.createElement('div');
+  storySection.className = 'collect-section';
+  var storyCount = 0;
+  for (var stId in memory.unlockedStories) storyCount++;
+  storySection.innerHTML = '<div class="collect-section-title" style="border-color:rgba(255,200,120,0.2);">✦ 剧情故事 <span style="font-size:10px;color:#8a7a9a;font-weight:400;">' + storyCount + '/' + STORY_CHAINS.length + '</span></div>';
+  for (var sti = 0; sti < STORY_CHAINS.length; sti++) {
+    var st = STORY_CHAINS[sti];
+    var stUnlocked = memory.unlockedStories[st.id];
+    var stItem = document.createElement('div');
+    stItem.className = 'collect-item' + (stUnlocked ? '' : ' locked');
+    if (stUnlocked) {
+      stItem.innerHTML =
+        '<div class="ci-ico" style="font-size:22px;">' + st.icon + '</div>' +
+        '<div class="ci-info"><div class="ci-name">' + st.name + '</div>' +
+        '<div class="ci-desc">' + st.desc + '</div></div>' +
+        '<span class="ci-kind" style="cursor:pointer;letter-spacing:1px;">阅读</span>';
+      stItem.addEventListener('click', (function(id){ return function(){ showStory(id); }; })(st.id));
+    } else {
+      stItem.innerHTML =
+        '<div class="ci-ico" style="font-size:18px;opacity:0.4;">🔒</div>' +
+        '<div class="ci-info"><div class="ci-name" style="color:#6a5a8a;">???</div>' +
+        '<div class="ci-desc">点击条件未知</div></div>' +
+        '<span class="ci-kind" style="opacity:0.3;">🔒</span>';
+    }
+    storySection.appendChild(stItem);
+  }
+  collectList.appendChild(storySection);
 }
 </script>
+
+  <!-- 剧情阅读器 -->
+  <div class="story-overlay" id="storyOverlay">
+    <div class="story-card">
+      <button class="story-close" id="storyClose">✕</button>
+      <div class="story-icon" id="storyIcon">💖</div>
+      <div class="story-title" id="storyTitle">—</div>
+      <div class="story-divider"></div>
+      <div class="story-text" id="storyText">—</div>
+    </div>
+  </div>
+
 </body>
 </html>
