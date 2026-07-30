@@ -1358,7 +1358,7 @@
           <!-- 花心 -->
           <div class="core"></div>
         </div>
-        <div class="tap-hint">轻 触 花 蕊</div>
+        <div class="tap-hint"></div>
       </div>
     </div>
 
@@ -2357,8 +2357,14 @@ function handleOrbTap(e){
   setTimeout(function(){ if(ri.parentNode) ri.parentNode.removeChild(ri); }, 700);
   openOrb();
 }
-flower.addEventListener('click', function(e){ e.stopPropagation(); handleOrbTap(e); });
-flower.addEventListener('touchend', function(e){ e.preventDefault(); e.stopPropagation(); handleOrbTap(e); }, {passive:false});
+function onFlowerTap(e){
+  if (e) { if (e.type === 'touchend') e.preventDefault(); e.stopPropagation(); }
+  handleOrbTap(e);
+}
+flower.addEventListener('click', onFlowerTap);
+flower.addEventListener('touchend', onFlowerTap, {passive:false});
+flowerWrap.addEventListener('click', onFlowerTap);
+flowerWrap.addEventListener('touchend', onFlowerTap, {passive:false});
 
 // 再翻一张：智能抽卡
 nextBtn.addEventListener('click', function(){
