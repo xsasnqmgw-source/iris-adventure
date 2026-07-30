@@ -1580,6 +1580,125 @@ var STORY_CHAINS = [
       return true;
     },
     story: { title: '走遍四方', text: '你已经把长沙所有想去的地方\n都收集了一遍。\n\n但其实去哪里都不重要，\n重要的是——\n和你一起去。\n\n下一站，我们想去哪里？' }
+  },
+  {
+    id: 'first_flip',
+    name: '初次翻牌',
+    icon: '🎴',
+    desc: '翻开第一张卡片',
+    condition: function(m){
+      return m.totalFlips >= 1;
+    },
+    story: { title: '第一张', text: '你翻开了第一张卡片。\n\n每一张卡都是一段悄悄话，\n而你选择了翻开它。\n\n这个小小的举动，\n是故事的开始。\n\n——欢迎来到我们的世界' }
+  },
+  {
+    id: 'explorer',
+    name: '探索者',
+    icon: '👣',
+    desc: '累计访问 3 次',
+    condition: function(m){
+      return m.visitCount >= 3;
+    },
+    story: { title: '第三次到来', text: '这是你第三次来到这里。\n\n第一次是好奇，\n第二次是想看看有没有新的，\n第三次……\n\n第三次已经是习惯了。\n\n有些地方，\n来一次是偶然，\n来三次就是约定。' }
+  },
+  {
+    id: 'night_visitor',
+    name: '深夜访客',
+    icon: '🌙',
+    desc: '在深夜访问（23:00–5:00）',
+    condition: function(m){
+      var h = new Date().getHours();
+      return h >= 23 || h < 5;
+    },
+    story: { title: '夜深了', text: '深夜的时候，\n世界安静下来，\n只有屏幕的光亮着你。\n\n这个时间还在这里的人，\n大概心里都藏着一些\n白天说不出口的话。\n\n——晚安，好梦。' }
+  },
+  {
+    id: 'heart_complete',
+    name: '一句心意·全',
+    icon: '💕',
+    desc: '集齐全部 7 张「一句心意」卡',
+    condition: function(m){
+      for (var i=0; i<=6; i++) { if (!m.collected[i]) return false; }
+      return true;
+    },
+    story: { title: '心意全集', text: '你把每一句「一句心意」\n都收进了收藏册。\n\n从第一张到最后一张，\n像是在读一封很长的信。\n\n信的内容只有四个字，\n但写了七种不一样的语气。\n\n——你读懂了吗？' }
+  },
+  {
+    id: 'where_complete',
+    name: '今天去哪儿·全',
+    icon: '🗺️',
+    desc: '集齐全部 9 张「今天去哪儿」卡',
+    condition: function(m){
+      for (var i=7; i<=15; i++) { if (!m.collected[i]) return false; }
+      return true;
+    },
+    story: { title: '足迹', text: '长沙的每一个角落，\n我们都去过了。\n\n岳麓山的日出，\n美术馆的展览，\n书店的周末午后……\n\n这些地方从此不只是地名，\n而是我们故事的坐标。\n\n——下一站，去哪里？' }
+  },
+  {
+    id: 'challenge_complete',
+    name: '挑战达成',
+    icon: '🎯',
+    desc: '集齐全部 6 张「小小挑战」卡',
+    condition: function(m){
+      for (var i=16; i<=21; i++) { if (!m.collected[i]) return false; }
+      return true;
+    },
+    story: { title: '全部挑战', text: '所有的小挑战，\n你都完成了。\n\n对视十秒，\n猜歌名，\n奇怪的双人合照……\n\n有些挑战有点难，\n有些让人脸红，\n但你都笑着做到了。\n\n——和你一起，做什么都有趣。' }
+  },
+  {
+    id: 'flip_master',
+    name: '翻牌达人',
+    icon: '🃏',
+    desc: '累计翻开 30 张卡片',
+    condition: function(m){
+      return m.totalFlips >= 30;
+    },
+    story: { title: '三十次相遇', text: '你已经翻开了 30 张卡片。\n\n每一次翻开，\n都是一次小小的期待。\n\n这张会是什么？\n那句话是写给谁的呢？\n\n30 次了，\n你还是很温柔地\n一张一张地翻开。\n\n——谢谢你这么认真。' }
+  },
+  {
+    id: 'legend_collector',
+    name: '传说收集者',
+    icon: '🌟',
+    desc: '解锁全部 4 张隐藏传说卡',
+    condition: function(m){
+      var n = 0; for (var k in m.unlockedHidden) n++;
+      return n >= 4;
+    },
+    story: { title: '传说的尽头', text: '你找到了所有隐藏的传说卡。\n\n缘分、晚安、约定、真心——\n每一张都不容易遇到。\n\n但你一个不落地找到了。\n\n有些东西，\n只有足够用心之后，\n才会出现。\n\n——你值得所有的美好。' }
+  },
+  {
+    id: 'season_collector',
+    name: '四季收藏家',
+    icon: '🍀',
+    desc: '集齐全部 4 张节气限定卡',
+    condition: function(m){
+      var need = ['season_spring','season_summer','season_autumn','season_winter'];
+      for (var i=0; i<need.length; i++) { if (!m.limitedCollected[need[i]]) return false; }
+      return true;
+    },
+    story: { title: '走过四季', text: '春天到冬天，\n你一张都没有错过。\n\n迎春、初夏、落叶、围炉——\n四个季节，四张卡片，\n像是陪你走过了一整年。\n\n——四季轮转，我都在。' }
+  },
+  {
+    id: 'monthly_half_1',
+    name: '上半年',
+    icon: '📅',
+    desc: '集齐 1–6 月的月份卡',
+    condition: function(m){
+      for (var i=0; i<=5; i++) { if (!m.limitedCollected['month_'+i]) return false; }
+      return true;
+    },
+    story: { title: '上半年', text: '从一月到六月，\n你集齐了上半年的所有月份卡。\n\n新年、春天、樱花、雨季、繁花、盛夏——\n半年的时光，\n都收藏在这个小册子里。\n\n下半年的故事，\n还在等着你。' }
+  },
+  {
+    id: 'monthly_half_2',
+    name: '下半年',
+    icon: '📅',
+    desc: '集齐 7–12 月的月份卡',
+    condition: function(m){
+      for (var i=6; i<=11; i++) { if (!m.limitedCollected['month_'+i]) return false; }
+      return true;
+    },
+    story: { title: '下半年', text: '从七月到十二月，\n下半年的每一张卡片，\n你都收进了心里。\n\n蝉鸣、流星、月圆、桂香、暖茶、雪夜——\n一年到头，\n每个月的最后一天，\n都在期待下个月的卡片。\n\n——明年，还要一起过。' }
   }
 ];
 
