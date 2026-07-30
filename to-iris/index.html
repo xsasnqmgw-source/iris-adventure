@@ -474,13 +474,13 @@
   .rarity-tag.sr { background: rgba(100,160,255,0.25); color: #8ac8ff; }
   .rarity-tag.ssr { background: rgba(200,130,255,0.3); color: #e8a8ff; }
   .rarity-tag.ur {
-    background: linear-gradient(135deg, #ffd700, #ffa500);
-    color: #4a2800;
-    -webkit-animation: urShine 1.5s ease-in-out infinite;
-    animation: urShine 1.5s ease-in-out infinite;
+    background: linear-gradient(135deg, #d4a017, #b8860b);
+    color: #2a1a00;
+    -webkit-animation: urShine 2.4s ease-in-out infinite;
+    animation: urShine 2.4s ease-in-out infinite;
   }
-  @-webkit-keyframes urShine { 0%,100% { box-shadow: 0 0 8px rgba(255,215,0,0.6); } 50% { box-shadow: 0 0 20px rgba(255,165,0,0.9); } }
-  @keyframes urShine { 0%,100% { box-shadow: 0 0 8px rgba(255,215,0,0.6); } 50% { box-shadow: 0 0 20px rgba(255,165,0,0.9); } }
+  @-webkit-keyframes urShine { 0%,100% { box-shadow: 0 0 4px rgba(212,160,23,0.4); } 50% { box-shadow: 0 0 10px rgba(255,180,0,0.55); } }
+  @keyframes urShine { 0%,100% { box-shadow: 0 0 4px rgba(212,160,23,0.4); } 50% { box-shadow: 0 0 10px rgba(255,180,0,0.55); } }
 
   /* 稀有度边框 */
   .card.rarity-r { border-color: rgba(255,255,255,0.18); }
@@ -489,19 +489,54 @@
     border-color: rgba(200,130,255,0.5);
     box-shadow: 0 20px 60px rgba(140,60,200,0.5), 0 0 30px rgba(200,130,255,0.3);
   }
+  /* UR 传说：暗金质感 + 动态流光，靠动效不靠亮度 */
   .card.rarity-ur {
     border: 2px solid transparent;
     background:
-      -webkit-linear-gradient(160deg, rgba(255,250,230,0.15) 0%, rgba(255,220,180,0.08) 100%) padding-box,
-      -webkit-linear-gradient(135deg, #ffd700 0%, #ff8c00 50%, #ffd700 100%) border-box;
+      -webkit-linear-gradient(160deg, rgba(60,45,20,0.35) 0%, rgba(30,22,10,0.25) 100%) padding-box,
+      -webkit-linear-gradient(135deg, #8a6a1a 0%, #d4a017 50%, #8a6a1a 100%) border-box;
     background:
-      linear-gradient(160deg, rgba(255,250,230,0.15) 0%, rgba(255,220,180,0.08) 100%) padding-box,
-      linear-gradient(135deg, #ffd700 0%, #ff8c00 50%, #ffd700 100%) border-box;
-    box-shadow: 0 20px 60px rgba(200,130,0,0.6), 0 0 40px rgba(255,180,0,0.4);
+      linear-gradient(160deg, rgba(60,45,20,0.35) 0%, rgba(30,22,10,0.25) 100%) padding-box,
+      linear-gradient(135deg, #8a6a1a 0%, #d4a017 50%, #8a6a1a 100%) border-box;
+    box-shadow: 0 20px 50px rgba(100,70,0,0.35);
+    -webkit-animation: urBreath 3.5s ease-in-out infinite;
+    animation: urBreath 3.5s ease-in-out infinite;
   }
+  /* 呼吸光晕：缓慢明暗，不是一直亮 */
+  @-webkit-keyframes urBreath {
+    0%,100% { box-shadow: 0 20px 50px rgba(100,70,0,0.3), 0 0 0 rgba(255,180,0,0); }
+    50% { box-shadow: 0 20px 50px rgba(100,70,0,0.3), 0 0 28px rgba(255,180,0,0.22); }
+  }
+  @keyframes urBreath {
+    0%,100% { box-shadow: 0 20px 50px rgba(100,70,0,0.3), 0 0 0 rgba(255,180,0,0); }
+    50% { box-shadow: 0 20px 50px rgba(100,70,0,0.3), 0 0 28px rgba(255,180,0,0.22); }
+  }
+  /* 横扫流光带：柔化，不刺眼 */
   .card.rarity-ur::before {
-    background: linear-gradient(90deg, transparent, #ffd700, #ff8c00, #ffd700, transparent);
-    opacity: 0.9;
+    background: linear-gradient(90deg, transparent, rgba(255,215,0,0.35), rgba(255,140,0,0.22), rgba(255,215,0,0.35), transparent);
+    opacity: 0.5;
+  }
+  /* 表面镭射扫光：斜向柔光带缓慢扫过，screen 混合只加亮不遮文字 */
+  .card.rarity-ur::after {
+    content: '';
+    position: absolute; top: 0; left: -50%;
+    width: 40%; height: 100%;
+    background: linear-gradient(100deg, transparent 0%, rgba(255,235,180,0.12) 50%, transparent 100%);
+    -webkit-transform: skewX(-20deg);
+    transform: skewX(-20deg);
+    mix-blend-mode: screen;
+    -webkit-animation: urSweep 4.5s ease-in-out infinite;
+    animation: urSweep 4.5s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  @-webkit-keyframes urSweep {
+    0% { left: -50%; }
+    55%,100% { left: 120%; }
+  }
+  @keyframes urSweep {
+    0% { left: -50%; }
+    55%,100% { left: 120%; }
   }
 
   /* UR 金光粒子爆发层 */
@@ -1264,7 +1299,7 @@ var MONTHLY_CARDS = [
   { month:3,  ico:'🌧️', title:'雨季卡',  text:'四月的雨，\n打在伞上噼里啪啦。\n一把伞两个人，\n肩膀挨着肩膀，\n这就是最好的晴天。', rarity:'SSR' },
   { month:4,  ico:'🌺', title:'繁花卡',  text:'五月到处都在开花，\n但我想摘一朵\n刚好开在你笑的那一秒的，\n别处没有。', rarity:'SSR' },
   { month:5,  ico:'🌞', title:'盛夏卡',  text:'六月的光很烈，\n但晒在我心上的，\n是你回头看我的那一眼。', rarity:'SSR' },
-  { month:6,  ico:'🦟', title:'蝉鸣卡',  text:'蝉叫了一整个夏天，\n我忍了一整个夏天\n没说出口的话——\n想你了。', rarity:'SSR' },
+  { month:6,  ico:'🦗', title:'蝉鸣卡',  text:'蝉叫了一整个夏天，\n我忍了一整个夏天\n没说出口的话——\n想你了。', rarity:'SSR' },
   { month:7,  ico:'🌠', title:'星夜卡',  text:'八月的流星，\n我许了一个愿。\n不能告诉你，\n说了就不灵了。\n……好吧，和你有关。', rarity:'SSR' },
   { month:8,  ico:'🌕', title:'月圆卡',  text:'九月的月亮很圆，\n但不如你靠在我肩上时，\n我心里的那个圆。', rarity:'SSR' },
   { month:9,  ico:'🍁', title:'桂香卡',  text:'十月的风带着桂花味，\n走到哪儿都是甜的。\n就像想到你的时候，\n空气都是软的。', rarity:'SSR' },
@@ -2179,4 +2214,3 @@ function renderCollectList(){
 </script>
 </body>
 </html>
-
