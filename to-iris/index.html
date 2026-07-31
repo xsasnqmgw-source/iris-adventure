@@ -1372,6 +1372,53 @@
   .visit-entry:last-child { border-bottom: none; }
   .visit-entry .vi-date { color: rgba(255,255,255,0.4); font-size: 11px; }
   .visit-entry .vi-num { display: inline-block; width: 24px; color: rgba(180,140,255,0.5); font-size: 11px; text-align: right; margin-right: 8px; }
+
+  /* 氛围感 */
+  .music-btn {
+    position: fixed; top: 14px; right: 14px; z-index: 400;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    font-size: 17px; color: #fff; cursor: pointer;
+    -webkit-transition: background 0.2s, border-color 0.2s, opacity 0.2s;
+    transition: background 0.2s, border-color 0.2s, opacity 0.2s;
+  }
+  .music-btn:active { opacity: 0.6; }
+  .music-btn.on {
+    background: rgba(180,140,255,0.18);
+    border-color: rgba(180,140,255,0.4);
+    box-shadow: 0 0 12px rgba(180,140,255,0.25);
+  }
+  .spark {
+    position: fixed; border-radius: 50%; pointer-events: none; z-index: 300;
+    -webkit-animation: sparkFloat 0.9s ease-out forwards;
+    animation: sparkFloat 0.9s ease-out forwards;
+  }
+  @-webkit-keyframes sparkFloat {
+    0% { opacity: 1; -webkit-transform: scale(1); }
+    100% { opacity: 0; -webkit-transform: scale(0.2) translateY(-28px); }
+  }
+  @keyframes sparkFloat {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.2) translateY(-28px); }
+  }
+  body.tint-dawn::before,
+  body.tint-dusk::before,
+  body.tint-night::before {
+    content: ''; position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  }
+  body.tint-dawn::before {
+    background: -webkit-linear-gradient(180deg, rgba(255,180,120,0.10), rgba(255,140,160,0.05));
+    background: linear-gradient(180deg, rgba(255,180,120,0.10), rgba(255,140,160,0.05));
+  }
+  body.tint-dusk::before {
+    background: -webkit-linear-gradient(180deg, rgba(255,120,90,0.13), rgba(150,80,180,0.10));
+    background: linear-gradient(180deg, rgba(255,120,90,0.13), rgba(150,80,180,0.10));
+  }
+  body.tint-night::before {
+    background: -webkit-linear-gradient(180deg, rgba(60,40,120,0.12), rgba(10,5,40,0.20));
+    background: linear-gradient(180deg, rgba(60,40,120,0.12), rgba(10,5,40,0.20));
+  }
 </style>
 </head>
 <body>
@@ -1396,6 +1443,7 @@
     </div>
   </div>
   <canvas id="stars"></canvas>
+  <button class="music-btn" id="musicBtn" aria-label="背景音乐">🎵</button>
 
   <div class="stage">
     <div class="signature" id="sig">— to IRIS —</div>
@@ -2045,6 +2093,86 @@ function tryUnlock(){
     document.getElementById('visitLogModal').style.display = 'none';
   });
 })();
+
+/* ===== 氛围感 ===== */
+// 1. 时间段色调
+function applyTimeTint(){
+  var h = new Date().getHours();
+  var cls;
+  if (h >= 5 && h < 8) cls = 'tint-dawn';
+  else if (h >= 8 && h < 17) cls = '';
+  else if (h >= 17 && h < 20) cls = 'tint-dusk';
+  else cls = 'tint-night';
+  document.body.classList.remove('tint-dawn', 'tint-dusk', 'tint-night');
+  if (cls) document.body.classList.add(cls);
+}
+applyTimeTint();
+
+// 2. 背景音乐（Web Audio 生成轻琶音）
+var audioCtx = null, musicOn = false, musicTimer = null;
+var MUSIC_NOTES = [261.63, 329.63, 392.00, 440.00, 523.25];
+function playNote(freq){
+  var t = audioCtx.currentTime;
+  var osc = audioCtx.createOscillator();
+  var gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.linearRampToValueAtTime(0.05, t + 0.06);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + 2.8);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(t);
+  osc.stop(t + 3);
+}
+function scheduleMusic(){
+  var n = Math.floor(Math.random() * MUSIC_NOTES.length);
+  playNote(MUSIC_NOTES[n]);
+  if (Math.random() < 0.4) {
+    setTimeout(function(){ playNote(MUSIC_NOTES[(n+2) % MUSIC_NOTES.length]); }, 400);
+  }
+  musicTimer = setTimeout(scheduleMusic, 2600 + Math.random() * 2200);
+}
+function toggleMusic(){
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch(e){ return; }
+  }
+  var btn = document.getElementById('musicBtn');
+  if (musicOn) {
+    musicOn = false;
+    clearTimeout(musicTimer);
+    audioCtx.suspend();
+    btn.textContent = '🎵';
+    btn.classList.remove('on');
+  } else {
+    musicOn = true;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    scheduleMusic();
+    btn.textContent = '♪';
+    btn.classList.add('on');
+  }
+}
+document.getElementById('musicBtn').addEventListener('click', toggleMusic);
+
+// 3. 点击光点
+function spawnSpark(x, y){
+  var s = document.createElement('div');
+  s.className = 'spark';
+  var size = 6 + Math.random() * 8;
+  s.style.left = (x - size/2) + 'px';
+  s.style.top = (y - size/2) + 'px';
+  s.style.width = size + 'px';
+  s.style.height = size + 'px';
+  s.style.background = ['#ffd9ec', '#e8d0ff', '#ffb3d9', '#c9b8ff'][Math.floor(Math.random()*4)];
+  document.body.appendChild(s);
+  setTimeout(function(){ if (s.parentNode) s.parentNode.removeChild(s); }, 900);
+}
+document.addEventListener('click', function(e){
+  var t = e.target;
+  if (t && t.closest && (t.closest('.lock-screen') || t.closest('#modal') || t.closest('#storyOverlay'))) return;
+  spawnSpark(e.clientX, e.clientY);
+});
 
 /* ===== 交互 ===== */
 var flower = document.getElementById('flower');
