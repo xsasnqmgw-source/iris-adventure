@@ -1513,13 +1513,13 @@
 /* ===== 卡片内容库 ===== */
 var CARDS = [
   // 一句心意 (7) — SSR×4 金句 + R×3 日常
-  { kind:'一句心意', ico:'💫', title:'', text:'IRIS，你知道吗，\n光是想起你的名字，\n今天就变得比昨天好一点了。', sub:'', rarity:'R' },
-  { kind:'一句心意', ico:'🌙', title:'', text:'月亮不会奔向你，\n但我会。\n不远万里的那种。', sub:'', rarity:'SSR' },
-  { kind:'一句心意', ico:'🌸', title:'', text:'如果是去见你，\n我一定是用跑的。\n你不用跑，我来就好。', sub:'', rarity:'SSR' },
-  { kind:'一句心意', ico:'⭐', title:'', text:'你是我藏在星星里的浪漫，\n是我等了好久的光。', sub:'', rarity:'R' },
-  { kind:'一句心意', ico:'🍃', title:'', text:'风很温柔，花很浪漫，\n你很特别，我很喜欢。', sub:'', rarity:'R' },
-  { kind:'一句心意', ico:'✨', title:'', text:'遇见你以后，\n我所有的"随便"，\n其实都是"只要你在就好"。', sub:'', rarity:'SSR' },
-  { kind:'一句心意', ico:'🦋', title:'', text:'你身上有光，\n我抓来看看，\n然后就不想放了。', sub:'', rarity:'SSR' },
+  { kind:'一句心意', ico:'💫', title:'', text:'今天过得怎么样？\n如果没什么特别的，\n那就来翻一张卡\n换换心情。', sub:'', rarity:'R' },
+  { kind:'一句心意', ico:'🌙', title:'', text:'月亮不会说太多话，\n但它每晚都在。\n有些关心，\n也一样安静。', sub:'', rarity:'SSR' },
+  { kind:'一句心意', ico:'🌸', title:'', text:'如果你今天笑了三次，\n那就是很顺利的一天。\n希望你有。', sub:'', rarity:'SSR' },
+  { kind:'一句心意', ico:'⭐', title:'', text:'你朋友圈那张照片，\n拍得挺好看的。\n（就是单纯夸一下）', sub:'', rarity:'R' },
+  { kind:'一句心意', ico:'🍃', title:'', text:'天气好的时候，\n记得出去走走。\n风会替你带走烦恼。', sub:'', rarity:'R' },
+  { kind:'一句心意', ico:'✨', title:'', text:'有些话不需要说太满，\n你知道我在就行，\n我也知道你在。', sub:'', rarity:'SSR' },
+  { kind:'一句心意', ico:'🦋', title:'', text:'谢谢你今天点开这里，\n这页小小的光，\n也算陪了你一会儿。', sub:'', rarity:'SSR' },
   // 今天去哪儿 (9) — SR×4 场景 + R×5 日常
   { kind:'今天去哪儿', ico:'⛩️', title:'寺庙祈福', text:'一起去庙里走一圈吧，\n不求别的，\n就求你今天开开心心。', sub:'挑个下午，人少的时候去最舒服', rarity:'SR' },
   { kind:'今天去哪儿', ico:'🦎', title:'异宠店', text:'去看那些奇奇怪怪的小家伙吧，\n蜥蜴、守宫、角蛙……\n看看你敢不敢摸一下。', sub:'记得问店员能不能上手，别偷偷摸', rarity:'R' },
@@ -1529,46 +1529,46 @@ var CARDS = [
   { kind:'今天去哪儿', ico:'☕', title:'泊麓山咖啡书吧', text:'找个靠窗位置，\n各看各的书，\n偶尔抬头对视一下就好。', sub:'4楼有山景位，先到先得', rarity:'R' },
   { kind:'今天去哪儿', ico:'🍜', title:'麓山南觅食', text:'从头吃到尾，\n糖油粑粑、臭豆腐、烤冷面……\n我请客，你负责吃。', sub:'别吃太饱，后面还有好几家', rarity:'R' },
   { kind:'今天去哪儿', ico:'🌊', title:'橘子洲散步', text:'湘江边走一走，\n吹吹风，\n什么烦恼都没了。', sub:'建议坐观光车，走完全程腿会废', rarity:'R' },
-  { kind:'今天去哪儿', ico:'📖', title:'止间书店', text:'安静的一下午，\n一本书，一杯咖啡，\n还有你。', sub:'二楼有咖啡区，更安静', rarity:'R' },
+  { kind:'今天去哪儿', ico:'📖', title:'止间书店', text:'安静的一下午，\n一本书，一杯咖啡，\n时间会过得很慢。', sub:'二楼有咖啡区，更安静', rarity:'R' },
   // 小小挑战 (6) — SR×3 互动 + R×3 轻松
   { kind:'小小挑战', ico:'🎯', title:'对视十秒', text:'现在，\n看着我的眼睛，\n不许笑，不许躲。\n……\n好，你输了。', sub:'输了的人请喝奶茶', rarity:'SR' },
   { kind:'小小挑战', ico:'🎵', title:'猜歌名', text:'我哼一句，\n你猜是什么歌。\n猜不出来就……\n让我弹你脑门一下。', sub:'我跑调了你也得猜', rarity:'R' },
   { kind:'小小挑战', ico:'📸', title:'拍一张奇怪的合照', text:'做个最丑的表情，\n三二一，咔嚓。\n这张照片我存了。', sub:'不许删，以后要拿来笑你', rarity:'SR' },
   { kind:'小小挑战', ico:'🤫', title:'用眼神对话', text:'接下来一分钟，\n谁都不许说话，\n只用眼神交流。\n看看你能不能猜到我在想什么。', sub:'提示：我想的一定是好吃的', rarity:'R' },
-  { kind:'小小挑战', ico:'🎲', title:'真心话大冒险', text:'石头剪刀布，\n输的人选一个：\n真心话还是大冒险？', sub:'我先来，我选……你猜', rarity:'SR' },
+  { kind:'小小挑战', ico:'🎲', title:'真心话大冒险', text:'石头剪刀布，\n输的人选一个：\n真心话还是大冒险？', sub:'输的人先选', rarity:'SR' },
   { kind:'小小挑战', ico:'🍬', title:'分享耳机', text:'一人一只耳机，\n听同一首歌，\n什么都不说也挺好。', sub:'我推荐的歌不许说难听', rarity:'R' }
 ];
 
 /* ===== 隐藏卡（UR 传说级）===== */
 var HIDDEN_CARDS = [
-  { kind:'✦ 传说', ico:'🌟', title:'缘分卡', text:'第七次相遇——\n这不是巧合，\n是缘分在替我们计数。', sub:'第7次访问解锁', unlockVisit: 7, rarity:'UR' },
-  { kind:'✦ 传说', ico:'🌙', title:'晚安卡', text:'夜深了，\n如果你还没睡，\n那就......晚安。\n梦里见。', sub:'晚上22点后概率获得', nightOnly: true, rarity:'UR' },
-  { kind:'✦ 传说', ico:'🤝', title:'约定卡', text:'连续三天都来了，\n那我们约定——\n明天，\n也要见面。', sub:'连续3天访问解锁', unlockStreak: 3, rarity:'UR' },
-  { kind:'✦ 传说', ico:'💌', title:'真心卡', text:'其实每一张卡片，\n都是同一句话：\n我想你了。', sub:'翻开20张解锁', unlockFlips: 20, rarity:'UR' }
+  { kind:'✦ 传说', ico:'🌟', title:'缘分卡', text:'第七次相遇。\n不知道是巧合，\n还是默契。', sub:'第7次访问解锁', unlockVisit: 7, rarity:'UR' },
+  { kind:'✦ 传说', ico:'🌙', title:'晚安卡', text:'夜深了，\n如果还没睡，\n那就晚安吧。\n好梦。', sub:'晚上22点后概率获得', nightOnly: true, rarity:'UR' },
+  { kind:'✦ 传说', ico:'🤝', title:'约定卡', text:'连续三天都来了，\n那我们约定——\n明天，\n也来。', sub:'连续3天访问解锁', unlockStreak: 3, rarity:'UR' },
+  { kind:'✦ 传说', ico:'💌', title:'真心卡', text:'其实每一张卡片，\n都是同一句话：\n愿你今天开心。', sub:'翻开20张解锁', unlockFlips: 20, rarity:'UR' }
 ];
 
 /* ===== 限定卡（时间跨度钩子，每月/节气只开1张）===== */
 /* 节气卡：4张，各开放30天窗口 */
 var SEASONAL_CARDS = [
-  { id:'spring', ico:'🌱', title:'迎春卡', text:'春天来了，\n我们去看看第一朵花开。\n它会替我告诉你——\n新的一年，我在。', openStart:'01-20', openEnd:'02-19', rarity:'SSR' },
-  { id:'summer', ico:'🍉', title:'初夏卡', text:'蝉鸣起来的时候，\n我想和你一起吃西瓜。\n甜的给你，\n籽我来吐。', openStart:'05-06', openEnd:'06-05', rarity:'SSR' },
-  { id:'autumn', ico:'🍂', title:'落叶卡', text:'踩落叶的声音，\n是我们专属的秋天 BGM。\n嘎吱嘎吱，\n像在替我们说悄悄话。', openStart:'08-08', openEnd:'09-07', rarity:'SSR' },
-  { id:'winter', ico:'❄️', title:'围炉卡', text:'天冷了，\n但靠近你的时候很暖。\n这个冬天，\n我不想到处跑，\n只想待在你旁边。', openStart:'11-08', openEnd:'12-07', rarity:'SSR' }
+  { id:'spring', ico:'🌱', title:'迎春卡', text:'春天来了，\n我们去看第一朵花开吧。\n新的一年，\n也要一起玩。', openStart:'01-20', openEnd:'02-19', rarity:'SSR' },
+  { id:'summer', ico:'🍉', title:'初夏卡', text:'蝉鸣起来的时候，\n适合一起吃西瓜。\n约吗？', openStart:'05-06', openEnd:'06-05', rarity:'SSR' },
+  { id:'autumn', ico:'🍂', title:'落叶卡', text:'踩落叶的声音，\n是秋天特有的配乐。\n一起走一段吧。', openStart:'08-08', openEnd:'09-07', rarity:'SSR' },
+  { id:'winter', ico:'❄️', title:'围炉卡', text:'天冷了，\n记得添衣，\n热茶趁热喝。\n这个冬天，\n照顾好自己。', openStart:'11-08', openEnd:'12-07', rarity:'SSR' }
 ];
 /* 月份卡：12张，每月1张，错过等明年 */
 var MONTHLY_CARDS = [
-  { month:0,  ico:'🎆', title:'新年卡',  text:'新的一年，\n第一个想见的人是你。\n烟花再好看，\n也不如你抬头时的眼睛。', rarity:'SSR' },
-  { month:1,  ico:'🌷', title:'春日卡',  text:'二月的风开始软了，\n像你笑起来的样子。\n这个春天，\n我预定了。', rarity:'SSR' },
-  { month:2,  ico:'🌸', title:'樱花卡',  text:'樱花飘落的速度\n是秒速五厘米，\n而我走向你的速度——\n是能用跑就绝不走。', rarity:'SSR' },
-  { month:3,  ico:'🌧️', title:'雨季卡',  text:'四月的雨，\n打在伞上噼里啪啦。\n一把伞两个人，\n肩膀挨着肩膀，\n这就是最好的晴天。', rarity:'SSR' },
-  { month:4,  ico:'🌺', title:'繁花卡',  text:'五月到处都在开花，\n但我想摘一朵\n刚好开在你笑的那一秒的，\n别处没有。', rarity:'SSR' },
-  { month:5,  ico:'🌞', title:'盛夏卡',  text:'六月的光很烈，\n但晒在我心上的，\n是你回头看我的那一眼。', rarity:'SSR' },
-  { month:6,  ico:'🦗', title:'蝉鸣卡',  text:'蝉叫了一整个夏天，\n我忍了一整个夏天\n没说出口的话——\n想你了。', rarity:'SSR' },
-  { month:7,  ico:'🌠', title:'星夜卡',  text:'八月的流星，\n我许了一个愿。\n不能告诉你，\n说了就不灵了。\n……好吧，和你有关。', rarity:'SSR' },
-  { month:8,  ico:'🌕', title:'月圆卡',  text:'九月的月亮很圆，\n但不如你靠在我肩上时，\n我心里的那个圆。', rarity:'SSR' },
-  { month:9,  ico:'🍁', title:'桂香卡',  text:'十月的风带着桂花味，\n走到哪儿都是甜的。\n就像想到你的时候，\n空气都是软的。', rarity:'SSR' },
-  { month:10, ico:'🍵', title:'暖茶卡',  text:'十一月适合窝着，\n一杯热茶，一部老电影，\n还有你靠在我肩膀上打瞌睡。\n这就够了。', rarity:'SSR' },
-  { month:11, ico:'🎄', title:'雪夜卡',  text:'十二月如果下雪，\n我们一起出去走走吧。\n走着走着，\n一不小心就白头了。', rarity:'SSR' }
+  { month:0,  ico:'🎆', title:'新年卡',  text:'新的一年，\n第一个祝福给你：\n平安，开心，\n心想事成。', rarity:'SSR' },
+  { month:1,  ico:'🌷', title:'春日卡',  text:'二月的风开始软了，\n适合出门走走。\n这个春天，\n慢慢来。', rarity:'SSR' },
+  { month:2,  ico:'🌸', title:'樱花卡',  text:'樱花飘落的速度\n是秒速五厘米，\n所以看樱花要\n慢慢走，别错过。', rarity:'SSR' },
+  { month:3,  ico:'🌧️', title:'雨季卡',  text:'四月的雨，\n打在伞上噼里啪啦。\n记得带伞，\n别淋湿了。', rarity:'SSR' },
+  { month:4,  ico:'🌺', title:'繁花卡',  text:'五月到处都在开花，\n适合拍照，\n记得多出去走走。', rarity:'SSR' },
+  { month:5,  ico:'🌞', title:'盛夏卡',  text:'六月的光很烈，\n记得防晒，\n多喝水。', rarity:'SSR' },
+  { month:6,  ico:'🦗', title:'蝉鸣卡',  text:'蝉叫了一整个夏天，\n夏天的进度条\n已经过半了。', rarity:'SSR' },
+  { month:7,  ico:'🌠', title:'星夜卡',  text:'八月的流星，\n适合许愿。\n祝你心想事成。', rarity:'SSR' },
+  { month:8,  ico:'🌕', title:'月圆卡',  text:'九月的月亮很圆，\n适合赏月，\n记得抬头看看。', rarity:'SSR' },
+  { month:9,  ico:'🍁', title:'桂香卡',  text:'十月的风带着桂花味，\n走到哪儿都是甜的。\n秋天真好。', rarity:'SSR' },
+  { month:10, ico:'🍵', title:'暖茶卡',  text:'十一月适合窝着，\n一杯热茶，一部老电影，\n就很舒服。', rarity:'SSR' },
+  { month:11, ico:'🎄', title:'雪夜卡',  text:'十二月如果下雪，\n一起出去走走吧。\n雪景很难得。', rarity:'SSR' }
 ];
 
 /* 判断当前可用的限定卡（节气+当月） */
@@ -1614,28 +1614,28 @@ function getNextLimitedPreview(){
 
 /* ===== 每日签语 ===== */
 var DAILY_FORTUNES = [
-  '今天会遇到一个让你心软的瞬间',
-  '适合说一句一直没说出口的话',
+  '今天会遇到一个让你心情变好的瞬间',
+  '适合说一句一直想说的话',
   '今天的幸运色是鸢尾紫',
-  '会有一个意想不到的拥抱',
+  '会有一个意想不到的小惊喜',
   '今天适合慢下来走路',
-  '有人正在想你，只是没说',
+  '有人正惦记着你，只是没说',
   '今天的天空会特别好看',
   '会有好事发生，耐心等一等',
   '今天的你值得被温柔对待',
-  '适合给想念的人发一条消息',
-  '今天的风会替你传达心意',
+  '适合给老朋友发一条消息',
+  '今天的风很舒服，适合散步',
   '适合做一个小小的约定',
-  '今天的月亮会替你说晚安',
+  '今晚的月亮会很好看',
   '会有一个让你笑出声的时刻',
-  '今天的世界因你而柔软了一点'
+  '今天也要温柔地对待自己'
 ];
 
 /* ===== 剧情链系统 ===== */
 var STORY_CHAINS = [
   {
     id: 'heart_collector',
-    name: '心动收集',
+    name: '心意收集',
     icon: '💖',
     desc: '集齐全部 4 张「一句心意」SSR',
     condition: function(m){
@@ -1643,7 +1643,7 @@ var STORY_CHAINS = [
       for (var i=0; i<need.length; i++) { if (!m.collected[need[i]]) return false; }
       return true;
     },
-    story: { title: '写给心动', text: '你收集了所有的心意卡片。\n\n其实每一张翻开的卡片，\n都是同一句没说完的话——\n\n「我喜欢你。」\n\n只是我换了一百种方式说，\n希望你能听懂其中一种。\n\n——愿你永远保有这份心动的勇气。' }
+    story: { title: '写给心意', text: '你收集了所有的心意卡片。\n\n其实每一张卡片，\n都是同一个意思——\n\n「希望你今天也很好。」\n\n只是我换了一百种方式写，\n希望你能收到其中一种。\n\n——愿你被这个世界温柔以待。' }
   },
   {
     id: 'collector_master',
@@ -1654,7 +1654,7 @@ var STORY_CHAINS = [
       var n = 0; for (var k in m.collected) n++;
       return n >= 20;
     },
-    story: { title: '收藏的意义', text: '你翻开了 20 张卡片，\n把满满一册的回忆都收进了心里。\n\n有些话平时说不出口，\n但卡片替我说了。\n\n谢谢你愿意一张一张地翻，\n也谢谢你愿意相信，\n这个世界上还有人用心写卡片。\n\n——致 collector' }
+    story: { title: '收藏的意义', text: '你翻开了 20 张卡片，\n把满满一册的回忆都收进了心里。\n\n有些祝福平时不常提起，\n但卡片替我说了。\n\n谢谢你愿意一张一张地翻，\n也谢谢你愿意相信，\n这个世界上还有人认真写卡片。\n\n——致 collector' }
   },
   {
     id: 'old_friend',
@@ -1664,7 +1664,7 @@ var STORY_CHAINS = [
     condition: function(m){
       return m.visitCount >= 10;
     },
-    story: { title: '第十次相遇', text: '这是你第十次来到这里。\n\n从第一次的好奇，\n到现在的习惯，\n这里已经成了我们之间的秘密基地。\n\n有些人见一面就记住了，\n有些地方来一次就离不开了。\n\n——谢谢你，一直在。' }
+    story: { title: '第十次相遇', text: '这是你第十次来到这里。\n\n从第一次的好奇，\n到现在的习惯，\n这里已经成了我们之间的秘密基地。\n\n有些人见一面就记住了，\n有些地方来一次就离不开了。\n\n——谢谢你，还愿意来。' }
   },
   {
     id: 'sr_explorer',
@@ -1686,7 +1686,7 @@ var STORY_CHAINS = [
     condition: function(m){
       return m.totalFlips >= 1;
     },
-    story: { title: '第一张', text: '你翻开了第一张卡片。\n\n每一张卡都是一段悄悄话，\n而你选择了翻开它。\n\n这个小小的举动，\n是故事的开始。\n\n——欢迎来到我们的世界' }
+    story: { title: '第一张', text: '你翻开了第一张卡片。\n\n每一张卡都是一句小祝福，\n而你选择了翻开它。\n\n这个小小的举动，\n是故事的开始。\n\n——欢迎来到这片小世界' }
   },
   {
     id: 'explorer',
@@ -1696,7 +1696,7 @@ var STORY_CHAINS = [
     condition: function(m){
       return m.visitCount >= 3;
     },
-    story: { title: '第三次到来', text: '这是你第三次来到这里。\n\n第一次是好奇，\n第二次是想看看有没有新的，\n第三次……\n\n第三次已经是习惯了。\n\n有些地方，\n来一次是偶然，\n来三次就是约定。' }
+    story: { title: '第三次到来', text: '这是你第三次来到这里。\n\n第一次是好奇，\n第二次是想看看有没有新的，\n第三次……\n\n第三次，\n说明这里还值得来。\n\n有些地方来一次是偶然，\n来三次就是习惯了。' }
   },
   {
     id: 'night_visitor',
@@ -1707,7 +1707,7 @@ var STORY_CHAINS = [
       var h = new Date().getHours();
       return h >= 23 || h < 5;
     },
-    story: { title: '夜深了', text: '深夜的时候，\n世界安静下来，\n只有屏幕的光亮着你。\n\n这个时间还在这里的人，\n大概心里都藏着一些\n白天说不出口的话。\n\n——晚安，好梦。' }
+    story: { title: '夜深了', text: '深夜的时候，\n世界安静下来，\n只有屏幕的光亮着你。\n\n这个时间还在这里的人，\n大概是想在安静里\n待一会儿。\n\n——晚安，好梦。' }
   },
   {
     id: 'heart_complete',
@@ -1718,7 +1718,7 @@ var STORY_CHAINS = [
       for (var i=0; i<=6; i++) { if (!m.collected[i]) return false; }
       return true;
     },
-    story: { title: '心意全集', text: '你把每一句「一句心意」\n都收进了收藏册。\n\n从第一张到最后一张，\n像是在读一封很长的信。\n\n信的内容只有四个字，\n但写了七种不一样的语气。\n\n——你读懂了吗？' }
+    story: { title: '心意全集', text: '你把每一句「一句心意」\n都收进了收藏册。\n\n从第一张到最后一张，\n像在翻一本日记。\n\n每一页都很短，\n但都希望\n你能读到一点温度。' }
   },
   {
     id: 'where_complete',
@@ -1729,7 +1729,7 @@ var STORY_CHAINS = [
       for (var i=7; i<=15; i++) { if (!m.collected[i]) return false; }
       return true;
     },
-    story: { title: '足迹', text: '长沙的每一个角落，\n我们都去过了。\n\n岳麓山的日出，\n美术馆的展览，\n书店的周末午后……\n\n这些地方从此不只是地名，\n而是我们故事的坐标。\n\n——下一站，去哪里？' }
+    story: { title: '足迹', text: '长沙的每一个角落，\n我们都走过了。\n\n岳麓山的日出，\n美术馆的展览，\n书店的周末午后……\n\n这些地方从此不只是地名，\n而是我们一起走过的坐标。\n\n——下一站，去哪里？' }
   },
   {
     id: 'challenge_complete',
@@ -1740,7 +1740,7 @@ var STORY_CHAINS = [
       for (var i=16; i<=21; i++) { if (!m.collected[i]) return false; }
       return true;
     },
-    story: { title: '全部挑战', text: '所有的小挑战，\n你都完成了。\n\n对视十秒，\n猜歌名，\n奇怪的双人合照……\n\n有些挑战有点难，\n有些让人脸红，\n但你都笑着做到了。\n\n——和你一起，做什么都有趣。' }
+    story: { title: '全部挑战', text: '所有的小挑战，\n你都完成了。\n\n对视十秒，\n猜歌名，\n奇怪的双人合照……\n\n有些挑战有点难，\n有些有点糗，\n但你都笑着做到了。\n\n——和你一起，做什么都有趣。' }
   },
   {
     id: 'flip_master',
@@ -1750,7 +1750,7 @@ var STORY_CHAINS = [
     condition: function(m){
       return m.totalFlips >= 30;
     },
-    story: { title: '三十次相遇', text: '你已经翻开了 30 张卡片。\n\n每一次翻开，\n都是一次小小的期待。\n\n这张会是什么？\n那句话是写给谁的呢？\n\n30 次了，\n你还是很温柔地\n一张一张地翻开。\n\n——谢谢你这么认真。' }
+    story: { title: '三十次相遇', text: '你已经翻开了 30 张卡片。\n\n每一次翻开，\n都是一次小小的期待。\n\n这张会是什么？\n这句祝福是写给谁的呢？\n\n30 次了，\n你还是很认真地\n一张一张地翻开。\n\n——谢谢你这么认真。' }
   },
   {
     id: 'legend_collector',
@@ -1761,7 +1761,7 @@ var STORY_CHAINS = [
       var n = 0; for (var k in m.unlockedHidden) n++;
       return n >= 4;
     },
-    story: { title: '传说的尽头', text: '你找到了所有隐藏的传说卡。\n\n缘分、晚安、约定、真心——\n每一张都不容易遇到。\n\n但你一个不落地找到了。\n\n有些东西，\n只有足够用心之后，\n才会出现。\n\n——你值得所有的美好。' }
+    story: { title: '传说的尽头', text: '你找到了所有隐藏的传说卡。\n\n缘分、晚安、约定、真心——\n每一张都不容易遇到。\n\n但你一个不落地找到了。\n\n有些东西，\n只有足够用心之后，\n才会出现。\n\n——愿你拥有所有好运气。' }
   },
   {
     id: 'season_collector',
@@ -1773,7 +1773,7 @@ var STORY_CHAINS = [
       for (var i=0; i<need.length; i++) { if (!m.limitedCollected[need[i]]) return false; }
       return true;
     },
-    story: { title: '走过四季', text: '春天到冬天，\n你一张都没有错过。\n\n迎春、初夏、落叶、围炉——\n四个季节，四张卡片，\n像是陪你走过了一整年。\n\n——四季轮转，我都在。' }
+    story: { title: '走过四季', text: '春天到冬天，\n你一张都没有错过。\n\n迎春、初夏、落叶、围炉——\n四个季节，四张卡片，\n像是一年最美好的记录。\n\n——四季轮转，常来玩。' }
   },
   {
     id: 'monthly_half_1',
@@ -1795,7 +1795,7 @@ var STORY_CHAINS = [
       for (var i=6; i<=11; i++) { if (!m.limitedCollected['month_'+i]) return false; }
       return true;
     },
-    story: { title: '下半年', text: '从七月到十二月，\n下半年的每一张卡片，\n你都收进了心里。\n\n蝉鸣、流星、月圆、桂香、暖茶、雪夜——\n一年到头，\n每个月的最后一天，\n都在期待下个月的卡片。\n\n——明年，还要一起过。' }
+    story: { title: '下半年', text: '从七月到十二月，\n下半年的每一张卡片，\n你都收进了心里。\n\n蝉鸣、流星、月圆、桂香、暖茶、雪夜——\n一年到头，\n每个月的最后一天，\n都在期待下个月的卡片。\n\n——明年，也要常来。' }
   }
 ];
 
@@ -1948,11 +1948,11 @@ function getWelcomeText(){
   var visits = memory.visitCount;
   if (visits === 1) return '初次见面，请多指教 ✨';
   if (visits === 2) return '又见面了，很高兴你还来 🌸';
-  if (visits === 3) return '第三次了，你是不是喜欢上这里了？ 😊';
-  if (visits === 5) return '五连打卡！我开始期待每天见到你了 🥰';
-  if (visits === 10) return '十次了！你是我的常客了 🎉';
-  if (visits > 10) return '第 ' + visits + ' 次相遇，谢谢你一直陪着我 💞';
-  var msgs = ['好久不见，想我了吗？ 💫', '欢迎回来，今天想翻哪张？ 🌙', '又见面啦，今天天气真好 🍃', '等你好久了，点一下吧 ✨'];
+  if (visits === 3) return '第三次了，看来这里还不错？ 😊';
+  if (visits === 5) return '五连打卡！收藏册等你填满 📖';
+  if (visits === 10) return '十次了！老朋友级别的待遇 🎉';
+  if (visits > 10) return '第 ' + visits + ' 次相遇，谢谢你还愿意来 💫';
+  var msgs = ['好久不见，欢迎回来 💫', '欢迎回来，今天想翻哪张？ 🌙', '又见面啦，今天天气真好 🍃', '来了？翻一张吧 ✨'];
   return msgs[(visits - 1) % msgs.length];
 }
 
