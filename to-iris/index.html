@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -30,6 +30,7 @@
     -webkit-align-items: center; align-items: center;
     -webkit-justify-content: center; justify-content: center;
     padding: 24px;
+    -webkit-perspective: 1200px; perspective: 1200px;
   }
 
   .signature {
@@ -421,18 +422,22 @@
 
   /* 卡片 */
   .card-wrap {
-    position: absolute; left: 50%; top: 50%;
-    -webkit-transform: translate(-50%, -50%) scale(0.7);
-    transform: translate(-50%, -50%) scale(0.7);
+    position: absolute; left: 50%; 
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%) scale(0.7) rotateX(15deg) rotateY(-10deg);
+    transform: translate(-50%, -50%) scale(0.7) rotateX(15deg) rotateY(-10deg);
     width: 88%; max-width: 340px;
     opacity: 0; pointer-events: none;
-    transition: opacity .6s cubic-bezier(.2,.9,.3,1), transform .6s cubic-bezier(.2,.9,.3,1.2);
+    -webkit-transform-origin: 50% 60%;
+    transform-origin: 50% 60%;
+    -webkit-transition: opacity .35s cubic-bezier(.2,.9,.3,1), transform .45s cubic-bezier(.2,.9,.3,1.1);
+    transition: opacity .35s cubic-bezier(.2,.9,.3,1), transform .45s cubic-bezier(.2,.9,.3,1.1);
     z-index: 10;
   }
   .card-wrap.show {
     opacity: 1;
-    -webkit-transform: translate(-50%, -50%) scale(1);
-    transform: translate(-50%, -50%) scale(1);
+    -webkit-transform: translate(-50%, -50%) scale(1) rotateX(0) rotateY(0);
+    transform: translate(-50%, -50%) scale(1) rotateX(0) rotateY(0);
     pointer-events: auto;
   }
 
@@ -471,6 +476,14 @@
     font-size: 15px; line-height: 1.85; color: #e0d4f0;
     white-space: pre-line;
   }
+  .card-text .text-line {
+    display: inline-block;
+    opacity: 0; -webkit-transform: translateY(10px); transform: translateY(10px);
+    -webkit-animation: textLineIn .5s cubic-bezier(.2,.8,.2,1) forwards;
+    animation: textLineIn .5s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  @-webkit-keyframes textLineIn { to { opacity: 1; -webkit-transform: translateY(0); } }
+  @keyframes textLineIn { to { opacity: 1; transform: translateY(0); } }
   .card-sub {
     font-size: 12px; color: #9a86c4; margin-top: 14px;
     padding-top: 12px;
@@ -519,6 +532,12 @@
   }
   @-webkit-keyframes urShine { 0%,100% { box-shadow: 0 0 4px rgba(212,160,23,0.4); } 50% { box-shadow: 0 0 10px rgba(255,180,0,0.55); } }
   @keyframes urShine { 0%,100% { box-shadow: 0 0 4px rgba(212,160,23,0.4); } 50% { box-shadow: 0 0 10px rgba(255,180,0,0.55); } }
+  .rarity-tag.limited {
+    background: linear-gradient(135deg, #9ab4e8, #cdd9ff);
+    color: #141d3d;
+    -webkit-animation: urShine 2.4s ease-in-out infinite;
+    animation: urShine 2.4s ease-in-out infinite;
+  }
 
   /* 稀有度边框 */
   .card.rarity-r { border-color: rgba(255,255,255,0.18); }
@@ -577,6 +596,49 @@
     55%,100% { left: 120%; }
   }
 
+  /* 限定卡：月华银 + 专属灯火扫过（区别于UR暗金/SSR紫，彰显"时间限定"） */
+  .card.rarity-limited {
+    border: 1.5px solid transparent;
+    background:
+      -webkit-linear-gradient(160deg, rgba(28,36,66,0.42) 0%, rgba(18,24,48,0.3) 100%) padding-box,
+      -webkit-linear-gradient(135deg, #9ab4e8 0%, #cdd9ff 50%, #9ab4e8 100%) border-box;
+    background:
+      linear-gradient(160deg, rgba(28,36,66,0.42) 0%, rgba(18,24,48,0.3) 100%) padding-box,
+      linear-gradient(135deg, #9ab4e8 0%, #cdd9ff 50%, #9ab4e8 100%) border-box;
+    box-shadow: 0 20px 50px rgba(90,120,200,0.35);
+    -webkit-animation: limBreath 3.6s ease-in-out infinite;
+    animation: limBreath 3.6s ease-in-out infinite;
+  }
+  @-webkit-keyframes limBreath {
+    0%,100% { box-shadow: 0 20px 50px rgba(90,120,200,0.3), 0 0 0 rgba(205,217,255,0); }
+    50% { box-shadow: 0 20px 50px rgba(90,120,200,0.3), 0 0 26px rgba(205,217,255,0.24); }
+  }
+  @keyframes limBreath {
+    0%,100% { box-shadow: 0 20px 50px rgba(90,120,200,0.3), 0 0 0 rgba(205,217,255,0); }
+    50% { box-shadow: 0 20px 50px rgba(90,120,200,0.3), 0 0 26px rgba(205,217,255,0.24); }
+  }
+  /* 限定灯火扫过：柔和的斜向冷光纵向掠过 */
+  .card.rarity-limited::before {
+    content: '';
+    position: absolute; top: 0; left: -55%;
+    width: 42%; height: 100%;
+    background: linear-gradient(100deg, transparent 0%, rgba(230,240,255,0.16) 50%, transparent 100%);
+    -webkit-transform: skewX(-20deg);
+    transform: skewX(-20deg);
+    -webkit-animation: limSweep 5s ease-in-out infinite;
+    animation: limSweep 5s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  @-webkit-keyframes limSweep {
+    0% { left: -55%; }
+    50%,100% { left: 120%; }
+  }
+  @keyframes limSweep {
+    0% { left: -55%; }
+    50%,100% { left: 120%; }
+  }
+
   /* UR 金光粒子爆发层 */
   .gold-burst-layer {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -589,18 +651,31 @@
     border-radius: 50%;
     background: radial-gradient(circle, #fff8d0 0%, #ffd700 50%, transparent 100%);
     box-shadow: 0 0 10px #ffd700;
-    -webkit-animation: goldFly 1.5s cubic-bezier(.15,.6,.3,1) forwards;
-    animation: goldFly 1.5s cubic-bezier(.15,.6,.3,1) forwards;
   }
-  @-webkit-keyframes goldFly {
-    0% { -webkit-transform: translate(-50%, -50%) scale(0); opacity: 1; }
-    50% { opacity: 1; }
-    100% { -webkit-transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.2); opacity: 0; }
+  .gold-particle.heart-particle {
+    -webkit-animation: heartFly 1.8s cubic-bezier(.15,.6,.3,1) forwards;
+    animation: heartFly 1.8s cubic-bezier(.15,.6,.3,1) forwards;
   }
-  @keyframes goldFly {
-    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
-    50% { opacity: 1; }
-    100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.2); opacity: 0; }
+  @-webkit-keyframes heartFly {
+    0% { -webkit-transform: translate(calc(-50% + var(--hx)), calc(-50% + var(--hy))) scale(0.8); opacity: 0; }
+    15% { opacity: 1; }
+    30% { -webkit-transform: translate(calc(-50% + var(--hx)), calc(-50% + var(--hy))) scale(1.1); }
+    100% { -webkit-transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.15); opacity: 0; }
+  }
+  @keyframes heartFly {
+    0% { transform: translate(calc(-50% + var(--hx)), calc(-50% + var(--hy))) scale(0.8); opacity: 0; }
+    15% { opacity: 1; }
+    30% { transform: translate(calc(-50% + var(--hx)), calc(-50% + var(--hy))) scale(1.1); }
+    100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.15); opacity: 0; }
+  }
+  /* 限定卡月光粒子：冷白星屑 */
+  .gold-particle.limited-particle {
+    background: radial-gradient(circle, #eef4ff 0%, #cdd9ff 50%, transparent 100%);
+    box-shadow: 0 0 10px #cdd9ff;
+  }
+  /* 限定卡月晕 */
+  .purple-glow.limited-glow {
+    background: radial-gradient(circle, rgba(205,217,255,0.42) 0%, transparent 70%);
   }
   .purple-glow {
     position: absolute; top: 50%; left: 50%;
@@ -686,7 +761,23 @@
     background: rgba(255,255,255,0.02);
     color: transparent;
   }
-  .collect-mini-card.locked .mini-ico::before { content: '?'; color: rgba(154,134,196,0.4); font-size: 18px; }
+  .collect-mini-card.locked .mini-ico::before {
+    content: '?'; color: var(--lv, rgba(154,134,196,0.45)); font-size: 20px;
+    text-shadow: 0 0 10px var(--lv, rgba(154,134,196,0.3));
+    -webkit-animation: mysteryPulse 3.2s ease-in-out infinite;
+    animation: mysteryPulse 3.2s ease-in-out infinite;
+  }
+  @-webkit-keyframes mysteryPulse {
+    0%,100% { opacity: 0.45; -webkit-transform: scale(.92); }
+    50% { opacity: 1; -webkit-transform: scale(1.08); }
+  }
+  @keyframes mysteryPulse {
+    0%,100% { opacity: 0.45; transform: scale(.92); }
+    50% { opacity: 1; transform: scale(1.08); }
+  }
+  .collect-mini-card.locked .mini-ico:hover, .collect-mini-card.locked .mini-ico:active {
+    border-color: var(--lv, rgba(184,168,232,0.5));
+  }
   .collect-mini-card.expired .mini-ico { opacity: 0.3; filter: grayscale(1); }
   .collect-mini-card .mini-name {
     font-size: 8px; color: #9a86c4; letter-spacing: 0.5px;
@@ -956,6 +1047,18 @@
     -webkit-transition: -webkit-transform 0.4s cubic-bezier(.2,.8,.2,1), opacity 0.3s;
     transition: transform 0.4s cubic-bezier(.2,.8,.2,1), opacity 0.3s;
     -webkit-tap-highlight-color: transparent;
+    -webkit-animation: cardFloat 3s ease-in-out infinite;
+    animation: cardFloat 3s ease-in-out infinite;
+  }
+  .orbit-card:nth-child(odd) { -webkit-animation-delay: -0.8s; animation-delay: -0.8s; }
+  .orbit-card:nth-child(3n) { -webkit-animation-delay: -1.6s; animation-delay: -1.6s; }
+  @-webkit-keyframes cardFloat {
+    0%,100% { -webkit-transform: translateY(0); }
+    50% { -webkit-transform: translateY(-6px); }
+  }
+  @keyframes cardFloat {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
   }
   .orbit-card:active { -webkit-transform: scale(0.92); transform: scale(0.92); }
 
@@ -980,6 +1083,14 @@
     -webkit-justify-content: center; justify-content: center;
     color: #4a2860;
     font-family: "PingFang SC", sans-serif;
+    -webkit-transition: box-shadow .3s;
+    transition: box-shadow .3s;
+  }
+  .orbit-card:hover .orbit-face.front {
+    box-shadow: 0 0 24px rgba(232,160,210,0.5), 0 0 48px rgba(232,160,210,0.2);
+  }
+  .orbit-card:active .orbit-face.front {
+    box-shadow: 0 0 12px rgba(232,160,210,0.3);
   }
   .orbit-face.front::before {
     content: ''; position: absolute; inset: 0;
@@ -1678,6 +1789,16 @@ var DAILY_FORTUNES = [
   '会有一个让你笑出声的时刻',
   '今天也要温柔地对待自己'
 ];
+/* ===== 专属彩蛋（概率混入每日签，只有你懂的细节） ===== */
+var IRIS_MOMENTS = [
+  '今晚的菜，特意没有香菜',
+  '记得买点麻酱，蘸什么都香',
+  '不喜欢的酸，今天都替你避开',
+  '深夜想看点刺激的？记得留盏灯',
+  '头像很好看——和梁朝伟有点像，现在更像了',
+  '鸢尾紫是你的幸运色',
+  '今天的风，像你喜欢的那个方向'
+];
 
 /* ===== 剧情链系统 ===== */
 var STORY_CHAINS = [
@@ -1919,7 +2040,12 @@ setTimeout(function(){
   // 欢迎语
   var welcomeEl = document.getElementById('welcome');
   var lastVisit = getLastVisitText();
-  welcomeEl.innerHTML = getWelcomeText() + (lastVisit ? '<span class="line2">' + lastVisit + '</span>' : '') + (memory.lastDailyDate !== getTodayStr() ? '<span class="line2">✦ 今日签语待领取</span>' : '<span class="line2">✦ 今日已签 ✓</span>');
+  var quotaTxt = getLimitedQuota();
+  var streakTxt = '';
+  if ((memory.consecutiveDays || 0) > 0) {
+    streakTxt = '<span class="line2">🔥 连续 ' + memory.consecutiveDays + ' 天 · 今日限定 x' + quotaTxt + '</span>';
+  }
+  welcomeEl.innerHTML = getWelcomeText() + (lastVisit ? '<span class="line2">' + lastVisit + '</span>' : '') + streakTxt + (memory.lastDailyDate !== getTodayStr() ? '<span class="line2">✦ 今日签语待领取</span>' : '<span class="line2">✦ 今日已签 ✓</span>');
   welcomeEl.classList.add('show');
   // 底部加个"看收藏"按钮
   var bar = document.querySelector('.bottom-bar');
@@ -1957,12 +2083,13 @@ function loadMemory(){
       lastVisitDateStr: m.lastVisitDateStr || '',
       unlockedHidden: m.unlockedHidden || {},
       limitedCollected: m.limitedCollected || {},   // 限定卡已收集 {cardId: {time}}
-      lastLimitedDrawDate: m.lastLimitedDrawDate || ''  // 上次限定抽日期
+      lastLimitedDrawDate: m.lastLimitedDrawDate || '',  // 上次限定抽日期
+      limitedDrawsToday: m.limitedDrawsToday || 0   // 今日限定已抽次数
     };
   } catch(e) {
     return { collected: {}, totalFlips: 0, visitCount: 0, lastVisitTime: 0, lastCardIdx: -1,
              lastDailyDate: '', dailyFortuneIdx: null, consecutiveDays: 0, lastVisitDateStr: '',
-             unlockedHidden: {}, limitedCollected: {}, lastLimitedDrawDate: '' };
+             unlockedHidden: {}, limitedCollected: {}, lastLimitedDrawDate: '', limitedDrawsToday: 0 };
   }
 }
 
@@ -2203,15 +2330,17 @@ function initLimitedSystem(){
   // 按钮状态
   var canDraw = canDrawLimitedToday();
   var active = getActiveLimitedCards();
+  var quota = getLimitedQuota();
+  var done = memory.limitedDrawsToday || 0;
   if (active.length === 0) {
     limitedBtn.textContent = '✦ 暂无限定';
     limitedBtn.classList.add('used');
   } else if (canDraw) {
-    limitedBtn.textContent = '✦ 今日限定 1/1';
+    limitedBtn.textContent = '✦ 今日限定 ' + (quota - done) + '/' + quota;
     limitedBtn.classList.add('available');
     limitedBtn.classList.remove('used');
   } else {
-    limitedBtn.textContent = '✦ 今日限定 0/1';
+    limitedBtn.textContent = '✦ 今日限定 0/' + quota;
     limitedBtn.classList.add('used');
     limitedBtn.classList.remove('available');
   }
@@ -2248,9 +2377,9 @@ limitedBtn.addEventListener('click', function(){
   // 展示限定卡
   currentIdx = -99; // 标记限定卡
   var theCard = document.getElementById('theCard');
-  theCard.className = 'card rarity-ssr';
-  document.getElementById('rarityTag').textContent = 'SSR · 限定';
-  document.getElementById('rarityTag').className = 'rarity-tag ssr';
+  theCard.className = 'card rarity-limited';
+  document.getElementById('rarityTag').textContent = '✦ 限定';
+  document.getElementById('rarityTag').className = 'rarity-tag limited';
   document.getElementById('rarityTag').style.display = 'block';
   document.getElementById('dailyBanner').style.display = 'none';
   cKind.textContent = '✦ 限定卡';
@@ -2261,11 +2390,19 @@ limitedBtn.addEventListener('click', function(){
   cSub.textContent = '';
   flowerWrap.style.display = 'none';
   cardWrap.classList.add('show');
-  triggerPurpleGlow();
+  triggerLimitedGlow();
   // 更新按钮
-  limitedBtn.textContent = '✦ 今日限定 0/1';
-  limitedBtn.classList.add('used');
-  limitedBtn.classList.remove('available');
+  var quota2 = getLimitedQuota();
+  var done2 = memory.limitedDrawsToday || 0;
+  if (done2 < quota2) {
+    limitedBtn.textContent = '✦ 今日限定 ' + (quota2 - done2) + '/' + quota2;
+    limitedBtn.classList.remove('used');
+    limitedBtn.classList.add('available');
+  } else {
+    limitedBtn.textContent = '✦ 今日限定 0/' + quota2;
+    limitedBtn.classList.add('used');
+    limitedBtn.classList.remove('available');
+  }
   updateCollectionProgress();
 });
 
@@ -2319,10 +2456,13 @@ function smartDraw(){
     return unlockedKeys[Math.floor(Math.random() * unlockedKeys.length)];
   }
   // 主抽卡：档位制（UR 5% / SSR 15% / SR 30% / R 50%）
+  // 连续≥5天签到加成：UR 概率提至 10%，SSR 提至 20%
+  var urChance = 0.05, ssrChance = 0.20;
+  if ((memory.consecutiveDays || 0) >= 5) { urChance = 0.10; ssrChance = 0.30; }
   var roll = Math.random();
   var tier;
-  if (roll < 0.05) tier = 'UR';
-  else if (roll < 0.20) tier = 'SSR';
+  if (roll < urChance) tier = 'UR';
+  else if (roll < ssrChance) tier = 'SSR';
   else if (roll < 0.50) tier = 'SR';
   else tier = 'R';
   // 收集该档位的卡池
@@ -2349,15 +2489,29 @@ function smartDraw(){
   return chosen;
 }
 
-/* 限定卡抽卡：每日免费1次，从当前可用限定卡中抽 */
+/* 连续签到加成：连续天数越多，今日限定次数越多 */
+function getLimitedQuota(){
+  // 基础1次，连续≥2天每日2次，连续≥5天每日3次（激励每天都来）
+  var cd = memory.consecutiveDays || 0;
+  if (cd >= 5) return 3;
+  if (cd >= 2) return 2;
+  return 1;
+}
+/* 限定卡抽卡：每日免费可多次（随连续签到加成），从当前可用限定卡中抽 */
 function canDrawLimitedToday(){
   var today = getTodayStr();
-  return memory.lastLimitedDrawDate !== today;
+  if (memory.lastLimitedDrawDate !== today) {
+    memory.lastLimitedDrawDate = today;
+    memory.limitedDrawsToday = 0;
+    saveMemory();
+  }
+  return memory.limitedDrawsToday < getLimitedQuota();
 }
 function drawLimited(){
   if (!canDrawLimitedToday()) return null;
   var active = getActiveLimitedCards();
   if (active.length === 0) return null;
+  memory.limitedDrawsToday = (memory.limitedDrawsToday || 0) + 1;
   memory.lastLimitedDrawDate = getTodayStr();
   // 优先未收集的限定卡
   var uncollected = [];
@@ -2396,7 +2550,11 @@ function drawCard(idx, isDaily){
   // 每日签样式
   theCard.classList.toggle('daily-card', !!isDaily);
   if (isDaily && memory.dailyFortuneIdx != null) {
+    // 专属彩蛋：约 1/6 概率命中（用 dailyFortuneIdx 的奇偶+随机，保持每日固定）
     var fortune = DAILY_FORTUNES[memory.dailyFortuneIdx];
+    if (Math.random() < 0.16 && IRIS_MOMENTS.length) {
+      fortune = IRIS_MOMENTS[Math.floor(Math.random() * IRIS_MOMENTS.length)];
+    }
     var dateStr = new Date().getMonth()+1 + '月' + new Date().getDate() + '日';
     dailyBanner.innerHTML = '✦ 今日签语 ✦<span class="daily-date">' + dateStr + ' · ' + fortune + '</span>';
     dailyBanner.style.display = 'block';
@@ -2409,7 +2567,17 @@ function drawCard(idx, isDaily){
   cIco.textContent = c.ico;
   cTitle.textContent = c.title || '';
   cTitle.style.display = c.title ? 'block' : 'none';
-  cText.textContent = c.text;
+  // 文字逐行显现：每行单独 span，递进延迟
+  var lines = c.text.split('\n');
+  cText.innerHTML = '';
+  for (var li = 0; li < lines.length; li++) {
+    var sp = document.createElement('span');
+    sp.className = 'text-line';
+    sp.style.animationDelay = (0.15 + li * 0.12) + 's';
+    if (li > 0) sp.style.display = 'block';
+    sp.textContent = lines[li];
+    cText.appendChild(sp);
+  }
   cSub.textContent = c.sub || '';
   // 稀有度角标
   var rarityTag = document.getElementById('rarityTag');
@@ -2433,25 +2601,36 @@ function drawCard(idx, isDaily){
   checkStoryChains();
 }
 
-/* UR 金光粒子爆发 */
+/* UR 金光粒子爆发——先构成心形再飞散 */
 function triggerGoldBurst(){
   var layer = document.getElementById('goldBurstLayer');
   if (!layer) return;
   layer.innerHTML = '';
-  for (var i = 0; i < 30; i++) {
+  var n = 40;
+  for (var i = 0; i < n; i++) {
     var p = document.createElement('div');
-    p.className = 'gold-particle';
-    var angle = (i / 30) * Math.PI * 2;
-    var dist = 120 + Math.random() * 80;
+    p.className = 'gold-particle heart-particle';
+    // 心形参数方程：x = 16 sin³ t, y = 13 cos t - 5 cos 2t - 2 cos 3t - cos 4t
+    var t = (i / n) * Math.PI * 2;
+    var hx = 16 * Math.pow(Math.sin(t), 3);
+    var hy = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+    // 缩放和偏移，使心形居中
+    var scale = 5.5;
+    var cx = 0, cy = -4 * scale;
     p.style.left = '50%';
     p.style.top = '50%';
-    p.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
-    p.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
-    p.style.animationDelay = (Math.random() * 0.2) + 's';
+    p.style.setProperty('--hx', (hx * scale - cx) + 'px');
+    p.style.setProperty('--hy', (hy * scale - cy) + 'px');
+    // 散开方向：随机
+    var angle2 = Math.random() * Math.PI * 2;
+    var dist2 = 100 + Math.random() * 120;
+    p.style.setProperty('--tx', Math.cos(angle2) * dist2 + 'px');
+    p.style.setProperty('--ty', Math.sin(angle2) * dist2 + 'px');
+    p.style.animationDelay = (Math.random() * 0.15) + 's';
     layer.appendChild(p);
   }
   layer.classList.add('active');
-  setTimeout(function(){ layer.classList.remove('active'); layer.innerHTML = ''; }, 1500);
+  setTimeout(function(){ layer.classList.remove('active'); layer.innerHTML = ''; }, 1800);
 }
 /* SSR 紫光晕染 */
 function triggerPurpleGlow(){
@@ -2460,6 +2639,26 @@ function triggerPurpleGlow(){
   layer.innerHTML = '<div class="purple-glow"></div>';
   layer.classList.add('active');
   setTimeout(function(){ layer.classList.remove('active'); layer.innerHTML = ''; }, 1200);
+}
+/* 限定卡月光粒子爆发：冷白星屑 + 呼应"时间限定"的月色 */
+function triggerLimitedGlow(){
+  var layer = document.getElementById('goldBurstLayer');
+  if (!layer) return;
+  layer.innerHTML = '<div class="purple-glow limited-glow"></div>';
+  for (var i = 0; i < 24; i++) {
+    var p = document.createElement('div');
+    p.className = 'gold-particle limited-particle';
+    var angle = (i / 24) * Math.PI * 2;
+    var dist = 100 + Math.random() * 90;
+    p.style.left = '50%';
+    p.style.top = '50%';
+    p.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+    p.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+    p.style.animationDelay = (Math.random() * 0.18) + 's';
+    layer.appendChild(p);
+  }
+  layer.classList.add('active');
+  setTimeout(function(){ layer.classList.remove('active'); layer.innerHTML = ''; }, 1500);
 }
 
 /* ===== 剧情链检查 ===== */
@@ -2843,11 +3042,17 @@ function renderCollectList(){
     if (collected) cls += ' collected';
     else if (opts.locked) cls += ' locked';
     if (opts.expired) cls += ' expired';
+    var lvColor = { ur:'#e8c15a', ssr:'#d8a8ff', sr:'#9cc8ff', r:'#b8a8e8' }[ (rar||'R').toLowerCase() ] || '#b8a8e8';
+    var lvStyle = opts.locked ? ' style="--lv:' + lvColor + ';"' : '';
     var tag = '<div class="mini-tag ' + (rar||'r').toLowerCase() + '">' + (rar||'R') + '</div>';
     var showContent = collected || opts.expired || !opts.locked;
-    return '<div class="' + cls + '">' +
-      '<div class="mini-ico">' + (showContent ? ico : '') + '</div>' +
-      '<div class="mini-name">' + (showContent ? name : '???') + '</div>' +
+    // 锁定空位：等级色发光问号 + 神秘预告（增加收集欲）
+    var nameHtml = showContent
+      ? name
+      : '<span style="color:' + lvColor + '45;">待 揭 晓</span>';
+    return '<div class="' + cls + '"' + lvStyle + '>' +
+      '<div class="mini-ico' + (opts.locked ? ' mystery' : '') + '">' + (collected || opts.expired ? ico : '') + '</div>' +
+      '<div class="mini-name">' + nameHtml + '</div>' +
       tag + '</div>';
   }
 
