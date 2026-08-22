@@ -844,6 +844,15 @@
     .collect-mini-card .mini-ico { width: 42px; height: 42px; line-height: 42px; font-size: 20px; }
     .collect-mini-card .mini-name { font-size: 7px; }
   }
+  /* 短屏设备：缩小花朵与间距，避免底部栏被裁切 */
+  @media (max-height: 620px) {
+    .flower-wrap { margin-bottom: 12px; }
+    .flower-wrap, .flower-wrap.show { -webkit-transform: scale(0.78); transform: scale(0.78); }
+    .title { margin-bottom: 16px; font-size: 18px; }
+    .welcome { min-height: 0; }
+    .bottom-bar { bottom: 16px; }
+    .limited-preview { bottom: 52px; }
+  }
   .bottom-bar.hide { opacity: 0; -webkit-transform: translateY(16px); transform: translateY(16px); pointer-events: none; }
   .counter {
     font-size: 11px; color: #7a6a9a;
@@ -1101,6 +1110,21 @@
     background: linear-gradient(160deg, #2a1850 0%, #1a0a3a 100%);
     -webkit-transform: rotateY(180deg);
     transform: rotateY(180deg);
+  }
+  /* 卡背图案：居中星符 + 内描边，避免排版错乱 */
+  .card-back-pattern {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    display: -webkit-flex; display: flex;
+    -webkit-align-items: center; align-items: center;
+    -webkit-justify-content: center; justify-content: center;
+    font-size: 34px; color: rgba(255,255,255,0.55);
+    text-shadow: 0 0 12px rgba(232,160,210,0.6);
+    pointer-events: none;
+  }
+  .card-back-pattern::before {
+    content: ''; position: absolute; top: 7px; left: 7px; right: 7px; bottom: 7px;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
   }
 
   .orbit-ico {
@@ -1766,6 +1790,8 @@ function getNextLimitedPreview(){
   // 算天数
   var parts = next.openDate.split('-');
   var target = new Date(now.getFullYear(), parseInt(parts[0])-1, parseInt(parts[1]));
+  // 目标日期已过（如 12 月预告明年 1 月卡），顺延到下一年
+  if (target - now < 0) target = new Date(now.getFullYear()+1, parseInt(parts[0])-1, parseInt(parts[1]));
   var diff = Math.ceil((target - now) / (1000*60*60*24));
   if (diff < 0) diff = 0;
   return { card: next.card, days: diff, type: next.type };
@@ -2082,6 +2108,7 @@ function loadMemory(){
       consecutiveDays: m.consecutiveDays || 0,
       lastVisitDateStr: m.lastVisitDateStr || '',
       unlockedHidden: m.unlockedHidden || {},
+      unlockedStories: m.unlockedStories || {},
       limitedCollected: m.limitedCollected || {},   // 限定卡已收集 {cardId: {time}}
       lastLimitedDrawDate: m.lastLimitedDrawDate || '',  // 上次限定抽日期
       limitedDrawsToday: m.limitedDrawsToday || 0   // 今日限定已抽次数
@@ -2089,7 +2116,7 @@ function loadMemory(){
   } catch(e) {
     return { collected: {}, totalFlips: 0, visitCount: 0, lastVisitTime: 0, lastCardIdx: -1,
              lastDailyDate: '', dailyFortuneIdx: null, consecutiveDays: 0, lastVisitDateStr: '',
-             unlockedHidden: {}, limitedCollected: {}, lastLimitedDrawDate: '', limitedDrawsToday: 0 };
+             unlockedHidden: {}, unlockedStories: {}, limitedCollected: {}, lastLimitedDrawDate: '', limitedDrawsToday: 0 };
   }
 }
 
@@ -2197,6 +2224,7 @@ function tryUnlock(){
     localStorage.setItem('iris_logged_in', '1');
     document.getElementById('lockScreen').style.display = 'none';
     recordVisit();
+    checkStoryChains();
   } else {
     err.textContent = '密码不对，再试试 🤔';
     var card = document.querySelector('.lock-card');
@@ -2211,6 +2239,7 @@ function tryUnlock(){
   if (localStorage.getItem('iris_logged_in')) {
     document.getElementById('lockScreen').style.display = 'none';
     recordVisit();
+    checkStoryChains();
   } else {
     document.getElementById('lockBtn').addEventListener('click', tryUnlock);
     document.getElementById('lockInput').addEventListener('keydown', function(e){ if (e.key === 'Enter') tryUnlock(); });
@@ -2403,6 +2432,7 @@ limitedBtn.addEventListener('click', function(){
     limitedBtn.classList.add('used');
     limitedBtn.classList.remove('available');
   }
+  checkStoryChains();
   updateCollectionProgress();
 });
 
