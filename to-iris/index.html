@@ -484,6 +484,11 @@
   }
   @-webkit-keyframes textLineIn { to { opacity: 1; -webkit-transform: translateY(0); } }
   @keyframes textLineIn { to { opacity: 1; transform: translateY(0); } }
+  /* 关系温度尾句：随关系递进的温柔，颜色略淡、间距更开 */
+  .card-text .warm-tail {
+    margin-top: 12px; font-size: 13px; line-height: 1.7;
+    color: #e8c898;
+  }
   .card-sub {
     font-size: 12px; color: #9a86c4; margin-top: 14px;
     padding-top: 12px;
@@ -791,6 +796,19 @@
   .collect-mini-card .mini-tag.ssr { color: #e8a8ff; }
   .collect-mini-card .mini-tag.sr { color: #8ac8ff; }
   .collect-mini-card .mini-tag.r { color: #b8a8e8; }
+  /* 「去过了」标记：共同记忆存档，记录一起收藏的日期 */
+  .collect-mini-card .mini-been {
+    font-size: 7px; color: #ffc898; letter-spacing: 0.5px;
+    margin-top: 1px; opacity: .9; font-family: "PingFang SC", sans-serif;
+  }
+  /* 共同记忆抬头：相识日期 + 相遇次数 */
+  .memory-header {
+    font-size: 11px; letter-spacing: 1px; color: #d8c8ff;
+    margin-bottom: 16px; padding-bottom: 10px;
+    border-bottom: 1px solid rgba(184,168,232,0.12);
+    font-family: "PingFang SC", sans-serif;
+  }
+  .memory-header small { display: block; font-size: 9px; color: #9a86c4; margin-top: 5px; letter-spacing: 1px; }
 
   .actions {
     margin-top: 18px;
@@ -1289,6 +1307,18 @@
     color: #e8a850; opacity: .7;
     font-family: "PingFang SC", sans-serif;
   }
+  /* 特殊日专属卡：暖金偏粉的柔光，叠加在稀有度边框之上，不破坏 UR/SSR 原边框 */
+  .card.special-card {
+    box-shadow: 0 20px 60px rgba(255,180,120,0.42), 0 0 34px rgba(255,210,160,0.2);
+  }
+  .card.special-card::after {
+    content: '特 别 日 子';
+    position: absolute; top: 8px; right: 12px;
+    font-size: 8px; letter-spacing: 2px;
+    color: #ffd0a0; opacity: .85;
+    font-family: "PingFang SC", sans-serif;
+  }
+  .daily-sign-banner.special { color: #ffd0a0; }
 
   /* ===== 隐藏卡 ===== */
   .hidden-unlock-toast {
@@ -1690,12 +1720,12 @@ var CARDS = [
   { kind:'今天去哪儿', ico:'🌊', title:'橘子洲散步', text:'湘江边走一走，\n吹吹风，\n什么烦恼都没了。', sub:'建议坐观光车，走完全程腿会废', rarity:'R' },
   { kind:'今天去哪儿', ico:'📖', title:'止间书店', text:'安静的一下午，\n一本书，一杯咖啡，\n时间会过得很慢。', sub:'二楼有咖啡区，更安静', rarity:'R' },
   // 小小挑战 (6) — SR×3 互动 + R×3 轻松
-  { kind:'小小挑战', ico:'🎯', title:'对视十秒', text:'十秒之内，\n不许说话，\n不许笑。\n准备好了吗？\n……好，你输了。', sub:'输了的人请喝奶茶', rarity:'SR' },
-  { kind:'小小挑战', ico:'🎵', title:'猜歌名', text:'我哼一句，\n你猜是什么歌。\n猜不出来就……\n让我弹你脑门一下。', sub:'我跑调了你也得猜', rarity:'R' },
-  { kind:'小小挑战', ico:'📸', title:'拍一张奇怪的合照', text:'做个最丑的表情，\n三二一，咔嚓。\n这张照片我存了。', sub:'不许删，以后要拿来笑你', rarity:'SR' },
-  { kind:'小小挑战', ico:'🤫', title:'用眼神对话', text:'接下来一分钟，\n谁都不许说话，\n只用眼神交流。\n看看你能不能猜到我在想什么。', sub:'提示：我想的一定是好吃的', rarity:'R' },
-  { kind:'小小挑战', ico:'🎲', title:'真心话大冒险', text:'石头剪刀布，\n输的人选一个：\n真心话还是大冒险？', sub:'输的人先选', rarity:'SR' },
-  { kind:'小小挑战', ico:'🍬', title:'分享耳机', text:'一人一只耳机，\n听同一首歌，\n什么都不说也挺好。', sub:'我推荐的歌不许说难听', rarity:'R' }
+  { kind:'小小挑战', ico:'🎯', title:'对视十秒', text:'十秒之内，\n只看眼睛，不说话。\n看谁先笑出来。\n笑了的人，\n就请对方喝杯奶茶。', sub:'我可能会在第三秒就绷不住', rarity:'SR' },
+  { kind:'小小挑战', ico:'🎵', title:'猜歌名', text:'我哼一句，\n你猜是什么歌。\n猜对了，\n随你点一首，\n下次一起听。', sub:'我大概率会跑调，你做好准备', rarity:'R' },
+  { kind:'小小挑战', ico:'📸', title:'拍一张合照', text:'做个最放松的表情，\n三二一，咔嚓。\n这张，\n我想一直留着。', sub:'不用完美，真实的样子就很好', rarity:'SR' },
+  { kind:'小小挑战', ico:'🤫', title:'用眼神对话', text:'接下来一分钟，\n我们只靠眼神说话。\n看看能不能，\n猜到彼此在想什么。', sub:'我猜，我们想的可能是同一件事', rarity:'R' },
+  { kind:'小小挑战', ico:'🎲', title:'真心话大冒险', text:'石头剪刀布，\n赢的人，\n可以温柔地问一个问题，\n或者，\n请对方做一件小小的事。', sub:'你赢了我也不赖皮', rarity:'SR' },
+  { kind:'小小挑战', ico:'🍬', title:'分享耳机', text:'一人一只耳机，\n听同一首歌，\n什么也不必说，\n就很好。', sub:'这首歌，我挑了很久才选出来', rarity:'R' }
 ];
 
 /* ===== 隐藏卡（UR 传说级）===== */
@@ -1799,6 +1829,57 @@ var IRIS_MOMENTS = [
   '鸢尾紫是你的幸运色',
   '今天的风，像你喜欢的那个方向'
 ];
+
+/* ===== 峰终时刻：特殊日专属卡（每日首抽仪式感 + 特殊日惊喜） ===== */
+var SPECIAL_BASE = CARDS.length + HIDDEN_CARDS.length;
+/* 特殊日专属卡：只在特定日子出现，制造可预期的「峰」 */
+var SPECIAL_CARDS = [
+  { id:'day0605', ico:'🎂', kind:'✦ 特别的日子', title:'特别的日子', text:'六月初五，\n是我最想记住的一天。\n\n谢谢你，\n让这一天变得不一样。', sub:'这一天，只属于特别的你', rarity:'SSR' },
+  { id:'midmonth', ico:'🌕', kind:'✦ 特别的日子', title:'月半', text:'每个月的这个时候，\n月亮会慢慢变圆。\n\n就像有些心意，\n一天比一天更满。', sub:'抬头看看，今晚的月亮很好看', rarity:'SSR' },
+  { id:'anniversary', ico:'💫', kind:'✦ 初见纪念', title:'初见纪念', text:'还记得吗？\n这是我们认识的那一天。\n\n时间过得很快，\n但有些瞬间，永远记得。', sub:'谢谢你，一直在这里', rarity:'UR' }
+];
+/* 我们的相识日（策划设定：初见纪念的固定锚点） */
+var FIRST_MET = { year: 2026, month: 7, day: 21 };
+/* 相识第几天（跨年自动累积） */
+function daysSinceFirstMet(){
+  var start = new Date(FIRST_MET.year, FIRST_MET.month - 1, FIRST_MET.day);
+  var now = new Date();
+  return Math.max(1, Math.floor((now - start) / 86400000) + 1);
+}
+/* 判断今天是否为特殊日：6月5日 / 每月15日（月半）/ 初见纪念日（每年7月21日） */
+function getSpecialToday(){
+  var now = new Date();
+  var m = now.getMonth() + 1;
+  var d = now.getDate();
+  if (m === 6 && d === 5) return { id:'day0605', cardIdx:0, label:'特别的日子', banner:'六月初五，想和你说：这一天，因为有你而特别' };
+  if (d === 15) return { id:'midmonth', cardIdx:1, label:'月半', banner:'月亮正一点点变圆，愿你今晚抬头，能看见一弯温柔' };
+  if (now.getFullYear() > FIRST_MET.year && m === FIRST_MET.month && d === FIRST_MET.day) {
+    return { id:'anniversary', cardIdx:2, label:'初见纪念', banner:'这是我们认识的第 ' + daysSinceFirstMet() + ' 天' };
+  }
+  return null;
+}
+function isSpecialCard(idx){ return idx >= SPECIAL_BASE; }
+/* 当日首抽：特殊日必得专属卡（每天只触发一次） */
+function getSpecialCardIndex(){
+  var sp = getSpecialToday();
+  if (!sp) return null;
+  var today = getTodayStr();
+  if (memory.lastSpecialDrawDate === today) return null;
+  memory.lastSpecialDrawDate = today;
+  saveMemory();
+  return SPECIAL_BASE + sp.cardIdx;
+}
+/* 日期工具：时间戳 → M月D日；日期串 → YYYY年M月D日 */
+function formatMD(ts){
+  var d = new Date(ts);
+  return (d.getMonth()+1) + '月' + d.getDate() + '日';
+}
+function formatCnDate(dateStr){
+  if (!dateStr) return '—';
+  var p = dateStr.split('-');
+  if (p.length !== 3) return dateStr;
+  return p[0] + '年' + parseInt(p[1]) + '月' + parseInt(p[2]) + '日';
+}
 
 /* ===== 剧情链系统 ===== */
 var STORY_CHAINS = [
@@ -2084,12 +2165,16 @@ function loadMemory(){
       unlockedHidden: m.unlockedHidden || {},
       limitedCollected: m.limitedCollected || {},   // 限定卡已收集 {cardId: {time}}
       lastLimitedDrawDate: m.lastLimitedDrawDate || '',  // 上次限定抽日期
-      limitedDrawsToday: m.limitedDrawsToday || 0   // 今日限定已抽次数
+      limitedDrawsToday: m.limitedDrawsToday || 0,  // 今日限定已抽次数
+      firstVisitDate: m.firstVisitDate || '',      // 初次相遇日期（共同记忆锚点）
+      firstVisitTime: m.firstVisitTime || 0,       // 初次相遇时间戳（算相识天数）
+      lastSpecialDrawDate: m.lastSpecialDrawDate || ''  // 上次特殊日抽卡日期
     };
   } catch(e) {
     return { collected: {}, totalFlips: 0, visitCount: 0, lastVisitTime: 0, lastCardIdx: -1,
              lastDailyDate: '', dailyFortuneIdx: null, consecutiveDays: 0, lastVisitDateStr: '',
-             unlockedHidden: {}, limitedCollected: {}, lastLimitedDrawDate: '', limitedDrawsToday: 0 };
+             unlockedHidden: {}, limitedCollected: {}, lastLimitedDrawDate: '', limitedDrawsToday: 0,
+             firstVisitDate: '', firstVisitTime: 0, lastSpecialDrawDate: '' };
   }
 }
 
@@ -2105,6 +2190,11 @@ function getTodayStr(){
 function markVisit(){
   memory.visitCount++;
   var today = getTodayStr();
+  // 初次相遇：记录日期与时间戳，作为「共同记忆」与「初见纪念日」锚点
+  if (!memory.firstVisitDate) {
+    memory.firstVisitDate = today;
+    memory.firstVisitTime = Date.now();
+  }
   // 连续天数追踪
   if (memory.lastVisitDateStr && memory.lastVisitDateStr !== today) {
     var last = new Date(memory.lastVisitDateStr);
@@ -2130,6 +2220,21 @@ function getWelcomeText(){
   var msgs = ['好久不见，欢迎回来 💫', '欢迎回来，今天想翻哪张？ 🌙', '又见面啦，今天天气真好 🍃', '来了？翻一张吧 ✨'];
   return msgs[(visits - 1) % msgs.length];
 }
+
+/* ===== 关系温度：按累计访问数渐进升温 ===== */
+// 0=初识(1-5次) 1=熟悉(6-19次) 2=心照(20次+)
+function getWarmth(){
+  var v = memory.visitCount || 0;
+  if (v <= 5) return 0;
+  if (v <= 19) return 1;
+  return 2;
+}
+// 一句心意卡的「温度尾句」：随关系递进，从客气祝愿 → 带我的语气 → 只对你说
+var WARM_TAILS = [
+  '今天，也请对自己好一点。',
+  '换成我会说的话，就是：记得开心。',
+  '这句话，我只说给你听。'
+];
 
 function getLastVisitText(){
   if (!memory.lastVisitTime) return '';
@@ -2411,7 +2516,10 @@ var busy = false;
 function getCard(idx){
   if (idx < CARDS.length) return CARDS[idx];
   var hi = idx - CARDS.length;
-  return HIDDEN_CARDS[hi] || CARDS[0];
+  if (hi < HIDDEN_CARDS.length) return HIDDEN_CARDS[hi] || CARDS[0];
+  var si = idx - SPECIAL_BASE;
+  if (si >= 0 && si < SPECIAL_CARDS.length) return SPECIAL_CARDS[si] || CARDS[0];
+  return CARDS[0];
 }
 
 function checkHiddenUnlocks(){
@@ -2436,6 +2544,9 @@ function checkHiddenUnlocks(){
 }
 
 function smartDraw(){
+  // 峰终时刻：特殊日专属卡（当日首抽必得，制造可预期的惊喜峰值）
+  var specialIdx = getSpecialCardIndex();
+  if (specialIdx != null) return specialIdx;
   // 检查隐藏卡解锁
   var newlyUnlocked = checkHiddenUnlocks();
   // 新解锁的UR卡：50%概率惊喜出现
@@ -2547,9 +2658,14 @@ function drawCard(idx, isDaily){
   var c = getCard(idx);
   var theCard = document.getElementById('theCard');
   var dailyBanner = document.getElementById('dailyBanner');
-  // 每日签样式
-  theCard.classList.toggle('daily-card', !!isDaily);
-  if (isDaily && memory.dailyFortuneIdx != null) {
+  // 每日签 & 特殊日横幅样式
+  var spToday = isSpecialCard(idx) ? getSpecialToday() : null;
+  dailyBanner.classList.remove('special');
+  if (spToday && spToday.banner) {
+    dailyBanner.innerHTML = '✦ ' + spToday.label + ' ✦<span class="daily-date">' + spToday.banner + '</span>';
+    dailyBanner.style.display = 'block';
+    dailyBanner.classList.add('show', 'special');
+  } else if (isDaily && memory.dailyFortuneIdx != null) {
     // 专属彩蛋：约 1/6 概率命中（用 dailyFortuneIdx 的奇偶+随机，保持每日固定）
     var fortune = DAILY_FORTUNES[memory.dailyFortuneIdx];
     if (Math.random() < 0.16 && IRIS_MOMENTS.length) {
@@ -2569,6 +2685,8 @@ function drawCard(idx, isDaily){
   cTitle.style.display = c.title ? 'block' : 'none';
   // 文字逐行显现：每行单独 span，递进延迟
   var lines = c.text.split('\n');
+  // 关系温度：仅「一句心意」卡附加渐进升温的尾句
+  var warmTail = (c.kind === '一句心意') ? WARM_TAILS[getWarmth()] : null;
   cText.innerHTML = '';
   for (var li = 0; li < lines.length; li++) {
     var sp = document.createElement('span');
@@ -2577,6 +2695,14 @@ function drawCard(idx, isDaily){
     if (li > 0) sp.style.display = 'block';
     sp.textContent = lines[li];
     cText.appendChild(sp);
+  }
+  if (warmTail) {
+    var wt = document.createElement('span');
+    wt.className = 'text-line warm-tail';
+    wt.style.display = 'block';
+    wt.style.animationDelay = (0.15 + lines.length * 0.12) + 's';
+    wt.textContent = '——' + warmTail;
+    cText.appendChild(wt);
   }
   cSub.textContent = c.sub || '';
   // 稀有度角标
@@ -2591,6 +2717,7 @@ function drawCard(idx, isDaily){
   theCard.className = 'card';
   var rar = c.rarity || 'R';
   if (isDaily) theCard.classList.add('daily-card');
+  if (spToday) theCard.classList.add('special-card');
   theCard.classList.add('rarity-' + rar.toLowerCase());
   // UR 金光爆发
   if (rar === 'UR') triggerGoldBurst();
@@ -2714,10 +2841,11 @@ document.getElementById('storyOverlay').addEventListener('click', function(e){
 
 /* 收集进度更新 */
 function updateCollectionProgress(){
-  var normalTotal = CARDS.length + HIDDEN_CARDS.length;
+  var normalTotal = CARDS.length + HIDDEN_CARDS.length + SPECIAL_CARDS.length;
   var normalCollected = 0;
   for (var i = 0; i < CARDS.length; i++) if (memory.collected[i]) normalCollected++;
   for (var h = 0; h < HIDDEN_CARDS.length; h++) if (memory.collected[CARDS.length + h]) normalCollected++;
+  for (var sp = 0; sp < SPECIAL_CARDS.length; sp++) if (memory.collected[SPECIAL_BASE + sp]) normalCollected++;
   var limitedTotal = SEASONAL_CARDS.length + MONTHLY_CARDS.length;
   var limitedCollected = 0;
   for (var k in memory.limitedCollected) limitedCollected++;
@@ -3026,12 +3154,21 @@ function renderCollectList(){
   var normalGot = 0, limitedGot = 0;
   for (var k in memory.collected) normalGot++;
   for (var l in memory.limitedCollected) limitedGot++;
-  var totalNormal = CARDS.length + HIDDEN_CARDS.length;
+  var totalNormal = CARDS.length + HIDDEN_CARDS.length + SPECIAL_CARDS.length;
   var totalLimited = SEASONAL_CARDS.length + MONTHLY_CARDS.length;
   collectedCount.textContent = (normalGot + limitedGot) + ' / ' + (totalNormal + totalLimited);
   collectList.innerHTML = '';
+  // 共同记忆抬头：相识日期 + 相遇次数（把我们的一起存档）
+  var memoHeader = document.createElement('div');
+  memoHeader.className = 'memory-header';
+  var firstMetStr = FIRST_MET.year + '-' + FIRST_MET.month + '-' + FIRST_MET.day;
+  memoHeader.innerHTML = '<span class="tier-ur">✦ 共同记忆</span><small>相识于 ' + formatCnDate(firstMetStr) + ' · 已经相遇 ' + (memory.visitCount || 0) + ' 次</small>';
+  collectList.appendChild(memoHeader);
   if (normalGot === 0 && limitedGot === 0) {
-    collectList.innerHTML = '<div class="empty">还没收集到任何卡片<br>点光球翻第一张吧 ✨</div>';
+    var emptyDiv = document.createElement('div');
+    emptyDiv.className = 'empty';
+    emptyDiv.innerHTML = '还没收集到任何卡片<br>点光球翻第一张吧 ✨';
+    collectList.appendChild(emptyDiv);
     return;
   }
 
@@ -3050,9 +3187,12 @@ function renderCollectList(){
     var nameHtml = showContent
       ? name
       : '<span style="color:' + lvColor + '45;">待 揭 晓</span>';
+    // 共同记忆：已收集的卡标记「去过了 · 日期」
+    var beenHtml = (collected && collected.time) ? '<div class="mini-been">去过了 · ' + formatMD(collected.time) + '</div>' : '';
     return '<div class="' + cls + '"' + lvStyle + '>' +
       '<div class="mini-ico' + (opts.locked ? ' mystery' : '') + '">' + (collected || opts.expired ? ico : '') + '</div>' +
       '<div class="mini-name">' + nameHtml + '</div>' +
+      beenHtml +
       tag + '</div>';
   }
 
@@ -3070,6 +3210,19 @@ function renderCollectList(){
     urSection.innerHTML += miniCard(hc.ico, hc.title, 'UR', hHas, { locked: !unlocked && !hHas });
   }
   collectList.appendChild(urSection);
+
+  // 特别的日子（特殊日专属卡，只在特定日子出现）
+  var specialSection = document.createElement('div');
+  specialSection.className = 'collect-section';
+  var spGot = 0;
+  for (var spi = 0; spi < SPECIAL_CARDS.length; spi++) if (memory.collected[SPECIAL_BASE + spi]) spGot++;
+  specialSection.innerHTML = '<div class="collect-section-title"><span class="tier-limited">✦ 特别的日子</span> ' + spGot + '/' + SPECIAL_CARDS.length + '</div>';
+  for (var spj = 0; spj < SPECIAL_CARDS.length; spj++) {
+    var spc = SPECIAL_CARDS[spj];
+    var spHas = memory.collected[SPECIAL_BASE + spj];
+    specialSection.innerHTML += miniCard(spc.ico, spc.title, spc.rarity, spHas, { locked: !spHas });
+  }
+  collectList.appendChild(specialSection);
 
   // SSR 史诗区
   var ssrSection = document.createElement('div');
