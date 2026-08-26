@@ -2148,6 +2148,47 @@ setTimeout(function(){
 var STORAGE_KEY = 'iris_memory_v1';
 var memory = loadMemory();
 
+/* ===== 后台上报（飞书多维表格 + 群提醒） ===== */
+// 后台中转 Worker 地址（Cloudflare），不填则整段上报静默跳过，不影响抽卡玩法。
+var REPORT_ENDPOINT = 'https://1475605839-jpfu8k9t07.ap-guangzhou.tencentscf.com';
+
+function getProgressStr(){
+  var normalTotal = CARDS.length + HIDDEN_CARDS.length + SPECIAL_CARDS.length;
+  var normalCollected = 0;
+  for (var i = 0; i < CARDS.length; i++) if (memory.collected[i]) normalCollected++;
+  for (var h = 0; h < HIDDEN_CARDS.length; h++) if (memory.collected[CARDS.length + h]) normalCollected++;
+  for (var sp = 0; sp < SPECIAL_CARDS.length; sp++) if (memory.collected[SPECIAL_BASE + sp]) normalCollected++;
+  var limitedTotal = SEASONAL_CARDS.length + MONTHLY_CARDS.length;
+  var limitedCollected = 0;
+  for (var k in memory.limitedCollected) limitedCollected++;
+  return (normalCollected + limitedCollected) + '/' + (normalTotal + limitedTotal);
+}
+
+function reportEvent(event, opts){
+  if (!REPORT_ENDPOINT) return; // 未配置时静默跳过
+  opts = opts || {};
+  var payload = {
+    event: event,
+    timeMs: Date.now(),
+    card: opts.card,
+    rarity: opts.rarity,
+    consecutiveDays: memory.consecutiveDays || 0,
+    visitCount: memory.visitCount || 0,
+    collectionProgress: opts.collectionProgress || getProgressStr(),
+    note: opts.note,
+    notify: !!opts.notify,
+    message: opts.message
+  };
+  try {
+    fetch(REPORT_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      keepalive: true
+    }).catch(function(){});
+  } catch(e) {}
+}
+
 function loadMemory(){
   try {
     var s = localStorage.getItem(STORAGE_KEY);
@@ -2207,6 +2248,7 @@ function markVisit(){
   memory.lastVisitDateStr = today;
   memory.lastVisitTime = Date.now();
   saveMemory();
+  reportEvent('open');
 }
 
 function getWelcomeText(){
@@ -2508,6 +2550,7 @@ limitedBtn.addEventListener('click', function(){
     limitedBtn.classList.add('used');
     limitedBtn.classList.remove('available');
   }
+  reportEvent('limited', { card: card.title || card.ico, rarity: '特别' });
   updateCollectionProgress();
 });
 
@@ -2726,6 +2769,24 @@ function drawCard(idx, isDaily){
   counter.textContent = '已翻开 ' + count + ' 张';
   updateCollectionProgress();
   checkStoryChains();
+
+  // 后台埋点：特别日 / 签到（今日首抽）/ 普通抽卡
+  var _evt, _msg = null, _notify = false;
+  var _cardName = c.title || c.ico || '';
+  if (spToday) {
+    _evt = 'special';
+    _notify = true;
+    _msg = '✦ 特别的日子：她翻到了「' + _cardName + '」';
+  } else if (isDaily) {
+    _evt = 'daily';
+    _notify = true;
+    _msg = '今日首次来访 · 第' + memory.visitCount + '次相遇 · 连续' + (memory.consecutiveDays || 0) + '天';
+  } else {
+    _evt = 'draw';
+    if (rar === 'UR') { _notify = true; _msg = '抽到 UR「' + _cardName + '」✨'; }
+    else if (rar === 'SSR') { _notify = true; _msg = '抽到 SSR「' + _cardName + '」✨'; }
+  }
+  reportEvent(_evt, { card: _cardName, rarity: rar, notify: _notify, message: _msg });
 }
 
 /* UR 金光粒子爆发——先构成心形再飞散 */
