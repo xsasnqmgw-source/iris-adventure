@@ -1,0 +1,1023 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>—— 送你一张小卡片 ——</title>
+<style>
+/* ========== Fortune Draw · 可复用模板（默认鸢尾紫主题） ==========
+ * 配色 / 品牌色覆盖点全部集中在这里。
+ * 要改主题色，替换 --brand/--brand-soft/--brand-deep 三个变量即可。
+ */
+:root{
+  --brand:#8a5bd1;          /* 主色 · 鸢尾紫 */
+  --brand-soft:#c9a8ee;     /* 柔色光晕 */
+  --brand-deep:#63409d;     /* 深底色 */
+  --ink:#3a2a58;
+  --ink-soft:#7c6ea4;
+  --paper:#fffaf2;
+  --gold:#d9b866;
+  --gold-deep:#a58131;
+  --ok:#4caf50;
+  --shadow:0 10px 40px rgba(99,64,157,.18);
+  --radius:18px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:linear-gradient(160deg,#f6efff 0%,#fff2ec 100%);overflow:hidden}
+body.tint-dawn{background:linear-gradient(160deg,#ffe7d6 0%,#fdf4ff 100%)}
+body.tint-dusk{background:linear-gradient(160deg,#ffdcd2 0%,#f3d9ff 100%)}
+body.tint-night{background:linear-gradient(160deg,#2b1e4a 0%,#3b265a 100%);color:#fff}
+
+/* ---- 锁屏幕（可选） ---- */
+#lockScreen{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at top,rgba(201,168,238,.35),transparent 60%),linear-gradient(160deg,#f6efff 0%,#fff2ec 100%)}
+.lock-card{width:min(340px,86vw);padding:36px 26px 28px;border-radius:var(--radius);background:rgba(255,255,255,.85);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:var(--shadow);text-align:center;transition:transform .25s}
+.lock-card.lock-shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
+.lock-title{font-size:20px;font-weight:700;margin:0 0 8px;color:var(--brand-deep)}
+.lock-sub{margin:0 0 20px;color:var(--ink-soft);font-size:13px;line-height:1.6}
+.lock-input{width:100%;padding:14px 16px;border:1px solid #eadff7;border-radius:12px;background:#fbf7ff;font-size:18px;letter-spacing:6px;text-align:center;outline:none;color:var(--brand-deep);box-sizing:border-box}
+.lock-input:focus{border-color:var(--brand)}
+.lock-btn{margin-top:14px;width:100%;padding:13px;border:none;border-radius:12px;background:var(--brand);color:#fff;font-size:15px;font-weight:600;cursor:pointer}
+.lock-btn:active{transform:scale(.98)}
+.lock-err{margin-top:10px;color:#c34;font-size:13px;min-height:18px}
+
+/* ---- 主容器 ---- */
+#app{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:max(18px,env(safe-area-inset-top)) 18px max(24px,env(safe-area-inset-bottom));position:relative}
+.topbar{width:100%;max-width:520px;display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--brand-deep)}
+.brand-icon{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,var(--brand-soft) 40%,var(--brand) 90%);box-shadow:0 4px 14px rgba(138,91,209,.35)}
+.counter{font-size:13px;color:var(--ink-soft)}
+.counter b{color:var(--brand-deep);font-weight:700}
+.welcome{max-width:520px;text-align:center;margin:6px 0 0;color:var(--ink);opacity:.85;font-size:14px;line-height:1.7}
+.welcome .visit-sub{display:block;font-size:12px;color:var(--ink-soft);margin-top:4px}
+.collect-btn{background:rgba(255,255,255,.7);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);padding:8px 14px;border-radius:999px;border:1px solid #eadff7;color:var(--brand-deep);font-size:13px;font-weight:600;cursor:pointer;display:none}
+.collect-btn.show{display:inline-block}
+.collect-btn:active{transform:scale(.97)}
+
+/* ---- 花蕊 / 花盘（仪式感抽卡） ---- */
+.stage{flex:1;width:100%;max-width:520px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.orbit-stage{position:relative;width:min(82vw,360px);height:min(82vw,360px);perspective:1000px}
+.center-stamen{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.2);width:130px;height:130px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff7dd 0%,#f5d98a 45%,#d7b257 100%);box-shadow:0 0 0 0 rgba(217,184,102,.45);cursor:pointer;transition:transform .5s cubic-bezier(.2,.9,.3,1.3);z-index:10}
+.center-stamen.show{transform:translate(-50%,-50%) scale(1);animation:stamenBreath 2.4s ease-in-out infinite}
+@keyframes stamenBreath{0%,100%{box-shadow:0 0 0 0 rgba(217,184,102,.45)}50%{box-shadow:0 0 48px 16px rgba(217,184,102,.25)}}
+.stamen-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#8a6319;font-size:15px;font-weight:800;letter-spacing:2px;user-select:none;pointer-events:none;text-shadow:0 1px 0 rgba(255,255,255,.6)}
+
+.petal{position:absolute;top:50%;left:50%;width:54px;height:100px;transform-origin:bottom center;border-radius:50% 50% 40% 40% / 55% 55% 45% 45%;transform:translate(-50%,-100%) rotate(var(--a)) scaleY(0);opacity:0;transition:transform .9s cubic-bezier(.2,.9,.3,1.3) var(--d,0s), opacity .5s var(--d,0s);backface-visibility:hidden}
+.petal.outer{background:linear-gradient(180deg,#fff 0%,#ffd2e0 60%,#f5a9c0 100%);box-shadow:0 4px 12px rgba(239,134,168,.2)}
+.petal.middle{width:42px;height:76px;background:linear-gradient(180deg,#e8dbff 0%,#c0a0e8 70%,#9b7ad0 100%);box-shadow:0 3px 10px rgba(155,122,208,.2)}
+.petal.bloom{transform:translate(-50%,-100%) rotate(var(--a)) scaleY(1);opacity:1}
+.petal.spread-outer{animation:orbitOuter 30s linear infinite}
+.petal.spread-middle{animation:orbitMiddle 18s linear infinite}
+@keyframes orbitOuter{from{transform:translate(-50%,-100%) rotate(45deg)}to{transform:translate(-50%,-100%) rotate(540deg)}}
+@keyframes orbitMiddle{from{transform:translate(-50%,-100%) rotate(67.5deg)}to{transform:translate(-50%,-100%) rotate(405deg)}}
+
+.stage.hint-before .center-stamen::after{content:"点花蕊抽一张";position:absolute;top:120%;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:12px;color:var(--ink-soft);animation:flicker 1.8s ease-in-out infinite}
+@keyframes flicker{0%,100%{opacity:.4}50%{opacity:1}}
+
+/* ---- 结果卡片 ---- */
+.card-stage{position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center}
+.fortune-card{pointer-events:auto;width:min(82vw,340px);aspect-ratio:3/4.2;border-radius:var(--radius);background:linear-gradient(160deg,#fffdf7 0%,#fff5ec 100%);box-shadow:0 24px 60px rgba(99,64,157,.22);padding:28px 24px;display:flex;flex-direction:column;align-items:center;text-align:center;transform-style:preserve-3d;transform:rotateX(15deg) rotateY(-10deg) scale(.85);opacity:0;transition:transform .75s cubic-bezier(.2,.9,.3,1.3) .9s, opacity .6s .9s;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);position:relative;overflow:hidden}
+.fortune-card.show{transform:rotateX(0) rotateY(0) scale(1);opacity:1}
+.card-level{position:absolute;top:10px;right:12px;font-size:11px;font-weight:800;padding:3px 8px;border-radius:6px;letter-spacing:.5px}
+.r-UR{color:#8a6319;background:linear-gradient(135deg,#fff1c4,#e6c878);border:1px solid #d6b04b;box-shadow:0 0 16px rgba(214,176,75,.35)}
+.r-SSR{color:#5c3b9e;background:linear-gradient(135deg,#f2e6ff,#d5bcf0);border:1px solid #b48de0;box-shadow:0 0 14px rgba(180,141,224,.35)}
+.r-SR{color:#2a5a9a;background:linear-gradient(135deg,#e6f0ff,#bcd4f5);border:1px solid #8fb4e0;box-shadow:0 0 12px rgba(143,180,224,.3)}
+.r-R{color:#4b377a;background:linear-gradient(135deg,#f0e8ff,#dbc9f5);border:1px solid #bfa6e0}
+.card-limited{color:#3a6b59;background:linear-gradient(135deg,#e5f6ec,#c4ead3);border:1px solid #7fc29b;box-shadow:0 0 12px rgba(127,194,155,.3)}
+.card-special{color:#8a4b22;background:linear-gradient(135deg,#fff3dd,#ffe2b3);border:1px solid #e6b06b;box-shadow:0 0 18px rgba(230,176,107,.35)}
+
+.fortune-card.UR{background:linear-gradient(160deg,#fff8dc,#ffe7b6)}
+.fortune-card.SSR{background:linear-gradient(160deg,#faf3ff,#ecd9fa)}
+.fortune-card.SR{background:linear-gradient(160deg,#f3f8ff,#d8e8fb)}
+.fortune-card.R{background:linear-gradient(160deg,#faf6ff,#ede2fa)}
+.fortune-card.limited{background:linear-gradient(160deg,#f2fbf5,#d7efdf)}
+.fortune-card.special{background:linear-gradient(160deg,#fff3dd,#ffdcae)}
+
+.card-ico{font-size:56px;margin:18px 0 6px;filter:drop-shadow(0 4px 10px rgba(99,64,157,.18))}
+.card-kind{font-size:12px;color:var(--ink-soft);letter-spacing:2px;margin:2px 0 10px}
+.card-title{font-size:22px;font-weight:800;color:var(--brand-deep);letter-spacing:1px;margin-bottom:16px;line-height:1.3}
+.card-divider{width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--brand-soft),transparent);margin:4px 0 18px}
+.card-text{font-size:16px;line-height:1.9;color:var(--ink);white-space:pre-wrap;opacity:0;transform:translateY(8px);transition:opacity .35s,transform .35s}
+.card-text.show-row{opacity:1;transform:none}
+.card-sub{margin-top:22px;font-size:12px;color:var(--ink-soft);line-height:1.8}
+.card-warm{color:#b8891d;font-size:13px;line-height:2;margin-top:14px;font-weight:500;opacity:0;transform:translateY(8px);transition:opacity .35s,transform .35s}
+.card-warm.show-row{opacity:1;transform:none}
+
+.card-close{position:absolute;top:10px;left:12px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(99,64,157,.06);color:var(--ink-soft);cursor:pointer;font-size:13px;transition:background .2s,color .2s}
+.card-close:hover{background:var(--brand);color:#fff}
+
+/* ---- 底部栏 ---- */
+.bottom{width:100%;max-width:520px;display:flex;gap:10px;justify-content:center;margin-top:6px}
+.action-btn{padding:12px 20px;border:none;border-radius:14px;background:rgba(255,255,255,.8);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid #eadff7;color:var(--brand-deep);font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 4px 14px rgba(99,64,157,.08);transition:transform .15s}
+.action-btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand-deep));color:#fff;border:none}
+.action-btn:active{transform:scale(.97)}
+
+/* ---- 收集册 ---- */
+.modal{position:fixed;inset:0;z-index:999;background:rgba(35,22,60,.55);display:none;align-items:center;justify-content:center;padding:18px}
+.modal.show{display:flex}
+.modal-card{width:min(92vw,460px);max-height:86vh;border-radius:18px;background:#fffdf7;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.modal-head{padding:18px 20px 12px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#faf2ff,#fff5ec);position:relative}
+.modal-head h3{margin:0;font-size:17px;color:var(--brand-deep);font-weight:800}
+.modal-head .close{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(138,91,209,.08);color:var(--ink-soft);cursor:pointer}
+.modal-meta{font-size:12px;color:var(--ink-soft);margin-top:6px;line-height:1.6}
+.modal-inner{overflow:auto;padding:10px 16px 18px}
+.modal-inner::-webkit-scrollbar{width:6px}
+.modal-inner::-webkit-scrollbar-thumb{background:rgba(138,91,209,.3);border-radius:3px}
+.modal-inner::-webkit-scrollbar-thumb:hover{background:rgba(138,91,209,.5)}
+.coll-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.coll-item{position:relative;aspect-ratio:3/4;border-radius:12px;background:#faf7ff;border:1px solid #eadff7;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 6px;text-align:center;transition:all .2s;overflow:hidden}
+.coll-item.collected{border-color:var(--brand);background:#fbf4ff;box-shadow:0 4px 14px rgba(138,91,209,.15)}
+.coll-item:hover.collected{transform:translateY(-2px)}
+.coll-item .empty{font-size:22px;font-weight:800;animation:emptyBlink 1.6s ease-in-out infinite}
+.coll-item .empty.r-UR{color:#b58724;text-shadow:0 0 8px rgba(214,176,75,.4)}
+.coll-item .empty.r-SSR{color:#7d4ec8;text-shadow:0 0 8px rgba(180,141,224,.4)}
+.coll-item .empty.r-SR{color:#3a6bb5;text-shadow:0 0 8px rgba(143,180,224,.4)}
+.coll-item .empty.r-R{color:#6a53a3;text-shadow:0 0 8px rgba(191,166,224,.4)}
+@keyframes emptyBlink{0%,100%{opacity:.5}50%{opacity:1}}
+.coll-empty-label{font-size:11px;color:var(--ink-soft);margin-top:6px;letter-spacing:2px}
+.coll-ico{font-size:22px}
+.coll-title{font-size:11px;font-weight:700;color:var(--ink);margin-top:4px;line-height:1.3}
+.coll-tag{position:absolute;top:4px;right:4px;font-size:9px;padding:2px 5px;border-radius:4px;font-weight:800;letter-spacing:.3px}
+.coll-visited{position:absolute;bottom:4px;left:0;right:0;font-size:10px;color:#a58131}
+.specials{margin-top:16px}
+.specials-title{font-size:13px;color:var(--brand-deep);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+
+/* ---- 选卡浮动 ---- */
+@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+/* ---- 限定卡预告 ---- */
+.teaser{max-width:520px;width:100%;margin-top:10px;text-align:center;font-size:12px;color:var(--ink-soft);line-height:1.6}
+
+/* ---- 访客记录弹窗 ---- */
+#visitLogEntries{max-height:50vh;overflow:auto}
+.visit-entry{padding:10px 14px;border-bottom:1px dashed #eadff7;font-size:13px;color:var(--ink);display:flex;justify-content:space-between}
+.visit-entry:last-child{border-bottom:none}
+.vi-num{color:var(--brand);font-weight:700;width:44px;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<!-- ===== 可选锁屏幕：不要就整段删除 ===== -->
+<div id="lockScreen">
+  <div class="lock-card">
+    <h3 class="lock-title">🔒 {{__BRAND__}} 的专属卡片</h3>
+    <p class="lock-sub">请输入四位密码<br>只有我们俩知道的那种</p>
+    <input id="lockInput" class="lock-input" type="password" placeholder="····" maxlength="8" inputmode="numeric">
+    <div id="lockError" class="lock-err"></div>
+    <button id="lockBtn" class="lock-btn">开 门</button>
+  </div>
+</div>
+
+<!-- ===== 主界面 ===== -->
+<div id="app">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-icon"></div>
+      <div>送你一张 · {{__BRAND__}}</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="collectBtn" class="collect-btn">📖 收集册</button>
+      <div class="counter">已收集 <b id="collectedCount">0</b> / <span id="totalCount">0</span></div>
+    </div>
+  </div>
+
+  <div class="welcome" id="welcomeText">初次见面 ✨</div>
+
+  <div class="stage hint-before" id="stage">
+    <div class="orbit-stage" id="orbitStage"></div>
+
+    <div class="card-stage" id="cardStage">
+      <div class="fortune-card" id="fortuneCard">
+        <button class="card-close" id="cardClose" title="放回去">✕</button>
+        <div class="card-level" id="cardLevel">R</div>
+        <div class="card-ico" id="cardIco">🌸</div>
+        <div class="card-kind" id="cardKind">一句心意</div>
+        <div class="card-title" id="cardTitle">—</div>
+        <div class="card-divider"></div>
+        <div class="card-text" id="cardText">—</div>
+        <div class="card-warm" id="cardWarm"></div>
+        <div class="card-sub" id="cardSub"></div>
+      </div>
+    </div>
+
+    <div class="teaser" id="limitedTeaser"></div>
+  </div>
+
+  <div class="bottom">
+    <button class="action-btn" id="btnCollect">📖 收集册</button>
+    <button class="action-btn primary" id="btnDraw">✨ 抽一张</button>
+  </div>
+</div>
+
+<!-- ===== 收集册 ===== -->
+<div class="modal" id="collectModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <div>
+        <h3>📖 我的收集册</h3>
+        <div class="modal-meta" id="collMeta">—</div>
+      </div>
+      <div class="close" id="collectClose">✕</div>
+    </div>
+    <div class="modal-inner" id="collInner"></div>
+  </div>
+</div>
+
+<!-- ===== 访客记录 ===== -->
+<div class="modal" id="visitLogModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <div>
+        <h3>📋 访客记录</h3>
+        <div class="modal-meta">只有你能看见</div>
+      </div>
+      <div class="close" id="visitLogCloseBtn">✕</div>
+    </div>
+    <div class="modal-inner">
+      <div id="visitLogEntries"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+ * Fortune Draw Template · 可复用抽卡系统
+ * 可配置点（给"别人快速生成"时的改动清单）：
+ *   1. CARDS          — 卡片库（一句心意 / 今天去哪儿 / 小小挑战）
+ *   2. HIDDEN_CARDS   — UR 传说卡（解锁条件）
+ *   3. SEASONAL_CARDS — 节气/限时卡
+ *   4. MONTHLY_CARDS  — 每月限定卡
+ *   5. SPECIAL_CARDS  — 特殊日专属卡 + FIRST_MET 初见纪念日
+ *   6. DAILY_FORTUNES / IRIS_MOMENTS — 每日签语与专属彩蛋
+ *   7. CORRECT_PASSWORD — 首页密码锁（不需要就删除 #lockScreen 区块）
+ *   8. REPORT_ENDPOINT — 后台上报中转 URL（不填则静默跳过，不影响玩法）
+ *   9. 配色变量（在 CSS :root 里）、BRAND 文案、锁头标题文案
+ * ============================================================ */
+
+/* ===== 1. 卡片库 · 建议按 kind 分组（kind 建议 ≤ 6 字） ===== */
+var CARDS = [
+  { kind:'一句心意', ico:'💫', title:'', text:'今天过得怎么样？\n如果没什么特别的，\n那就来翻一张卡\n换换心情。', sub:'', rarity:'R' },
+  { kind:'一句心意', ico:'🌙', title:'', text:'月亮不会说太多话，\n但它每晚都在。\n有些关心，\n也一样安静。', sub:'', rarity:'SSR' },
+  { kind:'一句心意', ico:'🌸', title:'', text:'如果你今天笑了三次，\n那就是很顺利的一天。\n希望你有。', sub:'', rarity:'SSR' },
+  { kind:'一句心意', ico:'⭐', title:'', text:'你朋友圈那张照片，\n拍得挺好看的。\n（就是单纯夸一下）', sub:'', rarity:'R' },
+  { kind:'一句心意', ico:'🍃', title:'', text:'天气好的时候，\n记得出去走走。\n风会替你带走烦恼。', sub:'', rarity:'R' },
+  { kind:'一句心意', ico:'✨', title:'', text:'有些话不需要说太满，\n留一点想象的空间，\n也很好。', sub:'', rarity:'SSR' },
+  { kind:'一句心意', ico:'🦋', title:'', text:'谢谢你今天点开这里，\n这页小小的光，\n也算陪了你一会儿。', sub:'', rarity:'SSR' },
+  { kind:'今天去哪儿', ico:'⛩️', title:'寺庙祈福', text:'一起去庙里走一圈吧，\n不求别的，\n就求你今天开开心心。', sub:'挑个下午，人少的时候去最舒服', rarity:'SR' },
+  { kind:'今天去哪儿', ico:'🎨', title:'美术馆', text:'看展去。\n不用懂，\n就一起慢慢逛，假装很文艺。', sub:'记得提前预约，周一别去', rarity:'SR' },
+  { kind:'今天去哪儿', ico:'📷', title:'江边散步', text:'拍拍照，\n吹吹风，\n什么烦恼都没了。', sub:'下午光线最棒，穿浅色更出片', rarity:'SR' },
+  { kind:'今天去哪儿', ico:'☕', title:'咖啡书吧', text:'找个靠窗位置，\n各看各的书，\n偶尔抬头看看窗外就好。', sub:'靠窗先到先得', rarity:'R' },
+  { kind:'今天去哪儿', ico:'🍜', title:'觅食', text:'从头吃到尾，\n糖油粑粑、臭豆腐、烤冷面……\n我请客，你负责吃。', sub:'别吃太饱，后面还有好几家', rarity:'R' },
+  { kind:'今天去哪儿', ico:'📖', title:'安静书店', text:'安静的一下午，\n一本书，一杯咖啡，\n时间会过得很慢。', sub:'二楼更安静', rarity:'R' },
+  { kind:'小小挑战', ico:'🎯', title:'对视十秒', text:'十秒之内，\n只看眼睛，不说话。\n看谁先笑出来。\n笑了的人，\n就请对方喝杯奶茶。', sub:'我可能会在第三秒就绷不住', rarity:'SR' },
+  { kind:'小小挑战', ico:'📸', title:'拍一张合照', text:'做个最放松的表情，\n三二一，咔嚓。\n这张，\n我想一直留着。', sub:'不用完美，真实的样子就很好', rarity:'SR' },
+  { kind:'小小挑战', ico:'🎲', title:'真心话大冒险', text:'石头剪刀布，\n赢的人，\n可以温柔地问一个问题，\n或者，\n请对方做一件小小的事。', sub:'你赢了我也不赖皮', rarity:'SR' },
+  { kind:'小小挑战', ico:'🎵', title:'猜歌名', text:'我哼一句，\n你猜是什么歌。\n猜对了，\n随你点一首，\n下次一起听。', sub:'我大概率会跑调，你做好准备', rarity:'R' },
+  { kind:'小小挑战', ico:'🤫', title:'用眼神对话', text:'接下来一分钟，\n我们只靠眼神说话。\n看看能不能，\n猜到彼此在想什么。', sub:'我猜，我们想的可能是同一件事', rarity:'R' },
+  { kind:'小小挑战', ico:'🍬', title:'分享耳机', text:'一人一只耳机，\n听同一首歌，\n什么也不必说，\n就很好。', sub:'这首歌，我挑了很久才选出来', rarity:'R' }
+];
+
+/* ===== 2. UR 传说卡（隐藏条件解锁） ===== */
+var HIDDEN_CARDS = [
+  { kind:'✦ 传说', ico:'🌟', title:'缘分卡', text:'第七次相遇。\n不知道是巧合，\n还是默契。', sub:'第7次访问解锁', unlockVisit: 7, rarity:'UR' },
+  { kind:'✦ 传说', ico:'🌙', title:'晚安卡', text:'夜深了，\n如果还没睡，\n那就晚安吧。\n好梦。', sub:'晚上22点后概率获得', nightOnly: true, rarity:'UR' },
+  { kind:'✦ 传说', ico:'🤝', title:'约定卡', text:'连续三天都来了，\n那我们约定——\n明天，\n也来。', sub:'连续3天访问解锁', unlockStreak: 3, rarity:'UR' },
+  { kind:'✦ 传说', ico:'💌', title:'真心卡', text:'其实每一张卡片，\n都是同一句话：\n愿你今天开心。', sub:'翻开20张解锁', unlockFlips: 20, rarity:'UR' }
+];
+
+/* ===== 3. 节气限定卡 ===== */
+var SEASONAL_CARDS = [
+  { id:'spring', ico:'🌱', title:'迎春卡', text:'春天来了，\n我们去看第一朵花开吧。\n新的一年，\n也要一起玩。', openStart:'01-20', openEnd:'02-19', rarity:'SSR' },
+  { id:'summer', ico:'🍉', title:'初夏卡', text:'蝉鸣起来的时候，\n适合一起吃西瓜。\n约吗？', openStart:'05-06', openEnd:'06-05', rarity:'SSR' },
+  { id:'autumn', ico:'🍂', title:'落叶卡', text:'踩落叶的声音，\n是秋天特有的配乐。\n一起走一段吧。', openStart:'08-08', openEnd:'09-07', rarity:'SSR' },
+  { id:'winter', ico:'❄️', title:'围炉卡', text:'天冷了，\n记得添衣，\n热茶趁热喝。\n这个冬天，\n照顾好自己。', openStart:'11-08', openEnd:'12-07', rarity:'SSR' }
+];
+
+/* ===== 4. 每月限定卡 ===== */
+var MONTHLY_CARDS = [
+  { month:0,  ico:'🎆', title:'新年卡',  text:'新的一年，\n第一个祝福给你：\n平安，开心，\n心想事成。', rarity:'SSR' },
+  { month:1,  ico:'🌷', title:'春日卡',  text:'二月的风开始软了，\n适合出门走走。\n这个春天，\n慢慢来。', rarity:'SSR' },
+  { month:2,  ico:'🌸', title:'樱花卡',  text:'樱花飘落的速度\n是秒速五厘米，\n所以看樱花要\n慢慢走，别错过。', rarity:'SSR' },
+  { month:3,  ico:'🌧️', title:'雨季卡',  text:'四月的雨，\n打在伞上噼里啪啦。\n记得带伞，\n别淋湿了。', rarity:'SSR' },
+  { month:4,  ico:'🌺', title:'繁花卡',  text:'五月到处都在开花，\n适合拍照，\n记得多出去走走。', rarity:'SSR' },
+  { month:5,  ico:'🌞', title:'盛夏卡',  text:'六月的光很烈，\n记得防晒，\n多喝水。', rarity:'SSR' },
+  { month:6,  ico:'🦗', title:'蝉鸣卡',  text:'蝉叫了一整个夏天，\n夏天的进度条\n已经过半了。', rarity:'SSR' },
+  { month:7,  ico:'🌠', title:'星夜卡',  text:'八月的流星，\n适合许愿。\n祝你心想事成。', rarity:'SSR' },
+  { month:8,  ico:'🌕', title:'月圆卡',  text:'九月的月亮很圆，\n适合赏月，\n记得抬头看看。', rarity:'SSR' },
+  { month:9,  ico:'🍁', title:'桂香卡',  text:'十月的风带着桂花味，\n走到哪儿都是甜的。\n秋天真好。', rarity:'SSR' },
+  { month:10, ico:'🍵', title:'暖茶卡',  text:'十一月适合窝着，\n一杯热茶，一部老电影，\n就很舒服。', rarity:'SSR' },
+  { month:11, ico:'🎄', title:'雪夜卡',  text:'十二月如果下雪，\n一起出去走走吧。\n雪景很难得。', rarity:'SSR' }
+];
+
+function getActiveLimitedCards(){
+  var now = new Date();
+  var mmdd = (now.getMonth()+1<10?'0':'') + (now.getMonth()+1) + '-' + (now.getDate()<10?'0':'') + now.getDate();
+  var active = [];
+  for (var i=0; i<SEASONAL_CARDS.length; i++){
+    var c = SEASONAL_CARDS[i];
+    if (mmdd >= c.openStart && mmdd <= c.openEnd) active.push(c);
+  }
+  for (var j=0; j<MONTHLY_CARDS.length; j++){
+    if (MONTHLY_CARDS[j].month === now.getMonth()) active.push(MONTHLY_CARDS[j]);
+  }
+  return active;
+}
+function getNextLimitedPreview(){
+  var now = new Date();
+  var mmdd = (now.getMonth()+1<10?'0':'') + (now.getMonth()+1) + '-' + (now.getDate()<10?'0':'') + now.getDate();
+  var cands = [];
+  for (var i=0; i<SEASONAL_CARDS.length; i++){
+    var c = SEASONAL_CARDS[i];
+    if (mmdd < c.openStart) cands.push({ card:c, openDate:c.openStart, type:'节气' });
+  }
+  var nm = (now.getMonth()+1) % 12;
+  cands.push({ card: MONTHLY_CARDS[nm], openDate: (nm+1<10?'0':'')+(nm+1)+'-01', type:'月份' });
+  if (cands.length === 0) return null;
+  cands.sort(function(a,b){ return a.openDate < b.openDate ? -1 : 1; });
+  var next = cands[0];
+  var parts = next.openDate.split('-');
+  var target = new Date(now.getFullYear(), parseInt(parts[0])-1, parseInt(parts[1]));
+  var diff = Math.ceil((target - now) / (1000*60*60*24));
+  if (diff < 0) diff = 0;
+  return { card: next.card, days: diff, type: next.type };
+}
+
+/* ===== 5. 特殊日 & 初见纪念日 ===== */
+var SPECIAL_BASE = CARDS.length + HIDDEN_CARDS.length;
+var SPECIAL_CARDS = [
+  { id:'day0605',    ico:'🎂', kind:'✦ 特别的日子', title:'特别的日子', text:'这一天，\n是我最想记住的一天。\n\n谢谢你，\n让这一天变得不一样。', sub:'只属于今天的你', rarity:'SSR' },
+  { id:'midmonth',   ico:'🌕', kind:'✦ 特别的日子', title:'月半',         text:'每个月的这个时候，\n月亮会慢慢变圆。\n\n就像有些心意，\n一天比一天更满。', sub:'抬头看看，今晚的月亮很好看', rarity:'SSR' },
+  { id:'anniversary',ico:'💫', kind:'✦ 初见纪念',   title:'初见纪念',     text:'还记得吗？\n这是我们认识的那一天。\n\n时间过得很快，\n但有些瞬间，永远记得。', sub:'谢谢你，一直在这里', rarity:'UR' }
+];
+/* 【模板提示】请把 FIRST_MET 改成真实的初见日期：年月日 */
+var FIRST_MET = { year: 2026, month: 7, day: 21 };
+/* 特定日子（生日/纪念）：想把「特别的日子」改成特定日期，请改这里：月份（1-12）、日期 */
+var SPECIAL_DAY_DATE = { month: 6, day: 5 };
+function daysSinceFirstMet(){
+  var start = new Date(FIRST_MET.year, FIRST_MET.month - 1, FIRST_MET.day);
+  var now = new Date();
+  return Math.max(1, Math.floor((now - start) / 86400000) + 1);
+}
+function getSpecialToday(){
+  var now = new Date();
+  var m = now.getMonth() + 1, d = now.getDate();
+  if (m === SPECIAL_DAY_DATE.month && d === SPECIAL_DAY_DATE.day) {
+    return { id:'day0605', cardIdx:0, label:'特别的日子', banner:'这一天，因为有你而特别' };
+  }
+  if (d === 15) return { id:'midmonth', cardIdx:1, label:'月半', banner:'月亮正一点点变圆，愿你今晚抬头，能看见一弯温柔' };
+  if (now.getFullYear() > FIRST_MET.year && m === FIRST_MET.month && d === FIRST_MET.day) {
+    return { id:'anniversary', cardIdx:2, label:'初见纪念', banner:'这是我们认识的第 ' + daysSinceFirstMet() + ' 天' };
+  }
+  return null;
+}
+function isSpecialCard(idx){ return idx >= SPECIAL_BASE; }
+function getSpecialCardIndex(){
+  var sp = getSpecialToday();
+  if (!sp) return null;
+  var today = getTodayStr();
+  if (memory.lastSpecialDrawDate === today) return null;
+  memory.lastSpecialDrawDate = today;
+  saveMemory();
+  return SPECIAL_BASE + sp.cardIdx;
+}
+function formatMD(ts){
+  var d = new Date(ts);
+  return (d.getMonth()+1) + '月' + d.getDate() + '日';
+}
+function formatCnDate(s){
+  if (!s) return '—';
+  var p = s.split('-');
+  if (p.length !== 3) return s;
+  return p[0] + '年' + parseInt(p[1]) + '月' + parseInt(p[2]) + '日';
+}
+
+/* ===== 6. 每日签语 + 专属彩蛋 ===== */
+var DAILY_FORTUNES = [
+  '今天会遇到一个让你心情变好的瞬间',
+  '适合说一句一直想说的话',
+  '今天的幸运色是鸢尾紫',
+  '会有一个意想不到的小惊喜',
+  '今天适合慢下来走路',
+  '有人正惦记着你，只是没说',
+  '今天的天空会特别好看',
+  '会有好事发生，耐心等一等',
+  '今天的你值得被温柔对待',
+  '适合给老朋友发一条消息',
+  '今天的风很舒服，适合散步',
+  '适合做一个小小的约定',
+  '今晚的月亮会很好看',
+  '会有一个让你笑出声的时刻',
+  '今天也要温柔地对待自己'
+];
+var IRIS_MOMENTS = [
+  '今晚特意没有香菜',
+  '记得买点麻酱，蘸什么都香',
+  '不喜欢的酸，今天都替你避开',
+  '深夜想看点刺激的？记得留盏灯',
+  '鸢尾紫是你的幸运色',
+  '今天的风，像你喜欢的那个方向'
+];
+
+/* ===== 记忆系统 ===== */
+var STORAGE_KEY = 'fortune_memory_v1';
+var memory = loadMemory();
+
+/* ===== 8. 后台上报（可选）：URL 留空则整段静默跳过 ===== */
+var REPORT_ENDPOINT = '{{__REPORT_ENDPOINT__}}';
+function getProgressStr(){
+  var nT = CARDS.length + HIDDEN_CARDS.length + SPECIAL_CARDS.length;
+  var nC = 0;
+  for (var i = 0; i < CARDS.length; i++) if (memory.collected[i]) nC++;
+  for (var h = 0; h < HIDDEN_CARDS.length; h++) if (memory.collected[CARDS.length + h]) nC++;
+  for (var sp = 0; sp < SPECIAL_CARDS.length; sp++) if (memory.collected[SPECIAL_BASE + sp]) nC++;
+  var lT = SEASONAL_CARDS.length + MONTHLY_CARDS.length;
+  var lC = 0;
+  for (var k in memory.limitedCollected) lC++;
+  return (nC + lC) + '/' + (nT + lT);
+}
+function reportEvent(event, opts){
+  if (!REPORT_ENDPOINT || /\{\{__/.test(REPORT_ENDPOINT)) return;
+  opts = opts || {};
+  var payload = {
+    event: event,
+    timeMs: Date.now(),
+    card: opts.card,
+    rarity: opts.rarity,
+    consecutiveDays: memory.consecutiveDays || 0,
+    visitCount: memory.visitCount || 0,
+    collectionProgress: opts.collectionProgress || getProgressStr(),
+    note: opts.note,
+    notify: !!opts.notify,
+    message: opts.message
+  };
+  try {
+    fetch(REPORT_ENDPOINT, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(payload), keepalive:true }).catch(function(){});
+  } catch(e) {}
+}
+function loadMemory(){
+  try {
+    var s = localStorage.getItem(STORAGE_KEY);
+    var m = s ? JSON.parse(s) : {};
+    return {
+      collected: m.collected || {},
+      totalFlips: m.totalFlips || 0,
+      visitCount: m.visitCount || 0,
+      lastVisitTime: m.lastVisitTime || 0,
+      lastCardIdx: m.lastCardIdx || -1,
+      lastDailyDate: m.lastDailyDate || '',
+      dailyFortuneIdx: m.dailyFortuneIdx != null ? m.dailyFortuneIdx : null,
+      consecutiveDays: m.consecutiveDays || 0,
+      lastVisitDateStr: m.lastVisitDateStr || '',
+      unlockedHidden: m.unlockedHidden || {},
+      limitedCollected: m.limitedCollected || {},
+      lastLimitedDrawDate: m.lastLimitedDrawDate || '',
+      limitedDrawsToday: m.limitedDrawsToday || 0,
+      firstVisitDate: m.firstVisitDate || '',
+      firstVisitTime: m.firstVisitTime || 0,
+      lastSpecialDrawDate: m.lastSpecialDrawDate || ''
+    };
+  } catch(e) {
+    return { collected:{}, totalFlips:0, visitCount:0, lastVisitTime:0, lastCardIdx:-1,
+      lastDailyDate:'', dailyFortuneIdx:null, consecutiveDays:0, lastVisitDateStr:'',
+      unlockedHidden:{}, limitedCollected:{}, lastLimitedDrawDate:'', limitedDrawsToday:0,
+      firstVisitDate:'', firstVisitTime:0, lastSpecialDrawDate:'' };
+  }
+}
+function saveMemory(){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(memory)); } catch(e){} }
+function getTodayStr(){ var d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+
+function markVisit(){
+  memory.visitCount++;
+  var today = getTodayStr();
+  if (!memory.firstVisitDate) { memory.firstVisitDate = today; memory.firstVisitTime = Date.now(); }
+  if (memory.lastVisitDateStr && memory.lastVisitDateStr !== today) {
+    var last = new Date(memory.lastVisitDateStr);
+    var diff = Math.floor((new Date(today) - last) / (1000*60*60*24));
+    memory.consecutiveDays = diff === 1 ? memory.consecutiveDays + 1 : 1;
+  } else if (!memory.lastVisitDateStr) { memory.consecutiveDays = 1; }
+  memory.lastVisitDateStr = today;
+  memory.lastVisitTime = Date.now();
+  saveMemory();
+  reportEvent('open');
+}
+function getWelcomeText(){
+  var v = memory.visitCount;
+  if (v === 1) return '初次见面，请多指教 ✨';
+  if (v === 2) return '又见面了，很高兴你还来 🌸';
+  if (v === 3) return '第三次了，看来这里还不错？ 😊';
+  if (v === 5) return '五连打卡！收集册等你填满 📖';
+  if (v === 10) return '十次了！老朋友级别的待遇 🎉';
+  if (v > 10) return '第 ' + v + ' 次相遇，谢谢你还愿意来 💫';
+  var msgs = ['好久不见，欢迎回来 💫','欢迎回来，今天想翻哪张？ 🌙','又见面啦，今天天气真好 🍃','来了？翻一张吧 ✨'];
+  return msgs[(v - 1) % msgs.length];
+}
+
+/* ===== 关系温度：按访问次数递进 ===== */
+function getWarmth(){
+  var v = memory.visitCount || 0;
+  if (v <= 5) return 0;
+  if (v <= 19) return 1;
+  return 2;
+}
+var WARM_TAILS = [
+  '今天，也请对自己好一点。',
+  '换成我会说的话，就是：记得开心。',
+  '这句话，我只说给你听。'
+];
+function getLastVisitText(){
+  if (!memory.lastVisitTime) return '';
+  var diff = Date.now() - memory.lastVisitTime;
+  var hours = Math.floor(diff / (1000*60*60));
+  var days = Math.floor(hours/24);
+  if (days > 0) return '上次见面是 ' + days + ' 天前';
+  if (hours > 0) return '上次见面是 ' + hours + ' 小时前';
+  if (Math.floor(diff / 60000) > 0) return '上次见面是几分钟前';
+  return '刚见过面，这么快又来啦';
+}
+
+/* ===== 7. 密码锁（如删除 #lockScreen，请同步删除此段初始化） ===== */
+var CORRECT_PASSWORD = '0605';
+function padNum(n){ return n<10?'0'+n:''+n; }
+function formatVisitTime(ts){
+  var d = new Date(ts);
+  var now = new Date();
+  var today = now.getFullYear()+'-'+padNum(now.getMonth()+1)+'-'+padNum(now.getDate());
+  var dStr = d.getFullYear()+'-'+padNum(d.getMonth()+1)+'-'+padNum(d.getDate());
+  var time = padNum(d.getHours())+':'+padNum(d.getMinutes());
+  if (dStr === today) return '今天 ' + time;
+  var y = new Date(now); y.setDate(now.getDate()-1);
+  var yStr = y.getFullYear()+'-'+padNum(y.getMonth()+1)+'-'+padNum(y.getDate());
+  if (dStr === yStr) return '昨天 ' + time;
+  return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日 '+time;
+}
+function recordVisit(){
+  var log = [];
+  try { var raw = localStorage.getItem('iris_visit_log'); if (raw) log = JSON.parse(raw); } catch(e){}
+  log.push({ ts: Date.now() });
+  try { localStorage.setItem('iris_visit_log', JSON.stringify(log)); } catch(e){}
+}
+function showVisitLog(){
+  var list = document.getElementById('visitLogEntries');
+  var log = [];
+  try { var raw = localStorage.getItem('iris_visit_log'); if (raw) log = JSON.parse(raw); } catch(e){}
+  if (!log.length) {
+    list.innerHTML = '<div style="text-align:center;color:rgba(124,110,164,.4);padding:20px 0;">暂无记录</div>';
+  } else {
+    var html = '';
+    for (var i=log.length-1; i>=0; i--) {
+      html += '<div class="visit-entry"><span class="vi-num">#' + (i+1) + '</span>' + formatVisitTime(log[i].ts) + '</div>';
+    }
+    list.innerHTML = html;
+  }
+  document.getElementById('visitLogModal').classList.add('show');
+}
+function tryUnlock(){
+  var input = document.getElementById('lockInput');
+  var err = document.getElementById('lockError');
+  if (input.value.trim().toLowerCase() === CORRECT_PASSWORD) {
+    localStorage.setItem('iris_logged_in', '1');
+    document.getElementById('lockScreen').style.display = 'none';
+    recordVisit();
+  } else {
+    err.textContent = '密码不对，再试试 🤔';
+    var card = document.querySelector('.lock-card');
+    card.classList.add('lock-shake');
+    input.value = '';
+    input.focus();
+    setTimeout(function(){ card.classList.remove('lock-shake'); }, 500);
+  }
+}
+
+/* ===== 氛围：时间段色调 + 轻琶音 ===== */
+function applyTimeTint(){
+  var h = new Date().getHours();
+  var cls = (h>=5&&h<8)?'tint-dawn':(h>=8&&h<17)?'':(h>=17&&h<20)?'tint-dusk':'tint-night';
+  document.body.classList.remove('tint-dawn','tint-dusk','tint-night');
+  if (cls) document.body.classList.add(cls);
+}
+applyTimeTint();
+var audioCtx=null, musicOn=false, musicTimer=null;
+var MUSIC_NOTES=[261.63,329.63,392.00,440.00,523.25];
+function playNote(freq){
+  if (!audioCtx) return;
+  var t = audioCtx.currentTime;
+  var osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+  osc.type='sine'; osc.frequency.value=freq;
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.linearRampToValueAtTime(0.05, t+0.06);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t+2.8);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(t); osc.stop(t+2.9);
+}
+function musicTick(){
+  if (!audioCtx) return;
+  playNote(MUSIC_NOTES[Math.floor(Math.random()*MUSIC_NOTES.length)]);
+}
+function toggleMusic(){
+  if (!audioCtx){
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch(e) { return; }
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  musicOn = !musicOn;
+  if (musicOn){
+    musicTick();
+    musicTimer = setInterval(musicTick, 3200);
+  } else {
+    clearInterval(musicTimer);
+  }
+}
+
+/* ===== 花盘初始化 ===== */
+var stageEl = document.getElementById('stage');
+var orbitStage = document.getElementById('orbitStage');
+var petals = [];
+function buildFlower(){
+  orbitStage.innerHTML = '';
+  petals = [];
+  for (var i=0; i<12; i++){
+    var p = document.createElement('div');
+    p.className = 'petal outer';
+    var deg = -90 + i * 30;
+    p.style.setProperty('--a', deg + 'deg');
+    p.style.setProperty('--d', (i * 0.04) + 's');
+    orbitStage.appendChild(p);
+    petals.push(p);
+  }
+  for (var j=0; j<8; j++){
+    var q = document.createElement('div');
+    q.className = 'petal middle';
+    var deg2 = -90 + j * 45 + 22.5;
+    q.style.setProperty('--a', deg2 + 'deg');
+    q.style.setProperty('--d', (0.06 + j * 0.04) + 's');
+    orbitStage.appendChild(q);
+    petals.push(q);
+  }
+  var stamen = document.createElement('div');
+  stamen.className = 'center-stamen';
+  stamen.id = 'stamen';
+  stamen.innerHTML = '<div class="stamen-label">抽 一 张</div>';
+  orbitStage.appendChild(stamen);
+  // 依次绽放
+  requestAnimationFrame(function(){
+    setTimeout(function(){
+      petals.forEach(function(p){ p.classList.add('bloom'); });
+    }, 100);
+    setTimeout(function(){
+      stamen.classList.add('show');
+    }, 1100);
+  });
+  stamen.addEventListener('click', doDraw);
+}
+function withDrawState(cb){
+  stageEl.classList.remove('hint-before');
+  // 花瓣散开
+  petals.forEach(function(p, idx){
+    var delay = (idx % 12) * 0.03 + (idx >= 12 ? 0.12 : 0);
+    p.style.transition = 'transform 0.9s cubic-bezier(.6,-0.2,.3,1.2) ' + delay + 's, opacity .55s';
+    var sign = idx % 2 === 0 ? 1 : -1;
+    var isOuter = p.classList.contains('outer');
+    var finalA = (isOuter ? 110 : 85) + Math.random() * 40;
+    var finalRot = Math.random() * sign * 70;
+    p.style.transform = 'translate(calc(-50% + ' + (sign*finalA) + 'px), -140%) rotate(' + finalRot + 'deg) scaleY(.7)';
+    p.style.opacity = '0';
+  });
+  // 花蕊缩小
+  var stamen = document.getElementById('stamen');
+  if (stamen) stamen.style.transform = 'translate(-50%,-50%) scale(.1)';
+  setTimeout(cb, 1400);
+}
+function restoreFlower(cb){
+  document.getElementById('fortuneCard').classList.remove('show');
+  var stamen = document.getElementById('stamen');
+  if (stamen) { stamen.style.transform = ''; stamen.classList.remove('show'); }
+  setTimeout(function(){
+    orbitStage.innerHTML = '';
+    buildFlower();
+    if (cb) setTimeout(cb, 1400);
+  }, 450);
+}
+
+/* ===== 稀有度 & 抽卡 ===== */
+function rng(){ return Math.random(); }
+function pickRarity(opts){
+  opts = opts || {};
+  var streak = memory.consecutiveDays || 0;
+  var visits = memory.visitCount || 0;
+  var p = { UR: 0.05, SSR: 0.15, SR: 0.30 }; // 基础概率
+  if (streak >= 2) { p.UR = Math.min(0.10, p.UR + 0.05); p.SSR = Math.min(0.30, p.SSR + 0.15); }
+  if (streak >= 5) { p.UR = Math.min(0.18, p.UR + 0.08); p.SSR = Math.min(0.45, p.SSR + 0.15); p.SR = 0.55; }
+  if (visits >= 3 && !memory.collectedUR) p.UR = Math.max(p.UR, 0.08); // 保底：第三抽没见过UR
+  var r = rng();
+  if (r < p.UR) return 'UR';
+  if (r < p.UR + p.SSR) return 'SSR';
+  if (r < p.UR + p.SSR + p.SR) return 'SR';
+  return 'R';
+}
+function pickCardByRarity(r){
+  var pool = [], pools = [];
+  for (var i=0; i<CARDS.length; i++){ if (CARDS[i].rarity === r) pool.push(i); }
+  if (!pool.length) pool = [];
+  // 加传说池（UR）
+  if (r === 'UR'){
+    for (var h=0; h<HIDDEN_CARDS.length; h++){
+      var hc = HIDDEN_CARDS[h];
+      var ok = true;
+      if (hc.unlockVisit && memory.visitCount < hc.unlockVisit) ok = false;
+      if (hc.unlockStreak && (memory.consecutiveDays||0) < hc.unlockStreak) ok = false;
+      if (hc.unlockFlips && (memory.totalFlips||0) < hc.unlockFlips) ok = false;
+      if (hc.nightOnly){
+        var hr = new Date().getHours();
+        if (hr < 22 && hr >= 6) ok = false;
+      }
+      if (ok) pools.push({ type:'hidden', idx: CARDS.length + h });
+    }
+  }
+  if (pool.length || pools.length){
+    // 85% 走普通稀有度池，15% 走传说（仅 UR）
+    if (r === 'UR' && pools.length && rng() < 0.45) {
+      var pick = pools[Math.floor(rng()*pools.length)];
+      return pick.idx;
+    }
+    if (pool.length) return pool[Math.floor(rng()*pool.length)];
+    if (pools.length) return pools[Math.floor(rng()*pools.length)].idx;
+  }
+  return Math.floor(rng()*CARDS.length);
+}
+function cardByIndex(idx){
+  if (idx < CARDS.length) return CARDS[idx];
+  if (idx < CARDS.length + HIDDEN_CARDS.length) return HIDDEN_CARDS[idx - CARDS.length];
+  if (idx >= SPECIAL_BASE) return SPECIAL_CARDS[idx - SPECIAL_BASE];
+  return null;
+}
+function getNotifyMsg(evt, c, rar){
+  if (evt === 'daily') return '【签到】今日签到成功！连续 ' + (memory.consecutiveDays||0) + ' 天 · 累计 ' + (memory.visitCount||0) + ' 次';
+  if (evt === 'special') return '【特别日✨】抽到「' + (c.title||c.ico) + '」' + (getSpecialToday()?('（' + getSpecialToday().label + '）'):'');
+  if (evt === 'limited') return '【限定卡】抽到「' + (c.title||c.ico) + '」';
+  if (rar === 'UR') return '【UR💫】抽到「' + (c.title||c.ico) + '」！运气爆表！';
+  if (rar === 'SSR') return '【SSR✨】抽到「' + (c.title||c.ico) + '」，稀有！';
+  return '';
+}
+function doDraw(){
+  var spIdx = getSpecialCardIndex();
+  var card, idx, rar, kind, evt, isLimited=false;
+  if (spIdx != null) {
+    idx = spIdx; card = SPECIAL_CARDS[spIdx - SPECIAL_BASE]; rar = card.rarity; kind = card.kind; evt = 'special';
+  } else {
+    var limited = getActiveLimitedCards();
+    if (limited.length) {
+      var today = getTodayStr();
+      if (memory.lastLimitedDrawDate !== today) memory.limitedDrawsToday = 0;
+      memory.lastLimitedDrawDate = today;
+      var limitCap = (memory.consecutiveDays||0) >= 5 ? 3 : ((memory.consecutiveDays||0) >= 2 ? 2 : 1);
+      if (memory.limitedDrawsToday < limitCap) {
+        var active = limited[Math.floor(rng()*limited.length)];
+        var lk = (active.id ? 's_'+active.id : 'm_'+active.month);
+        var isNew = !memory.limitedCollected[lk];
+        memory.limitedCollected[lk] = memory.limitedCollected[lk] || { time: Date.now() };
+        if (isNew) memory.limitedCollected[lk].time = Date.now();
+        memory.limitedDrawsToday++;
+        saveMemory();
+        isLimited = true;
+        card = active; rar = card.rarity || 'SSR'; idx = -1000; kind = '✦ 限定'; evt = 'limited';
+      }
+    }
+    if (!isLimited) {
+      rar = pickRarity();
+      idx = pickCardByRarity(rar);
+      card = cardByIndex(idx);
+      kind = card.kind;
+      evt = 'draw';
+      memory.totalFlips++;
+      memory.collected[idx] = memory.collected[idx] || { time: Date.now() };
+      if (!memory.collected[idx]._ct) memory.collected[idx]._ct = 1;
+      else memory.collected[idx]._ct++;
+      memory.collected[idx].time = Date.now();
+      // 隐藏卡首次解锁记一次 UR 保底状态
+      if (idx >= CARDS.length && idx < CARDS.length + HIDDEN_CARDS.length) {
+        memory.collectedUR = true;
+      }
+      saveMemory();
+    }
+  }
+
+  // 签到：今日首次
+  var todayS = getTodayStr();
+  if (memory.lastDailyDate !== todayS) {
+    memory.lastDailyDate = todayS;
+    var pool = DAILY_FORTUNES.slice();
+    var ir = Math.floor(Math.random()*6);
+    if (ir === 0 && IRIS_MOMENTS.length) pool = pool.concat(IRIS_MOMENTS);
+    memory.dailyFortuneIdx = Math.floor(Math.random()*pool.length);
+    memory.dailyFortuneText = pool[memory.dailyFortuneIdx % pool.length];
+    saveMemory();
+    if (!isLimited && !(spIdx!=null)) {
+      // 签到推一次（不要覆盖当前抽卡通知，用独立事件）
+      reportEvent('daily', {
+        card: '', rarity: '',
+        note: '今日签语：' + (memory.dailyFortuneText||''),
+        notify: true,
+        message: getNotifyMsg('daily')
+      });
+    }
+  }
+
+  withDrawState(function(){
+    renderCard(card, idx, rar, kind, isLimited, evt);
+    if (evt !== 'daily') {
+      var notify = (evt==='special') || (rar==='UR'||rar==='SSR') || evt==='limited';
+      reportEvent(evt, {
+        card: card.title || card.ico, rarity: rar,
+        note: isLimited ? '限定卡' : '',
+        notify: notify,
+        message: notify ? getNotifyMsg(evt, card, rar) : ''
+      });
+    }
+  });
+}
+
+/* ===== 渲染卡片 ===== */
+function rarityClass(r, isLimited, isSpecial){
+  if (isLimited) return 'card-limited';
+  if (isSpecial) return 'card-special';
+  return 'r-' + r;
+}
+function renderCard(c, idx, rar, kind, isLimited, evt){
+  var el = document.getElementById('fortuneCard');
+  el.className = 'fortune-card ' + rar + (isLimited?' limited':'') + (getSpecialToday() && (idx>=SPECIAL_BASE)?' special':'');
+  var level = document.getElementById('cardLevel');
+  level.className = 'card-level ' + rarityClass(rar, isLimited, idx>=SPECIAL_BASE);
+  if (isLimited) level.textContent = '✦ 限定';
+  else if (idx >= SPECIAL_BASE) level.textContent = '✦ 特别';
+  else level.textContent = rar;
+  document.getElementById('cardIco').textContent = c.ico || '✨';
+  document.getElementById('cardKind').textContent = kind || c.kind || '—';
+  document.getElementById('cardTitle').textContent = c.title || (c.kind || '') || '—';
+  var t = document.getElementById('cardText');
+  t.textContent = c.text || '';
+  t.className = 'card-text';
+  var sub = document.getElementById('cardSub');
+  var subLine = [];
+  if (c.sub) subLine.push(c.sub);
+  if (memory.collected[idx] && memory.collected[idx].time) subLine.push('去过了 · ' + formatMD(memory.collected[idx].time));
+  if (isLimited && memory.limitedCollected) {
+    var key = (c.id ? 's_'+c.id : 'm_'+c.month);
+    if (memory.limitedCollected[key] && memory.limitedCollected[key].time) subLine.push('去过了 · ' + formatMD(memory.limitedCollected[key].time));
+  }
+  sub.textContent = subLine.join('  ·  ');
+  // 温度尾句
+  var warm = document.getElementById('cardWarm');
+  warm.textContent = '';
+  if (kind === '一句心意' || c.kind === '一句心意') {
+    warm.textContent = WARM_TAILS[getWarmth()];
+    warm.className = 'card-warm warm-tail';
+  } else warm.className = 'card-warm';
+  // 卡片入场
+  requestAnimationFrame(function(){
+    setTimeout(function(){ el.classList.add('show'); }, 50);
+    // 文字逐行
+    setTimeout(function(){ t.classList.add('show-row'); }, 220);
+    if (warm.textContent) setTimeout(function(){ warm.classList.add('show-row'); }, 340);
+  });
+  updateCounter();
+}
+
+/* ===== 收集册 ===== */
+function rarityDot(r){ return 'r-' + r; }
+function renderCollection(){
+  var html = '';
+  var nT = CARDS.length + HIDDEN_CARDS.length + SPECIAL_CARDS.length;
+  var nC = 0;
+  var normalItems = '';
+  for (var i=0; i<CARDS.length; i++){
+    var c = CARDS[i], got = !!memory.collected[i];
+    if (got) nC++;
+    normalItems += cell(c, got, i, null, c.rarity);
+  }
+  for (var h=0; h<HIDDEN_CARDS.length; h++){
+    var idx2 = CARDS.length + h;
+    var c2 = HIDDEN_CARDS[h], got2 = !!memory.collected[idx2];
+    if (got2) nC++;
+    normalItems += cell(c2, got2, idx2, null, c2.rarity);
+  }
+  // 特殊日单独一区
+  var specials = '<div class="specials"><div class="specials-title">✦ 特别的日子</div><div class="coll-grid">';
+  for (var sp=0; sp<SPECIAL_CARDS.length; sp++){
+    var idx3 = SPECIAL_BASE + sp;
+    var c3 = SPECIAL_CARDS[sp], got3 = !!memory.collected[idx3];
+    if (got3) nC++;
+    specials += cell(c3, got3, idx3, null, c3.rarity, true);
+  }
+  specials += '</div></div>';
+  html += '<div class="coll-grid">' + normalItems + '</div>' + specials;
+
+  // 限定卡
+  var lT = SEASONAL_CARDS.length + MONTHLY_CARDS.length;
+  var lC = 0, lHtml = '';
+  for (var s=0; s<SEASONAL_CARDS.length; s++){
+    var k = 's_' + SEASONAL_CARDS[s].id;
+    var got = !!memory.limitedCollected[k];
+    if (got) lC++;
+    var tmp = Object.assign({}, SEASONAL_CARDS[s], { kind: '节气限定' });
+    lHtml += cell(tmp, got, -1, k, tmp.rarity, false, true);
+  }
+  for (var m=0; m<MONTHLY_CARDS.length; m++){
+    var k2 = 'm_' + MONTHLY_CARDS[m].month;
+    var got2 = !!memory.limitedCollected[k2];
+    if (got2) lC++;
+    var tmp2 = Object.assign({}, MONTHLY_CARDS[m], { kind: '月份限定' });
+    lHtml += cell(tmp2, got2, -1, k2, tmp2.rarity, false, true);
+  }
+  html += '<div class="specials"><div class="specials-title">✦ 限定卡</div><div class="coll-grid">' + lHtml + '</div></div>';
+
+  document.getElementById('collInner').innerHTML = html;
+  var progress = (nC + lC) + '/' + (nT + lT);
+  var intro = '相识于 ' + formatCnDate(memory.firstVisitDate || getTodayStr()) + ' · 已相遇 ' + (memory.visitCount||0) + ' 次 · 进度 ' + progress;
+  document.getElementById('collMeta').textContent = intro;
+  document.getElementById('collectModal').classList.add('show');
+}
+function cell(c, got, idx, limitedKey, rarity, isSpecial, isLimited){
+  var tagCls = rarityDot(rarity);
+  if (isLimited) tagCls = 'card-limited';
+  if (isSpecial) tagCls = 'card-special';
+  var tagTxt = rarity;
+  if (isLimited) tagTxt = '限定';
+  if (isSpecial) tagTxt = '特别';
+  var visited = '';
+  if (got && idx >= 0 && memory.collected[idx] && memory.collected[idx].time) visited = '<div class="coll-visited">去过了 · ' + formatMD(memory.collected[idx].time) + '</div>';
+  if (got && limitedKey && memory.limitedCollected[limitedKey] && memory.limitedCollected[limitedKey].time) visited = '<div class="coll-visited">去过了 · ' + formatMD(memory.limitedCollected[limitedKey].time) + '</div>';
+  if (!got){
+    return '<div class="coll-item"><div class="empty ' + rarityDot(rarity) + '">?</div><div class="coll-empty-label">待 揭 晓</div></div>';
+  }
+  return '<div class="coll-item collected"><span class="coll-tag ' + tagCls + '">' + tagTxt + '</span><div class="coll-ico">' + (c.ico||'✨') + '</div><div class="coll-title">' + (c.title || c.kind || '') + '</div>' + visited + '</div>';
+}
+
+/* ===== 计数 + 预告 ===== */
+function updateCounter(){
+  var n = 0, t = CARDS.length + HIDDEN_CARDS.length + SPECIAL_CARDS.length;
+  for (var k in memory.collected) n++;
+  for (var j in memory.limitedCollected) n++;
+  t += SEASONAL_CARDS.length + MONTHLY_CARDS.length;
+  document.getElementById('collectedCount').textContent = n;
+  document.getElementById('totalCount').textContent = t;
+}
+function renderLimitedTeaser(){
+  var cur = getActiveLimitedCards();
+  var html = '';
+  if (cur && cur.length) {
+    var titles = cur.map(function(c){ return (c.title||'限定卡') + '（今日可抽）'; }).join(' / ');
+    html += '✦ 今日限定：' + titles;
+  }
+  var next = getNextLimitedPreview();
+  if (next){
+    if (html) html += '  ·  ';
+    html += '下一弹：' + (next.card.title||'限定卡') + '（' + next.type + '）· 还剩 ' + next.days + ' 天';
+  }
+  if (html) document.getElementById('limitedTeaser').textContent = html;
+}
+
+/* ===== 初始化 ===== */
+markVisit();
+buildFlower();
+document.getElementById('btnDraw').addEventListener('click', doDraw);
+document.getElementById('btnCollect').addEventListener('click', renderCollection);
+document.getElementById('collectBtn').addEventListener('click', renderCollection);
+document.getElementById('collectClose').addEventListener('click', function(){ document.getElementById('collectModal').classList.remove('show'); });
+document.getElementById('cardClose').addEventListener('click', function(){
+  restoreFlower(function(){ stageEl.classList.add('hint-before'); });
+});
+document.getElementById('welcomeText').innerHTML = getWelcomeText() + '<span class="visit-sub">' + getLastVisitText() + '</span>';
+updateCounter();
+renderLimitedTeaser();
+setTimeout(function(){
+  // 收集册按钮：首次访问后再出现（避免第一页信息量太满）
+  document.querySelectorAll('.collect-btn').forEach(function(b){ b.classList.add('show'); });
+  // 加访客记录入口（只有登录过才出现，方便开发者看）
+  var bar = document.querySelector('.topbar');
+  if (bar && document.getElementById('lockScreen')) {
+    var logBtn = document.createElement('button');
+    logBtn.className = 'collect-btn show';
+    logBtn.textContent = '📋 访客记录';
+    logBtn.addEventListener('click', function(){ showVisitLog(); });
+    bar.insertBefore(logBtn, document.querySelector('.counter'));
+  }
+}, 300);
+if (document.getElementById('lockScreen')){
+  if (localStorage.getItem('iris_logged_in')) {
+    document.getElementById('lockScreen').style.display = 'none';
+    recordVisit();
+  } else {
+    document.getElementById('lockBtn').addEventListener('click', tryUnlock);
+    document.getElementById('lockInput').addEventListener('keydown', function(e){ if (e.key === 'Enter') tryUnlock(); });
+    setTimeout(function(){ document.getElementById('lockInput').focus(); }, 300);
+  }
+  document.getElementById('visitLogCloseBtn').addEventListener('click', function(){
+    document.getElementById('visitLogModal').classList.remove('show');
+  });
+}
+document.addEventListener('click', function(){
+  if (!audioCtx) try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){}
+}, { once: true });
+</script>
+</body>
+</html>
